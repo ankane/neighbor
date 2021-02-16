@@ -56,6 +56,13 @@ class NeighborTest < Minitest::Test
     assert_empty Item.find(4).nearest_neighbors.first(3)
   end
 
+  def test_attribute_not_loaded
+    create_items(Item)
+    assert_raises(ActiveModel::MissingAttributeError) do
+      Item.select(:id).find(1).nearest_neighbors
+    end
+  end
+
   def test_large_dimensions
     error = assert_raises(ActiveRecord::StatementInvalid) do
       LargeDimensionsItem.create!(neighbor_vector: 101.times.to_a)
