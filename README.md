@@ -56,7 +56,7 @@ Get the nearest neighbors
 item.nearest_neighbors.first(5)
 ```
 
-## Distances
+## Distance
 
 Specify the distance metric
 
@@ -74,6 +74,10 @@ Supported distances are:
 - `chebyshev`
 
 Returned records will have a `neighbor_distance` attribute
+
+## Dimensions
+
+By default, Postgres limits the `cube` data type to 100 dimensions. See the [Postgres docs](https://www.postgresql.org/docs/current/cube.html) for how to increase this.
 
 ## Example
 

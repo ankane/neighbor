@@ -37,6 +37,11 @@ class ChebyshevItem < ActiveRecord::Base
   self.table_name = "items"
 end
 
+class LargeDimensionsItem < ActiveRecord::Base
+  has_neighbors dimensions: 101
+  self.table_name = "items"
+end
+
 class Minitest::Test
   def assert_elements_in_delta(expected, actual)
     assert_equal expected.size, actual.size

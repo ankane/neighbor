@@ -56,6 +56,13 @@ class NeighborTest < Minitest::Test
     assert_empty Item.find(4).nearest_neighbors.first(3)
   end
 
+  def test_large_dimensions
+    error = assert_raises(ActiveRecord::StatementInvalid) do
+      LargeDimensionsItem.create!(neighbor_vector: 101.times.to_a)
+    end
+    assert_match "A cube cannot have more than 100 dimensions", error.message
+  end
+
   def test_invalid_distance
     error = assert_raises(ArgumentError) do
       Item.has_neighbors(dimensions: 3, distance: "bad")
