@@ -115,6 +115,8 @@ movie = Movie.find_by(name: "Star Wars (1977)")
 movie.nearest_neighbors.first(5).map(&:name)
 ```
 
+[Complete code](examples/disco.rb)
+
 ## History
 
 View the [changelog](https://github.com/ankane/neighbor/blob/master/CHANGELOG.md)
