@@ -13,11 +13,7 @@ module Neighbor
       raise Error, "Expected #{@dimensions} dimensions, not #{value.size}" unless value.size == @dimensions
 
       if @distance == "cosine"
-        norm = 0.0
-        value.each do |v|
-          norm += v * v
-        end
-        norm = Math.sqrt(norm)
+        norm = Math.sqrt(value.sum { |v| v * v })
         value.map { |v| v / norm }
       else
         value
