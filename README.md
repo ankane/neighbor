@@ -48,7 +48,7 @@ item.update(neighbor_vector: [1.0, 1.2, 0.5])
 
 > With cosine distance (the default), vectors are normalized before being stored
 
-And get the nearest neighbors
+Get the nearest neighbors
 
 ```ruby
 item.nearest_neighbors.first(5)
@@ -72,10 +72,6 @@ Supported distances are:
 - `chebyshev`
 
 Returned records will have a `neighbor_distance` attribute
-
-```ruby
-returned_item.neighbor_distance
-```
 
 ## Example
 
