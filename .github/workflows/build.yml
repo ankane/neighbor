@@ -1,0 +1,28 @@
+name: build
+on: [push, pull_request]
+jobs:
+  build:
+    if: "!contains(github.event.head_commit.message, '[skip ci]')"
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+        - ruby: 3.0
+          gemfile: Gemfile
+        - ruby: 2.7
+          gemfile: gemfiles/activerecord60.gemfile
+        - ruby: 2.6
+          gemfile: gemfiles/activerecord52.gemfile
+    runs-on: ubuntu-20.04
+    env:
+      BUNDLE_GEMFILE: ${{ matrix.gemfile }}
+    steps:
+    - uses: actions/checkout@v2
+    - uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: ${{ matrix.ruby }}
+        bundler-cache: true
+    - uses: ankane/setup-postgres@v1
+    - run: |
+        createdb neighbor_test
+    - run: bundle exec rake test
