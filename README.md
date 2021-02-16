@@ -91,8 +91,20 @@ You can use Neighbor for online item recommendations with [Disco](https://github
 Generate a model
 
 ```sh
-rails generate model Movie name:string neighbor_vector:cube
-rails db:migrate
+rails generate model Movie
+```
+
+Update and run the migration
+
+```ruby
+class CreateMovies < ActiveRecord::Migration[6.1]
+  def change
+    create_table :movies do |t|
+      t.string :name
+      t.column :neighbor_vector, :cube
+    end
+  end
+end
 ```
 
 And add `has_neighbors`
