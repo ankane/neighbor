@@ -20,6 +20,8 @@ rails generate neighbor:install
 rails db:migrate
 ```
 
+This enables the [cube extension](https://www.postgresql.org/docs/current/cube.html) in Postgres
+
 ## Getting Started
 
 Create a migration
