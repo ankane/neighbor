@@ -66,14 +66,19 @@ class Item < ApplicationRecord
 end
 ```
 
-Supported distances are:
+Supported values are:
 
 - `cosine` (default)
 - `euclidean`
 - `taxicab`
 - `chebyshev`
 
-Returned records will have a `neighbor_distance` attribute
+Records returned from `nearest_neighbors` will have a `neighbor_distance` attribute
+
+```ruby
+nearest_item = item.nearest_neighbors.first
+nearest_item.neighbor_distance
+```
 
 ## Dimensions
 
