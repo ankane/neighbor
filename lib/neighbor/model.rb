@@ -12,7 +12,9 @@ module Neighbor
         attribute attribute_name, Neighbor::Vector.new(dimensions: dimensions, distance: distance)
 
         define_method :nearest_neighbors do
-          return self.class.none if neighbor_vector.nil?
+          return self.class.none if send(attribute_name).nil?
+
+          quoted_attribute = "#{self.class.connection.quote_table_name(self.class.table_name)}.#{self.class.connection.quote_column_name(attribute_name)}"
 
           operator =
             case distance
@@ -24,11 +26,9 @@ module Neighbor
               "<->"
             end
 
-          quoted_attribute = "#{self.class.connection.quote_table_name(self.class.table_name)}.#{self.class.connection.quote_column_name(attribute_name)}"
-
           # important! neighbor_vector should already be typecast
           # but use to_f as extra safeguard against SQL injection
-          order = "#{quoted_attribute} #{operator} cube(array[#{neighbor_vector.map(&:to_f).join(", ")}])"
+          order = "#{quoted_attribute} #{operator} cube(array[#{send(attribute_name).map(&:to_f).join(", ")}])"
 
           # https://stats.stackexchange.com/questions/146221/is-cosine-similarity-identical-to-l2-normalized-euclidean-distance
           # with normalized vectors:
