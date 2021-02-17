@@ -86,7 +86,7 @@ By default, Postgres limits the `cube` data type to 100 dimensions. See the [Pos
 
 ## Example
 
-You can use Neighbor for online item recommendations with [Disco](https://github.com/ankane/disco). We’ll use MovieLens data for this example.
+You can use Neighbor for online item-based recommendations with [Disco](https://github.com/ankane/disco). We’ll use MovieLens data for this example.
 
 Generate a model
 
