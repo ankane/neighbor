@@ -84,6 +84,14 @@ class NeighborTest < Minitest::Test
     assert_equal "Expected 3 dimensions, not 2", error.message
   end
 
+  def test_schema
+    file = Tempfile.new
+    ActiveRecord::SchemaDumper.dump(ActiveRecord::Base.connection, file)
+    file.rewind
+    refute_match "Could not dump table", file.read
+    load(file.path)
+  end
+
   def create_items(cls)
     vectors = [
       [1, 1, 1],

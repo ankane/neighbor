@@ -14,7 +14,7 @@ ActiveRecord::Schema.define do
   enable_extension "cube"
 
   create_table :items, force: true do |t|
-    t.column :neighbor_vector, :cube
+    t.cube :neighbor_vector
   end
 end
 

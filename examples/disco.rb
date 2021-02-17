@@ -9,7 +9,7 @@ ActiveRecord::Schema.define do
 
   create_table :movies, force: true do |t|
     t.string :name
-    t.column :neighbor_vector, :cube
+    t.cube :neighbor_vector
   end
 end
 

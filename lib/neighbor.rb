@@ -21,7 +21,20 @@ ActiveSupport.on_load(:active_record) do
 
   extend Neighbor::Model
 
-  # prevent unknown OID warning
   require "active_record/connection_adapters/postgresql_adapter"
+
+  # ensure schema can be dumped
+  ActiveRecord::ConnectionAdapters::PostgreSQLAdapter::NATIVE_DATABASE_TYPES[:cube] = {name: "cube"}
+
+  # ensure schema can be loaded
+  if ActiveRecord::VERSION::MAJOR >= 6
+    ActiveRecord::ConnectionAdapters::TableDefinition.send(:define_column_methods, :cube)
+  else
+    ActiveRecord::ConnectionAdapters::TableDefinition.define_method :cube do |*args, **options|
+      args.each { |name| column(name, :cube, options) }
+    end
+  end
+
+  # prevent unknown OID warning
   ActiveRecord::ConnectionAdapters::PostgreSQLAdapter.prepend(Neighbor::RegisterCubeType)
 end
