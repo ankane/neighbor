@@ -1,3 +1,7 @@
+## 0.1.2 (unreleased)
+
+- Added `nearest_neighbors` scope
+
 ## 0.1.1 (2021-02-16)
 
 - Fixed `Could not dump table` error

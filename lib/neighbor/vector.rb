@@ -6,18 +6,20 @@ module Neighbor
       @distance = distance
     end
 
-    def cast(value)
-      return if value.nil?
-
+    def self.cast(value, dimensions:, distance:)
       value = value.to_a.map(&:to_f)
-      raise Error, "Expected #{@dimensions} dimensions, not #{value.size}" unless value.size == @dimensions
+      raise Error, "Expected #{dimensions} dimensions, not #{value.size}" unless value.size == dimensions
 
-      if @distance == "cosine"
+      if distance == "cosine"
         norm = Math.sqrt(value.sum { |v| v * v })
         value.map { |v| v / norm }
       else
         value
       end
+    end
+
+    def cast(value)
+      self.class.cast(value, dimensions: @dimensions, distance: @distance) unless value.nil?
     end
 
     def serialize(value)
