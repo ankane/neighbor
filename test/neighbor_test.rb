@@ -56,6 +56,14 @@ class NeighborTest < Minitest::Test
     assert_empty Item.find(4).nearest_neighbors.first(3)
   end
 
+  def test_scope
+    create_items(Item)
+    result = Item.nearest_neighbors([3, 3, 3]).first(5)
+    assert_equal [1, 2], result.map(&:id).first(2).sort # same distance
+    assert_equal 3, result.map(&:id).last
+    assert_elements_in_delta [0, 0, 0.05719095841050148], result.map(&:neighbor_distance)
+  end
+
   def test_attribute_not_loaded
     create_items(Item)
     assert_raises(ActiveModel::MissingAttributeError) do
