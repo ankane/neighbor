@@ -65,6 +65,13 @@ class NeighborTest < Minitest::Test
     assert_elements_in_delta [0, 0, 0.05719095841050148], result.map(&:neighbor_distance)
   end
 
+  def test_scope_invalid_dimensions
+    error = assert_raises(Neighbor::Error) do
+      Item.nearest_neighbors([3, 3]).first(5)
+    end
+    assert_equal "Expected 3 dimensions, not 2", error.message
+  end
+
   def test_attribute_not_loaded
     create_items(Item)
     assert_raises(ActiveModel::MissingAttributeError) do
