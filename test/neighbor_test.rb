@@ -59,6 +59,7 @@ class NeighborTest < Minitest::Test
   def test_scope
     create_items(Item)
     result = Item.nearest_neighbors([3, 3, 3]).first(5)
+    assert_equal 3, result.size
     assert_equal [1, 2], result.map(&:id).first(2).sort # same distance
     assert_equal 3, result.map(&:id).last
     assert_elements_in_delta [0, 0, 0.05719095841050148], result.map(&:neighbor_distance)
