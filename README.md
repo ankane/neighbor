@@ -50,10 +50,16 @@ item.update(neighbor_vector: [1.0, 1.2, 0.5])
 
 > With cosine distance (the default), vectors are normalized before being stored
 
-Get the nearest neighbors
+Get the nearest neighbors to a record
 
 ```ruby
 item.nearest_neighbors.first(5)
+```
+
+Get the nearest neighbors to a vector [master]
+
+```ruby
+Item.nearest_neighbors([1, 2, 3])
 ```
 
 ## Distance
