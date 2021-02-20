@@ -79,6 +79,8 @@ Supported values are:
 - `taxicab`
 - `chebyshev`
 
+For inner product, see [this example](examples/disco_user_recs.rb)
+
 Records returned from `nearest_neighbors` will have a `neighbor_distance` attribute
 
 ```ruby
