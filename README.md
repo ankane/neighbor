@@ -59,7 +59,7 @@ item.nearest_neighbors.first(5)
 Get the nearest neighbors to a vector
 
 ```ruby
-Item.nearest_neighbors([0.9, 1.3, 1.1])
+Item.nearest_neighbors([0.9, 1.3, 1.1]).first(5)
 ```
 
 ## Distance
