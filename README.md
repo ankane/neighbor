@@ -56,7 +56,7 @@ Get the nearest neighbors to a record
 item.nearest_neighbors.first(5)
 ```
 
-Get the nearest neighbors to a vector [master]
+Get the nearest neighbors to a vector
 
 ```ruby
 Item.nearest_neighbors([1, 2, 3])
