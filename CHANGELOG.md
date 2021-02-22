@@ -1,6 +1,7 @@
 ## 0.1.2 (unreleased)
 
 - Added `nearest_neighbors` scope
+- Added support for custom attribute
 
 ## 0.1.1 (2021-02-16)
 

@@ -108,14 +108,21 @@ class NeighborTest < Minitest::Test
     load(file.path)
   end
 
-  def create_items(cls)
+  def test_attribute
+    create_items(Product, :vector)
+    result = Product.find(1).nearest_neighbors.first(3)
+    assert_equal [2, 3], result.map(&:id)
+    assert_elements_in_delta [0, 0.05719095841050148], result.map(&:neighbor_distance)
+  end
+
+  def create_items(cls, attribute = :neighbor_vector)
     vectors = [
       [1, 1, 1],
       [2, 2, 2],
       [1, 1, 2]
     ]
     vectors.each.with_index do |v, i|
-      cls.create!(id: i + 1, neighbor_vector: v)
+      cls.create!(id: i + 1, attribute => v)
     end
   end
 end

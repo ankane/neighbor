@@ -16,6 +16,10 @@ ActiveRecord::Schema.define do
   create_table :items, force: true do |t|
     t.cube :neighbor_vector
   end
+
+  create_table :products, force: true do |t|
+    t.cube :vector
+  end
 end
 
 class Item < ActiveRecord::Base
@@ -40,6 +44,10 @@ end
 class LargeDimensionsItem < ActiveRecord::Base
   has_neighbors dimensions: 101
   self.table_name = "items"
+end
+
+class Product < ActiveRecord::Base
+  has_neighbors :vector, dimensions: 3
 end
 
 class Minitest::Test

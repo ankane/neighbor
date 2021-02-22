@@ -1,20 +1,16 @@
 module Neighbor
   module Model
-    def has_neighbors(dimensions:, distance: "cosine")
+    def has_neighbors(attribute = :neighbor_vector, dimensions:, distance: "cosine")
       distance = distance.to_s
       raise ArgumentError, "Invalid distance: #{distance}" unless %w(cosine euclidean taxicab chebyshev).include?(distance)
 
-      # TODO make configurable
-      # likely use argument
-      attribute_name = :neighbor_vector
-
       class_eval do
-        attribute attribute_name, Neighbor::Vector.new(dimensions: dimensions, distance: distance)
+        attribute(attribute, Neighbor::Vector.new(dimensions: dimensions, distance: distance))
 
         scope :nearest_neighbors, ->(vector) {
           return none if vector.nil?
 
-          quoted_attribute = "#{connection.quote_table_name(table_name)}.#{connection.quote_column_name(attribute_name)}"
+          quoted_attribute = "#{connection.quote_table_name(table_name)}.#{connection.quote_column_name(attribute)}"
 
           operator =
             case distance
@@ -40,14 +36,14 @@ module Neighbor
 
           # for select, use column_names instead of * to account for ignored columns
           select(*column_names, "#{neighbor_distance} AS neighbor_distance")
-            .where.not(attribute_name => nil)
+            .where.not(attribute => nil)
             .order(Arel.sql(order))
         }
 
         define_method :nearest_neighbors do
           self.class
             .where.not(self.class.primary_key => send(self.class.primary_key))
-            .nearest_neighbors(send(attribute_name))
+            .nearest_neighbors(send(attribute))
         end
       end
     end

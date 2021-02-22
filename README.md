@@ -92,6 +92,16 @@ nearest_item.neighbor_distance
 
 By default, Postgres limits the `cube` data type to 100 dimensions. See the [Postgres docs](https://www.postgresql.org/docs/current/cube.html) for how to increase this.
 
+## Attribute
+
+Specify the attribute to use
+
+```ruby
+class Item < ApplicationRecord
+  has_neighbors :vector, dimensions: 20
+end
+```
+
 ## Example
 
 You can use Neighbor for online item-based recommendations with [Disco](https://github.com/ankane/disco). We’ll use MovieLens data for this example.
