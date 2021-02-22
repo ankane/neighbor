@@ -9,6 +9,8 @@ module Neighbor
       attribute_name = :neighbor_vector
 
       class_eval do
+        raise Error, "nearest_neighbors already defined" if method_defined?(:nearest_neighbors)
+
         attribute attribute_name, Neighbor::Vector.new(dimensions: dimensions, distance: distance)
 
         scope :nearest_neighbors, ->(vector) {

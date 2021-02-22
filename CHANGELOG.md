@@ -1,3 +1,7 @@
+## 0.1.3 (unreleased)
+
+- Raise an error if `nearest_neighbors` already defined
+
 ## 0.1.2 (2021-02-21)
 
 - Added `nearest_neighbors` scope

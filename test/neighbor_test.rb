@@ -100,6 +100,13 @@ class NeighborTest < Minitest::Test
     assert_equal "Expected 3 dimensions, not 2", error.message
   end
 
+  def test_already_defined
+    error = assert_raises(Neighbor::Error) do
+      Item.has_neighbors dimensions: 3
+    end
+    assert_equal "nearest_neighbors already defined", error.message
+  end
+
   def test_schema
     file = Tempfile.new
     ActiveRecord::SchemaDumper.dump(ActiveRecord::Base.connection, file)
