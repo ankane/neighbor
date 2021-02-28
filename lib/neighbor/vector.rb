@@ -9,6 +9,7 @@ module Neighbor
     def self.cast(value, dimensions:, distance:)
       value = value.to_a.map(&:to_f)
       raise Error, "Expected #{dimensions} dimensions, not #{value.size}" unless value.size == dimensions
+      raise Error, "Values must be finite" unless value.all?(&:finite?)
 
       if distance == "cosine"
         norm = Math.sqrt(value.sum { |v| v * v })
