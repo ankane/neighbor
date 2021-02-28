@@ -65,6 +65,9 @@ class NeighborTest < Minitest::Test
     result = Item.find(3).nearest_neighbors.to_a.last
     assert_equal 4, result.id
     assert_in_delta 0.5, result.neighbor_distance
+
+    result = Item.find(4).nearest_neighbors.first(3)
+    assert_elements_in_delta [0.5, 0.5, 0.5], result.map(&:neighbor_distance)
   end
 
   # private, but make sure doesn't update in-place
