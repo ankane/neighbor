@@ -56,6 +56,24 @@ class NeighborTest < Minitest::Test
     assert_empty Item.find(4).nearest_neighbors.first(3)
   end
 
+  def test_cosine_zero
+    create_items(Item)
+    Item.create!(id: 4, neighbor_vector: [0, 0, 0])
+    assert_equal [0, 0, 0], Item.last.neighbor_vector
+    assert_equal "(0, 0, 0)", Item.connection.select_all("SELECT neighbor_vector FROM items WHERE id = 4").first["neighbor_vector"]
+
+    result = Item.find(3).nearest_neighbors.to_a.last
+    assert_equal 4, result.id
+    assert_in_delta 0.5, result.neighbor_distance
+  end
+
+  # private, but make sure doesn't update in-place
+  def test_cast
+    vector = [1, 2, 3]
+    Neighbor::Vector.cast(vector, dimensions: 3, distance: "cosine")
+    assert_equal [1, 2, 3], vector
+  end
+
   def test_scope
     create_items(Item)
     result = Item.nearest_neighbors([3, 3, 3]).first(5)

@@ -12,10 +12,16 @@ module Neighbor
 
       if distance == "cosine"
         norm = Math.sqrt(value.sum { |v| v * v })
-        value.map { |v| v / norm }
-      else
-        value
+
+        # store zero vector as all zeros
+        # since NaN makes the distance always 0
+        # could also throw error
+
+        # safe to update in-place since earlier map dups
+        value.map! { |v| v / norm } if norm > 0
       end
+
+      value
     end
 
     def cast(value)

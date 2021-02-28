@@ -1,6 +1,7 @@
 ## 0.1.3 (unreleased)
 
 - Raise an error if `nearest_neighbors` already defined
+- Fixed NaN with zero vectors and cosine distance
 
 ## 0.1.2 (2021-02-21)
 
