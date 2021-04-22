@@ -23,7 +23,7 @@ rails generate neighbor:cube
 rails db:migrate
 ```
 
-For vector, install [pgvector](https://github.com/ankane/pgvector#installation) and run:
+For vector, [install pgvector](https://github.com/ankane/pgvector#installation) and run:
 
 ```sh
 rails generate neighbor:vector
