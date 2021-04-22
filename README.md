@@ -12,15 +12,23 @@ Add this line to your application’s Gemfile:
 gem 'neighbor'
 ```
 
-And run:
+## Choose An Extension
+
+Neighbor supports two extensions: [cube](https://www.postgresql.org/docs/current/cube.html) and [vector](https://github.com/ankane/pgvector). cube ships with Postgres, while vector supports approximate nearest neighbor search.
+
+For cube, run:
 
 ```sh
-bundle install
-rails generate neighbor:install
+rails generate neighbor:cube
 rails db:migrate
 ```
 
-This enables the [cube extension](https://www.postgresql.org/docs/current/cube.html) in Postgres
+For vector, install [pgvector](https://github.com/ankane/pgvector#installation) and run:
+
+```sh
+rails generate neighbor:vector
+rails db:migrate
+```
 
 ## Getting Started
 
@@ -30,6 +38,8 @@ Create a migration
 class AddNeighborVectorToItems < ActiveRecord::Migration[6.1]
   def change
     add_column :items, :neighbor_vector, :cube
+    # or
+    add_column :items, :neighbor_vector, :vector, limit: 3
   end
 end
 ```
@@ -38,7 +48,7 @@ Add to your model
 
 ```ruby
 class Item < ApplicationRecord
-  has_neighbors dimensions: 3
+  has_neighbors
 end
 ```
 
@@ -48,49 +58,76 @@ Update the vectors
 item.update(neighbor_vector: [1.0, 1.2, 0.5])
 ```
 
-> With cosine distance (the default), vectors are normalized before being stored
-
 Get the nearest neighbors to a record
 
 ```ruby
-item.nearest_neighbors.first(5)
+item.nearest_neighbors(distance: "euclidean").first(5)
 ```
 
 Get the nearest neighbors to a vector
 
 ```ruby
-Item.nearest_neighbors([0.9, 1.3, 1.1]).first(5)
+Item.nearest_neighbors([0.9, 1.3, 1.1], distance: "euclidean").first(5)
 ```
 
 ## Distance
 
-Specify the distance metric
+Supported values are:
+
+- `euclidean`
+- `cosine`
+- `taxicab` (cube only)
+- `chebyshev` (cube only)
+- `inner_product` (vector only)
+
+For cosine distance with cube, vectors must be normalized before being stored.
 
 ```ruby
 class Item < ApplicationRecord
-  has_neighbors dimensions: 3, distance: "euclidean"
+  has_neighbors normalize: true
 end
 ```
 
-Supported values are:
-
-- `cosine` (default)
-- `euclidean`
-- `taxicab`
-- `chebyshev`
-
-For inner product, see [this example](examples/disco_user_recs.rb)
+For inner product with cube, see [this example](examples/disco_user_recs.rb).
 
 Records returned from `nearest_neighbors` will have a `neighbor_distance` attribute
 
 ```ruby
-nearest_item = item.nearest_neighbors.first
+nearest_item = item.nearest_neighbors(distance: "euclidean").first
 nearest_item.neighbor_distance
 ```
 
 ## Dimensions
 
-By default, Postgres limits the `cube` data type to 100 dimensions. See the [Postgres docs](https://www.postgresql.org/docs/current/cube.html) for how to increase this.
+The cube data type is limited 100 dimensions by default. See the [Postgres docs](https://www.postgresql.org/docs/current/cube.html) for how to increase this. The vector data type is limited to 1024 dimensions.
+
+For cube, it’s a good idea to specify the number of dimensions to ensure all records have the same number.
+
+```ruby
+class Movie < ApplicationRecord
+  has_neighbors dimensions: 3
+end
+```
+
+## Indexing
+
+For vector, add an approximate index to speed up queries. Create a migration with:
+
+```ruby
+class AddIndexToItemsNeighborVector < ActiveRecord::Migration[6.1]
+  def change
+    add_index :items, :neighbor_vector, using: :ivfflat
+  end
+end
+```
+
+Add `opclass: :vector_cosine_ops` for cosine distance and `opclass: :vector_ip_ops` for inner product.
+
+Set the number of probes
+
+```ruby
+Item.connection.execute("SET ivfflat.probes = 3")
+```
 
 ## Example
 
@@ -107,7 +144,7 @@ And add `has_neighbors`
 
 ```ruby
 class Movie < ApplicationRecord
-  has_neighbors dimensions: 20
+  has_neighbors dimensions: 20, normalize: true
 end
 ```
 
@@ -131,10 +168,22 @@ And get similar movies
 
 ```ruby
 movie = Movie.find_by(name: "Star Wars (1977)")
-movie.nearest_neighbors.first(5).map(&:name)
+movie.nearest_neighbors(distance: "cosine").first(5).map(&:name)
 ```
 
 [Complete code](examples/disco_item_recs.rb)
+
+## Upgrading
+
+### 0.2.0
+
+The `distance` option has been moved from `has_neighbors` to `nearest_neighbors`, and there is no longer a default. If you use cosine distance, set:
+
+```ruby
+class Item < ApplicationRecord
+  has_neighbors normalize: true
+end
+```
 
 ## History
 

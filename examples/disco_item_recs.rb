@@ -14,7 +14,7 @@ ActiveRecord::Schema.define do
 end
 
 class Movie < ActiveRecord::Base
-  has_neighbors dimensions: 20
+  has_neighbors dimensions: 20, normalize: true
 end
 
 data = Disco.load_movielens
@@ -26,4 +26,4 @@ recommender.item_ids.each do |item_id|
 end
 
 movie = Movie.find_by(name: "Star Wars (1977)")
-pp movie.nearest_neighbors.first(5).map(&:name)
+pp movie.nearest_neighbors(distance: "cosine").first(5).map(&:name)

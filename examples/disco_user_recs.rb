@@ -19,11 +19,11 @@ end
 
 # use an extra dimension to map inner product to euclidean
 class Movie < ActiveRecord::Base
-  has_neighbors dimensions: 21, distance: "euclidean"
+  has_neighbors dimensions: 21
 end
 
 class User < ActiveRecord::Base
-  has_neighbors dimensions: 20, distance: "euclidean"
+  has_neighbors dimensions: 20
 end
 
 data = Disco.load_movielens
@@ -45,7 +45,7 @@ recommender.user_ids.each do |user_id|
 end
 
 user = User.find(123)
-pp Movie.nearest_neighbors(user.neighbor_vector.append(0)).first(5).map(&:name)
+pp Movie.nearest_neighbors(user.neighbor_vector.append(0), distance: "euclidean").first(5).map(&:name)
 
 # excludes rated, so will be different for some users
 # pp recommender.user_recs(user.id).map { |v| v[:item_id] }

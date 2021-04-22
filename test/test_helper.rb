@@ -10,36 +10,14 @@ ActiveRecord::Base.logger = logger
 
 ActiveRecord::Base.establish_connection adapter: "postgresql", database: "neighbor_test"
 
-ActiveRecord::Schema.define do
-  enable_extension "cube"
-
-  create_table :items, force: true do |t|
-    t.cube :neighbor_vector
-  end
+def vector?
+  ENV["EXT"] == "vector"
 end
 
-class Item < ActiveRecord::Base
-  has_neighbors dimensions: 3
-end
-
-class EuclideanItem < ActiveRecord::Base
-  has_neighbors dimensions: 3, distance: "euclidean"
-  self.table_name = "items"
-end
-
-class TaxicabItem < ActiveRecord::Base
-  has_neighbors dimensions: 3, distance: "taxicab"
-  self.table_name = "items"
-end
-
-class ChebyshevItem < ActiveRecord::Base
-  has_neighbors dimensions: 3, distance: "chebyshev"
-  self.table_name = "items"
-end
-
-class LargeDimensionsItem < ActiveRecord::Base
-  has_neighbors dimensions: 101
-  self.table_name = "items"
+if vector?
+  require_relative "support/vector"
+else
+  require_relative "support/cube"
 end
 
 class Minitest::Test

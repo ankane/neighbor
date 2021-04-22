@@ -1,17 +1,22 @@
 module Neighbor
   class Vector < ActiveRecord::Type::Value
-    def initialize(dimensions:, distance:)
+    def initialize(dimensions:, normalize:, model:, attribute_name:)
       super()
       @dimensions = dimensions
-      @distance = distance
+      @normalize = normalize
+      @model = model
+      @attribute_name = attribute_name
     end
 
-    def self.cast(value, dimensions:, distance:)
+    def self.cast(value, dimensions:, normalize:, column_info:)
       value = value.to_a.map(&:to_f)
-      raise Error, "Expected #{dimensions} dimensions, not #{value.size}" unless value.size == dimensions
+
+      dimensions ||= column_info[:dimensions]
+      raise Error, "Expected #{dimensions} dimensions, not #{value.size}" if dimensions && value.size != dimensions
+
       raise Error, "Values must be finite" unless value.all?(&:finite?)
 
-      if distance == "cosine"
+      if normalize
         norm = Math.sqrt(value.sum { |v| v * v })
 
         # store zero vector as all zeros
@@ -25,12 +30,32 @@ module Neighbor
       value
     end
 
+    def self.column_info(model, attribute_name)
+      attribute_name = attribute_name.to_s
+      column = model.columns.detect { |c| c.name == attribute_name }
+      {
+        type: column.try(:type),
+        dimensions: column.try(:limit)
+      }
+    end
+
+    # need to be careful to avoid loading column info before needed
+    def column_info
+      @column_info ||= self.class.column_info(@model, @attribute_name)
+    end
+
     def cast(value)
-      self.class.cast(value, dimensions: @dimensions, distance: @distance) unless value.nil?
+      self.class.cast(value, dimensions: @dimensions, normalize: @normalize, column_info: column_info) unless value.nil?
     end
 
     def serialize(value)
-      "(#{cast(value).join(", ")})" unless value.nil?
+      unless value.nil?
+        if column_info[:type] == :vector
+          "[#{cast(value).join(", ")}]"
+        else
+          "(#{cast(value).join(", ")})"
+        end
+      end
     end
 
     def deserialize(value)
