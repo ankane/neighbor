@@ -39,7 +39,7 @@ class AddNeighborVectorToItems < ActiveRecord::Migration[6.1]
   def change
     add_column :items, :neighbor_vector, :cube
     # or
-    add_column :items, :neighbor_vector, :vector, limit: 3
+    add_column :items, :neighbor_vector, :vector, limit: 3 # dimensions
   end
 end
 ```
