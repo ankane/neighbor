@@ -40,7 +40,7 @@ movies = []
 recommender.item_ids.each_with_index do |item_id, i|
   movies << {name: item_id, neighbor_vector: recommender.item_factors(item_id).append(extra[i])}
 end
-Movie.insert_all(movies) # use create! for Active Record < 6
+Movie.insert_all!(movies) # use create! for Active Record < 6
 
 users = []
 recommender.user_ids.each do |user_id|
