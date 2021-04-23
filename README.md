@@ -88,7 +88,7 @@ class Item < ApplicationRecord
 end
 ```
 
-For inner product with cube, see [this example](examples/disco_user_recs.rb).
+For inner product with cube, see [this example](examples/disco_user_recs_cube.rb).
 
 Records returned from `nearest_neighbors` will have a `neighbor_distance` attribute
 
@@ -173,7 +173,7 @@ movie = Movie.find_by(name: "Star Wars (1977)")
 movie.nearest_neighbors(distance: "cosine").first(5).map(&:name)
 ```
 
-[Complete code](examples/disco_item_recs.rb)
+See the complete code for [cube](examples/disco_item_recs_cube.rb) and [vector](examples/disco_item_recs_vector.rb)
 
 ## Upgrading
 
