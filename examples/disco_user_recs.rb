@@ -36,13 +36,17 @@ norms = (recommender.item_factors ** 2).sum(axis: 1)
 phi = norms.max
 extra = Numo::SFloat::Math.sqrt(phi - norms)
 
+movies = []
 recommender.item_ids.each_with_index do |item_id, i|
-  Movie.create!(name: item_id, neighbor_vector: recommender.item_factors(item_id).append(extra[i]))
+  movies << {name: item_id, neighbor_vector: recommender.item_factors(item_id).append(extra[i])}
 end
+Movie.insert_all(movies) # use create! for Active Record < 6
 
+users = []
 recommender.user_ids.each do |user_id|
-  User.create!(id: user_id, neighbor_vector: recommender.user_factors(user_id))
+  users << {id: user_id, neighbor_vector: recommender.user_factors(user_id)}
 end
+User.insert_all!(users) # use create! for Active Record < 6
 
 user = User.find(123)
 pp Movie.nearest_neighbors(user.neighbor_vector.append(0), distance: "euclidean").first(5).map(&:name)

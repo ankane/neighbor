@@ -159,9 +159,11 @@ recommender.fit(data)
 Use item factors for the neighbor vector
 
 ```ruby
+movies = []
 recommender.item_ids.each do |item_id|
-  Movie.create!(name: item_id, neighbor_vector: recommender.item_factors(item_id))
+  movies << {name: item_id, neighbor_vector: recommender.item_factors(item_id)}
 end
+Movie.insert_all!(movies) # use create! for Active Record < 6
 ```
 
 And get similar movies
