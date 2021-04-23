@@ -30,7 +30,7 @@ recommender = Disco::Recommender.new(factors: 20)
 recommender.fit(data)
 
 movies = []
-recommender.item_ids.each_with_index do |item_id, i|
+recommender.item_ids.each do |item_id|
   movies << {name: item_id, neighbor_vector: recommender.item_factors(item_id)}
 end
 Movie.insert_all!(movies) # use create! for Active Record < 6
