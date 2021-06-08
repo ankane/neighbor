@@ -23,11 +23,12 @@ jobs:
         ruby-version: ${{ matrix.ruby }}
         bundler-cache: true
     - uses: ankane/setup-postgres@v1
-    - run: createdb neighbor_test
+      with:
+        database: neighbor_test
     - run: bundle exec rake test
     - run: |
         sudo apt-get update && sudo apt-get install postgresql-server-dev-13
-        git clone --branch v0.1.4 https://github.com/ankane/pgvector.git
+        git clone --branch v0.1.5 https://github.com/ankane/pgvector.git
         cd pgvector
         make
         sudo make install
