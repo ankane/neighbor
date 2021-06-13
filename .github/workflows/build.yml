@@ -28,7 +28,7 @@ jobs:
     - run: bundle exec rake test
     - run: |
         sudo apt-get update && sudo apt-get install postgresql-server-dev-13
-        git clone --branch v0.1.5 https://github.com/ankane/pgvector.git
+        git clone --branch v0.1.7 https://github.com/ankane/pgvector.git
         cd pgvector
         make
         sudo make install
