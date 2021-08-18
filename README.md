@@ -206,5 +206,6 @@ To get started with development:
 git clone https://github.com/ankane/neighbor.git
 cd neighbor
 bundle install
+createdb neighbor_test
 bundle exec rake test
 ```
