@@ -2,7 +2,6 @@ name: build
 on: [push, pull_request]
 jobs:
   build:
-    if: "!contains(github.event.head_commit.message, '[skip ci]')"
     strategy:
       fail-fast: false
       matrix:
@@ -28,7 +27,7 @@ jobs:
     - run: bundle exec rake test
     - run: |
         sudo apt-get update && sudo apt-get install postgresql-server-dev-13
-        git clone --branch v0.1.7 https://github.com/ankane/pgvector.git
+        git clone --branch v0.1.8 https://github.com/ankane/pgvector.git
         cd pgvector
         make
         sudo make install
