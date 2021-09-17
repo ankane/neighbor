@@ -44,5 +44,9 @@ ActiveSupport.on_load(:active_record) do
   end
 
   # prevent unknown OID warning
-  ActiveRecord::ConnectionAdapters::PostgreSQLAdapter.prepend(Neighbor::RegisterTypes)
+  if ActiveRecord::VERSION::MAJOR >= 7
+    ActiveRecord::ConnectionAdapters::PostgreSQLAdapter.singleton_class.prepend(Neighbor::RegisterTypes)
+  else
+    ActiveRecord::ConnectionAdapters::PostgreSQLAdapter.prepend(Neighbor::RegisterTypes)
+  end
 end

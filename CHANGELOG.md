@@ -1,3 +1,7 @@
+## 0.2.1 (unreleased)
+
+- Added support for Active Record 7
+
 ## 0.2.0 (2021-04-21)
 
 - Added support for pgvector
