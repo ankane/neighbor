@@ -116,12 +116,12 @@ For vector, add an approximate index to speed up queries. Create a migration wit
 ```ruby
 class AddIndexToItemsNeighborVector < ActiveRecord::Migration[6.1]
   def change
-    add_index :items, :neighbor_vector, using: :ivfflat
+    add_index :items, :neighbor_vector, using: :ivfflat, opclass: :vector_l2_ops
   end
 end
 ```
 
-Add `opclass: :vector_cosine_ops` for cosine distance and `opclass: :vector_ip_ops` for inner product.
+Use `:vector_cosine_ops` for cosine distance and `:vector_ip_ops` for inner product.
 
 Set the number of probes
 
