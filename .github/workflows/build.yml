@@ -8,6 +8,8 @@ jobs:
         include:
         - ruby: 3.0
           gemfile: Gemfile
+        - ruby: 3.0
+          gemfile: gemfiles/activerecord70.gemfile
         - ruby: 2.7
           gemfile: gemfiles/activerecord60.gemfile
         - ruby: 2.6
@@ -26,8 +28,8 @@ jobs:
         database: neighbor_test
     - run: bundle exec rake test
     - run: |
-        sudo apt-get update && sudo apt-get install postgresql-server-dev-13
-        git clone --branch v0.1.8 https://github.com/ankane/pgvector.git
+        sudo apt-get update && sudo apt-get install postgresql-server-dev-14
+        git clone --branch v0.2.0 https://github.com/ankane/pgvector.git
         cd pgvector
         make
         sudo make install
