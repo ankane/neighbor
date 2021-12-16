@@ -1,4 +1,4 @@
-## 0.2.1 (unreleased)
+## 0.2.1 (2021-12-15)
 
 - Added support for Active Record 7
 
