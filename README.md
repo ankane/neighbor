@@ -9,7 +9,7 @@ Nearest neighbor search for Rails and Postgres
 Add this line to your application’s Gemfile:
 
 ```ruby
-gem 'neighbor'
+gem "neighbor"
 ```
 
 ## Choose An Extension
