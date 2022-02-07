@@ -14,7 +14,7 @@ gem "neighbor"
 
 ## Choose An Extension
 
-Neighbor supports two extensions: [cube](https://www.postgresql.org/docs/current/cube.html) and [vector](https://github.com/ankane/pgvector). cube ships with Postgres, while vector supports approximate nearest neighbor search.
+Neighbor supports two extensions: [cube](https://www.postgresql.org/docs/current/cube.html) and [vector](https://github.com/pgvector/pgvector). cube ships with Postgres, while vector supports approximate nearest neighbor search.
 
 For cube, run:
 
@@ -23,7 +23,7 @@ rails generate neighbor:cube
 rails db:migrate
 ```
 
-For vector, [install pgvector](https://github.com/ankane/pgvector#installation) and run:
+For vector, [install pgvector](https://github.com/pgvector/pgvector#installation) and run:
 
 ```sh
 rails generate neighbor:vector
