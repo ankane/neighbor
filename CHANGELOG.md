@@ -1,4 +1,4 @@
-## 0.2.2 (unreleased)
+## 0.2.2 (2022-07-13)
 
 - Added support for configurable attribute name
 - Added support for multiple attributes per model
