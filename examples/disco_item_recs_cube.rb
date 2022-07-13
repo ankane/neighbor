@@ -9,12 +9,12 @@ ActiveRecord::Schema.define do
 
   create_table :movies, force: true do |t|
     t.string :name
-    t.cube :neighbor_vector
+    t.cube :factors
   end
 end
 
 class Movie < ActiveRecord::Base
-  has_neighbors dimensions: 20, normalize: true
+  has_neighbors :factors, dimensions: 20, normalize: true
 end
 
 data = Disco.load_movielens
@@ -23,9 +23,9 @@ recommender.fit(data)
 
 movies = []
 recommender.item_ids.each do |item_id|
-  movies << {name: item_id, neighbor_vector: recommender.item_factors(item_id)}
+  movies << {name: item_id, factors: recommender.item_factors(item_id)}
 end
 Movie.insert_all!(movies) # use create! for Active Record < 6
 
 movie = Movie.find_by(name: "Star Wars (1977)")
-pp movie.nearest_neighbors(distance: "cosine").first(5).map(&:name)
+pp movie.nearest_neighbors(:factors, distance: "cosine").first(5).map(&:name)

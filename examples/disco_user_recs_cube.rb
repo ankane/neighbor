@@ -9,21 +9,21 @@ ActiveRecord::Schema.define do
 
   create_table :movies, force: true do |t|
     t.string :name
-    t.cube :neighbor_vector
+    t.cube :factors
   end
 
   create_table :users, force: true do |t|
-    t.cube :neighbor_vector
+    t.cube :factors
   end
 end
 
 # use an extra dimension to map inner product to euclidean
 class Movie < ActiveRecord::Base
-  has_neighbors dimensions: 21
+  has_neighbors :factors, dimensions: 21
 end
 
 class User < ActiveRecord::Base
-  has_neighbors dimensions: 20
+  has_neighbors :factors, dimensions: 20
 end
 
 data = Disco.load_movielens
@@ -38,18 +38,18 @@ extra = Numo::SFloat::Math.sqrt(phi - norms)
 
 movies = []
 recommender.item_ids.each_with_index do |item_id, i|
-  movies << {name: item_id, neighbor_vector: recommender.item_factors(item_id).append(extra[i])}
+  movies << {name: item_id, factors: recommender.item_factors(item_id).append(extra[i])}
 end
 Movie.insert_all!(movies) # use create! for Active Record < 6
 
 users = []
 recommender.user_ids.each do |user_id|
-  users << {id: user_id, neighbor_vector: recommender.user_factors(user_id)}
+  users << {id: user_id, factors: recommender.user_factors(user_id)}
 end
 User.insert_all!(users) # use create! for Active Record < 6
 
 user = User.find(123)
-pp Movie.nearest_neighbors(user.neighbor_vector.append(0), distance: "euclidean").first(5).map(&:name)
+pp Movie.nearest_neighbors(:factors, user.factors.append(0), distance: "euclidean").first(5).map(&:name)
 
 # excludes rated, so will be different for some users
 # pp recommender.user_recs(user.id).map { |v| v[:item_id] }

@@ -37,9 +37,9 @@ Create a migration
 ```ruby
 class AddNeighborVectorToItems < ActiveRecord::Migration[6.1]
   def change
-    add_column :items, :neighbor_vector, :cube
+    add_column :items, :embedding, :cube
     # or
-    add_column :items, :neighbor_vector, :vector, limit: 3 # dimensions
+    add_column :items, :embedding, :vector, limit: 3 # dimensions
   end
 end
 ```
@@ -48,26 +48,26 @@ Add to your model
 
 ```ruby
 class Item < ApplicationRecord
-  has_neighbors
+  has_neighbors :embedding
 end
 ```
 
 Update the vectors
 
 ```ruby
-item.update(neighbor_vector: [1.0, 1.2, 0.5])
+item.update(embedding: [1.0, 1.2, 0.5])
 ```
 
 Get the nearest neighbors to a record
 
 ```ruby
-item.nearest_neighbors(distance: "euclidean").first(5)
+item.nearest_neighbors(:embedding, distance: "euclidean").first(5)
 ```
 
 Get the nearest neighbors to a vector
 
 ```ruby
-Item.nearest_neighbors([0.9, 1.3, 1.1], distance: "euclidean").first(5)
+Item.nearest_neighbors(:embedding, [0.9, 1.3, 1.1], distance: "euclidean").first(5)
 ```
 
 ## Distance
@@ -84,7 +84,7 @@ For cosine distance with cube, vectors must be normalized before being stored.
 
 ```ruby
 class Item < ApplicationRecord
-  has_neighbors normalize: true
+  has_neighbors :embedding, normalize: true
 end
 ```
 
@@ -93,7 +93,7 @@ For inner product with cube, see [this example](examples/disco_user_recs_cube.rb
 Records returned from `nearest_neighbors` will have a `neighbor_distance` attribute
 
 ```ruby
-nearest_item = item.nearest_neighbors(distance: "euclidean").first
+nearest_item = item.nearest_neighbors(:embedding, distance: "euclidean").first
 nearest_item.neighbor_distance
 ```
 
@@ -104,8 +104,8 @@ The cube data type is limited 100 dimensions by default. See the [Postgres docs]
 For cube, it’s a good idea to specify the number of dimensions to ensure all records have the same number.
 
 ```ruby
-class Movie < ApplicationRecord
-  has_neighbors dimensions: 3
+class Item < ApplicationRecord
+  has_neighbors :embedding, dimensions: 3
 end
 ```
 
@@ -116,7 +116,7 @@ For vector, add an approximate index to speed up queries. Create a migration wit
 ```ruby
 class AddIndexToItemsNeighborVector < ActiveRecord::Migration[6.1]
   def change
-    add_index :items, :neighbor_vector, using: :ivfflat, opclass: :vector_l2_ops
+    add_index :items, :embedding, using: :ivfflat, opclass: :vector_l2_ops
   end
 end
 ```
@@ -136,7 +136,7 @@ You can use Neighbor for online item-based recommendations with [Disco](https://
 Generate a model
 
 ```sh
-rails generate model Movie name:string neighbor_vector:cube
+rails generate model Movie name:string factors:cube
 rails db:migrate
 ```
 
@@ -144,7 +144,7 @@ And add `has_neighbors`
 
 ```ruby
 class Movie < ApplicationRecord
-  has_neighbors dimensions: 20, normalize: true
+  has_neighbors :factors, dimensions: 20, normalize: true
 end
 ```
 
@@ -161,7 +161,7 @@ Use item factors for the neighbor vector
 ```ruby
 movies = []
 recommender.item_ids.each do |item_id|
-  movies << {name: item_id, neighbor_vector: recommender.item_factors(item_id)}
+  movies << {name: item_id, factors: recommender.item_factors(item_id)}
 end
 Movie.insert_all!(movies) # use create! for Active Record < 6
 ```
@@ -170,7 +170,7 @@ And get similar movies
 
 ```ruby
 movie = Movie.find_by(name: "Star Wars (1977)")
-movie.nearest_neighbors(distance: "cosine").first(5).map(&:name)
+movie.nearest_neighbors(:factors, distance: "cosine").first(5).map(&:name)
 ```
 
 See the complete code for [cube](examples/disco_item_recs_cube.rb) and [vector](examples/disco_item_recs_vector.rb)
