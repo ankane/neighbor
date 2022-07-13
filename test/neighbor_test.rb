@@ -173,7 +173,7 @@ class NeighborTest < Minitest::Test
     error = assert_raises(Neighbor::Error) do
       Item.has_neighbors
     end
-    assert_equal "nearest_neighbors already defined", error.message
+    assert_equal "has_neighbors already called for :neighbor_vector", error.message
   end
 
   def test_schema
@@ -184,14 +184,45 @@ class NeighborTest < Minitest::Test
     load(file.path)
   end
 
-  def create_items(cls)
+  def test_attribute
+    create_items(Item, :embedding)
+    result = Item.find(1).nearest_neighbors(:embedding, distance: "euclidean").first(3)
+    assert_equal [3, 2], result.map(&:id)
+    assert_elements_in_delta [1, 1.7320507764816284], result.map(&:neighbor_distance)
+  end
+
+  def test_attribute_scope
+    create_items(Item, :embedding)
+    assert_equal [1], Item.nearest_neighbors(:embedding, [0, 0, 0], distance: "euclidean").limit(1).map(&:id)
+  end
+
+  def test_invalid_attribute
+    create_items(Item)
+    error = assert_raises(ArgumentError) do
+      Item.find(1).nearest_neighbors(:bad, distance: "euclidean")
+    end
+    assert_equal "Invalid attribute", error.message
+  end
+
+  def test_invalid_attribute_scope
+    error = assert_raises(ArgumentError) do
+      Item.nearest_neighbors(:bad, [0, 0, 0], distance: "euclidean")
+    end
+    assert_equal "Invalid attribute", error.message
+  end
+
+  def test_neighbor_attributes
+    assert_equal Item.neighbor_attributes.keys, [:neighbor_vector, :embedding]
+  end
+
+  def create_items(cls, attribute = :neighbor_vector)
     vectors = [
       [1, 1, 1],
       [2, 2, 2],
       [1, 1, 2]
     ]
     vectors.each.with_index do |v, i|
-      cls.create!(id: i + 1, neighbor_vector: v)
+      cls.create!(id: i + 1, attribute => v)
     end
   end
 end

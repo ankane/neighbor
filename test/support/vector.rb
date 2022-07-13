@@ -3,11 +3,13 @@ ActiveRecord::Schema.define do
 
   create_table :items, force: true do |t|
     t.vector :neighbor_vector, limit: 3
+    t.vector :embedding, limit: 3
   end
 end
 
 class Item < ActiveRecord::Base
   has_neighbors
+  has_neighbors :embedding
 end
 
 class CosineItem < ActiveRecord::Base

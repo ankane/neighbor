@@ -1,3 +1,7 @@
+## 0.2.2 (unreleased)
+
+- Added support for multiple attributes per model
+
 ## 0.2.1 (2021-12-15)
 
 - Added support for Active Record 7

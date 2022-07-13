@@ -1,16 +1,43 @@
 module Neighbor
   module Model
-    def has_neighbors(dimensions: nil, normalize: nil)
-      # TODO make configurable
-      # likely use argument
-      attribute_name = :neighbor_vector
+    def has_neighbors(attribute_name = :neighbor_vector, dimensions: nil, normalize: nil)
+      attribute_name = attribute_name.to_sym
 
       class_eval do
-        raise Error, "nearest_neighbors already defined" if method_defined?(:nearest_neighbors)
+        @neighbor_attributes ||= {}
+
+        if @neighbor_attributes.empty?
+          def self.neighbor_attributes
+            parent_attributes =
+              if superclass.respond_to?(:neighbor_attributes)
+                superclass.neighbor_attributes
+              else
+                {}
+              end
+
+            parent_attributes.merge(@neighbor_attributes || {})
+          end
+        end
+
+        raise Error, "has_neighbors already called for #{attribute_name.inspect}" if neighbor_attributes[attribute_name]
+        @neighbor_attributes[attribute_name] = {dimensions: dimensions, normalize: normalize}
 
         attribute attribute_name, Neighbor::Vector.new(dimensions: dimensions, normalize: normalize, model: self, attribute_name: attribute_name)
 
-        scope :nearest_neighbors, ->(vector, distance:) {
+        return if @neighbor_attributes.size != 1
+
+        scope :nearest_neighbors, ->(attribute_name, vector = nil, distance:) {
+          if vector.nil? && !attribute_name.nil? && attribute_name.respond_to?(:to_a)
+            vector = attribute_name
+            attribute_name = :neighbor_vector
+          end
+          attribute_name = attribute_name.to_sym
+
+          options = neighbor_attributes[attribute_name]
+          raise ArgumentError, "Invalid attribute" unless options
+          normalize = options[:normalize]
+          dimensions = options[:dimensions]
+
           return none if vector.nil?
 
           distance = distance.to_s
@@ -80,10 +107,14 @@ module Neighbor
             .order(Arel.sql(order))
         }
 
-        define_method :nearest_neighbors do |**options|
+        def nearest_neighbors(attribute_name = :neighbor_vector, **options)
+          attribute_name = attribute_name.to_sym
+          # important! check if neighbor attribute before calling send
+          raise ArgumentError, "Invalid attribute" unless self.class.neighbor_attributes[attribute_name]
+
           self.class
             .where.not(self.class.primary_key => send(self.class.primary_key))
-            .nearest_neighbors(send(attribute_name), **options)
+            .nearest_neighbors(attribute_name, send(attribute_name), **options)
         end
       end
     end
