@@ -6,31 +6,31 @@ jobs:
       fail-fast: false
       matrix:
         include:
-        - ruby: 3.1
-          gemfile: Gemfile
-        - ruby: "3.0"
-          gemfile: gemfiles/activerecord61.gemfile
-        - ruby: 2.7
-          gemfile: gemfiles/activerecord60.gemfile
-        - ruby: 2.6
-          gemfile: gemfiles/activerecord52.gemfile
+          - ruby: 3.1
+            gemfile: Gemfile
+          - ruby: "3.0"
+            gemfile: gemfiles/activerecord61.gemfile
+          - ruby: 2.7
+            gemfile: gemfiles/activerecord60.gemfile
+          - ruby: 2.6
+            gemfile: gemfiles/activerecord52.gemfile
     runs-on: ubuntu-latest
     env:
       BUNDLE_GEMFILE: ${{ matrix.gemfile }}
     steps:
-    - uses: actions/checkout@v3
-    - uses: ruby/setup-ruby@v1
-      with:
-        ruby-version: ${{ matrix.ruby }}
-        bundler-cache: true
-    - uses: ankane/setup-postgres@v1
-      with:
-        database: neighbor_test
-    - run: bundle exec rake test
-    - run: |
-        sudo apt-get update && sudo apt-get install postgresql-server-dev-14
-        git clone --branch v0.3.1 https://github.com/pgvector/pgvector.git
-        cd pgvector
-        make
-        sudo make install
-    - run: EXT=vector bundle exec rake test
+      - uses: actions/checkout@v3
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby }}
+          bundler-cache: true
+      - uses: ankane/setup-postgres@v1
+        with:
+          database: neighbor_test
+      - run: bundle exec rake test
+      - run: |
+          sudo apt-get update && sudo apt-get install postgresql-server-dev-14
+          git clone --branch v0.3.2 https://github.com/pgvector/pgvector.git
+          cd pgvector
+          make
+          sudo make install
+      - run: EXT=vector bundle exec rake test
