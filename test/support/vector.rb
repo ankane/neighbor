@@ -23,6 +23,6 @@ class DimensionsItem < ActiveRecord::Base
 end
 
 class LargeDimensionsItem < ActiveRecord::Base
-  has_neighbors :embedding, dimensions: 1025
+  has_neighbors :embedding, dimensions: 16001
   self.table_name = "items"
 end

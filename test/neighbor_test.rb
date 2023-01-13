@@ -134,7 +134,7 @@ class NeighborTest < Minitest::Test
   end
 
   def test_large_dimensions
-    max_dimensions = vector? ? 1024 : 100
+    max_dimensions = vector? ? 16000 : 100
     error = assert_raises(ActiveRecord::StatementInvalid) do
       LargeDimensionsItem.create!(embedding: (max_dimensions + 1).times.to_a)
     end
