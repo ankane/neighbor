@@ -99,7 +99,7 @@ nearest_item.neighbor_distance
 
 ## Dimensions
 
-The cube data type is limited 100 dimensions by default. See the [Postgres docs](https://www.postgresql.org/docs/current/cube.html) for how to increase this. The vector data type is limited to 1024 dimensions.
+The cube data type is limited 100 dimensions by default. See the [Postgres docs](https://www.postgresql.org/docs/current/cube.html) for how to increase this. The vector data type is limited to 16000 dimensions (as of v0.4.0)
 
 For cube, it’s a good idea to specify the number of dimensions to ensure all records have the same number.
 
