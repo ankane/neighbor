@@ -156,7 +156,7 @@ recommender = Disco::Recommender.new(factors: 20)
 recommender.fit(data)
 ```
 
-Use item factors for the neighbor vector
+Store the item factors
 
 ```ruby
 movies = []
