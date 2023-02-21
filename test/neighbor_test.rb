@@ -52,7 +52,7 @@ class NeighborTest < Minitest::Test
 
     create_items(Item)
     result = Item.find(1).nearest_neighbors(:embedding, distance: "inner_product").first(3)
-    assert_equal [2, 3], result.map(&:id).sort # same distance
+    assert_equal [2, 3], result.map(&:id)
     assert_elements_in_delta [6, 4], result.map(&:neighbor_distance)
   end
 
