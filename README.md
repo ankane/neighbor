@@ -129,7 +129,78 @@ Set the number of probes
 Item.connection.execute("SET ivfflat.probes = 3")
 ```
 
-## Example
+## Examples
+
+- [OpenAI Embeddings](#openai-embeddings)
+- [Disco Recommendations](#disco-recommendations)
+
+### OpenAI Embeddings
+
+Generate a model
+
+```sh
+rails generate model Article content:text embedding:vector
+rails db:migrate
+```
+
+And add `has_neighbors`
+
+```ruby
+class Article < ApplicationRecord
+  has_neighbors :embedding
+end
+```
+
+Create a method to call the [embeddings API](https://platform.openai.com/docs/guides/embeddings)
+
+```ruby
+def fetch_embeddings(input)
+  url = "https://api.openai.com/v1/embeddings"
+  headers = {
+    "Authorization" => "Bearer #{ENV.fetch("OPENAI_API_KEY")}",
+    "Content-Type" => "application/json"
+  }
+  data = {
+    input: input,
+    model: "text-embedding-ada-002"
+  }
+
+  response = Net::HTTP.post(URI(url), data.to_json, headers)
+  JSON.parse(response.body)["data"].map { |v| v["embedding"] }
+end
+```
+
+Pass your input
+
+```ruby
+input = [
+  "The dog is barking",
+  "The cat is purring",
+  "The bear is growling"
+]
+embeddings = fetch_embeddings(input)
+```
+
+Store the embeddings
+
+```ruby
+articles = []
+input.zip(embeddings) do |content, embedding|
+  articles << {content: content, embedding: embedding}
+end
+Article.insert_all!(articles) # use create! for Active Record < 6
+```
+
+And get similar articles
+
+```ruby
+article = Article.first
+article.nearest_neighbors(:embedding, distance: "inner_product").first(5).map(&:content)
+```
+
+See the [complete code](examples/openai_embeddings.rb)
+
+### Disco Recommendations
 
 You can use Neighbor for online item-based recommendations with [Disco](https://github.com/ankane/disco). We’ll use MovieLens data for this example.
 
