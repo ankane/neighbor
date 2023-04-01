@@ -50,3 +50,5 @@ ActiveSupport.on_load(:active_record) do
     ActiveRecord::ConnectionAdapters::PostgreSQLAdapter.prepend(Neighbor::RegisterTypes)
   end
 end
+
+require "neighbor/railtie" if defined?(Rails::Railtie)

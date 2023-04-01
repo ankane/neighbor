@@ -1,3 +1,7 @@
+## 0.2.3 (unreleased)
+
+- Added support for dimensions to model generator
+
 ## 0.2.2 (2022-07-13)
 
 - Added support for configurable attribute name
