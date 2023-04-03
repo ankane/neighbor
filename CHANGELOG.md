@@ -1,4 +1,4 @@
-## 0.2.3 (unreleased)
+## 0.2.3 (2023-04-02)
 
 - Added support for dimensions to model generator
 

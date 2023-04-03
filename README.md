@@ -139,7 +139,7 @@ Item.connection.execute("SET ivfflat.probes = 3")
 Generate a model
 
 ```sh
-rails generate model Article content:text embedding:vector
+rails generate model Article content:text embedding:vector{1536}
 rails db:migrate
 ```
 
