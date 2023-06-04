@@ -2,7 +2,7 @@
 require "active_support"
 
 # modules
-require "neighbor/version"
+require_relative "neighbor/version"
 
 module Neighbor
   class Error < StandardError; end
@@ -20,8 +20,8 @@ module Neighbor
 end
 
 ActiveSupport.on_load(:active_record) do
-  require "neighbor/model"
-  require "neighbor/vector"
+  require_relative "neighbor/model"
+  require_relative "neighbor/vector"
 
   extend Neighbor::Model
 
@@ -51,4 +51,4 @@ ActiveSupport.on_load(:active_record) do
   end
 end
 
-require "neighbor/railtie" if defined?(Rails::Railtie)
+require_relative "neighbor/railtie" if defined?(Rails::Railtie)
