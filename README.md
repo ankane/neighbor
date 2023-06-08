@@ -34,6 +34,8 @@ rails db:migrate
 
 Create a migration
 
+Firstly, add a new column to store the vectors that represent the characteristics of each record. The datatype can be either `:cube` or `:vector` depending on the extension you're using.
+
 ```ruby
 class AddNeighborVectorToItems < ActiveRecord::Migration[7.0]
   def change
@@ -46,13 +48,17 @@ end
 
 Add to your model
 
+Then, enable the has_neighbors method in your model, which enables the nearest_neighbors functionality.
+
 ```ruby
 class Item < ApplicationRecord
   has_neighbors :embedding
 end
 ```
 
-Update the vectors
+Add vectors to records
+
+Update the vector field of each record to represent its characteristics. This could for example be done using [OpenAI Embeddings](#openai-embeddings) or [Disco Recommendations](#disco-recommendations).
 
 ```ruby
 item.update(embedding: [1.0, 1.2, 0.5])
@@ -60,14 +66,17 @@ item.update(embedding: [1.0, 1.2, 0.5])
 
 Get the nearest neighbors to a record
 
+Now, you can retrieve the nearest neighbors of a record. These will be the records that have the most similar vectors, and therefore represent the most 'similar' items in the context of your specific use case.
+
 ```ruby
 item.nearest_neighbors(:embedding, distance: "euclidean").first(5)
 ```
 
-Get the nearest neighbors to a vector
+You can also find similar items to a specific vector. This feature enables semantic search functionality: given a specific vector, find the items that are most similar to it.
 
 ```ruby
-Item.nearest_neighbors(:embedding, [0.9, 1.3, 1.1], distance: "euclidean").first(5)
+specific_vector = [0.9, 1.3, 1.1] # This can come from a user search
+Item.nearest_neighbors(:embedding, specific_vector, distance: "euclidean").first(5)
 ```
 
 ## Distance
