@@ -1,6 +1,6 @@
 module Neighbor
   module Model
-    def has_neighbors(attribute_name = :neighbor_vector, dimensions: nil, normalize: nil)
+    def has_neighbors(attribute_name, dimensions: nil, normalize: nil)
       attribute_name = attribute_name.to_sym
 
       class_eval do
@@ -26,13 +26,8 @@ module Neighbor
 
         return if @neighbor_attributes.size != 1
 
-        scope :nearest_neighbors, ->(attribute_name, vector = nil, distance:) {
-          if vector.nil? && !attribute_name.nil? && attribute_name.respond_to?(:to_a)
-            vector = attribute_name
-            attribute_name = :neighbor_vector
-          end
+        scope :nearest_neighbors, ->(attribute_name, vector, distance:) {
           attribute_name = attribute_name.to_sym
-
           options = neighbor_attributes[attribute_name]
           raise ArgumentError, "Invalid attribute" unless options
           normalize = options[:normalize]
@@ -107,7 +102,7 @@ module Neighbor
             .order(Arel.sql(order))
         }
 
-        def nearest_neighbors(attribute_name = :neighbor_vector, **options)
+        def nearest_neighbors(attribute_name, **options)
           attribute_name = attribute_name.to_sym
           # important! check if neighbor attribute before calling send
           raise ArgumentError, "Invalid attribute" unless self.class.neighbor_attributes[attribute_name]

@@ -3,13 +3,11 @@ ActiveRecord::Schema.define do
 
   create_table :items, force: true do |t|
     t.cube :embedding
-    t.cube :neighbor_vector
   end
 end
 
 class Item < ActiveRecord::Base
   has_neighbors :embedding
-  has_neighbors
 end
 
 class CosineItem < ActiveRecord::Base
