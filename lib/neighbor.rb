@@ -32,16 +32,7 @@ ActiveSupport.on_load(:active_record) do
   ActiveRecord::ConnectionAdapters::PostgreSQLAdapter::NATIVE_DATABASE_TYPES[:vector] = {name: "vector"}
 
   # ensure schema can be loaded
-  if ActiveRecord::VERSION::MAJOR >= 6
-    ActiveRecord::ConnectionAdapters::TableDefinition.send(:define_column_methods, :cube, :vector)
-  else
-    ActiveRecord::ConnectionAdapters::TableDefinition.define_method :cube do |*args, **options|
-      args.each { |name| column(name, :cube, options) }
-    end
-    ActiveRecord::ConnectionAdapters::TableDefinition.define_method :vector do |*args, **options|
-      args.each { |name| column(name, :vector, options) }
-    end
-  end
+  ActiveRecord::ConnectionAdapters::TableDefinition.send(:define_column_methods, :cube, :vector)
 
   # prevent unknown OID warning
   if ActiveRecord::VERSION::MAJOR >= 7
