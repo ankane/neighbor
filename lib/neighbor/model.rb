@@ -113,8 +113,8 @@ module Neighbor
           raise ArgumentError, "Invalid attribute" unless self.class.neighbor_attributes[attribute_name]
 
           self.class
-            .where.not(self.class.primary_key => send(self.class.primary_key))
-            .nearest_neighbors(attribute_name, send(attribute_name), **options)
+            .where.not(self.class.primary_key => self[self.class.primary_key])
+            .nearest_neighbors(attribute_name, self[attribute_name], **options)
         end
       end
     end
