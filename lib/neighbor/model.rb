@@ -1,7 +1,11 @@
 module Neighbor
   module Model
-    def has_neighbors(attribute_name = :neighbor_vector, dimensions: nil, normalize: nil)
-      attribute_name = attribute_name.to_sym
+    def has_neighbors(*attribute_names, dimensions: nil, normalize: nil)
+      if attribute_names.empty?
+        attribute_names << :neighbor_vector
+      else
+        attribute_names.map!(&:to_sym)
+      end
 
       class_eval do
         @neighbor_attributes ||= {}
@@ -19,12 +23,14 @@ module Neighbor
           end
         end
 
-        raise Error, "has_neighbors already called for #{attribute_name.inspect}" if neighbor_attributes[attribute_name]
-        @neighbor_attributes[attribute_name] = {dimensions: dimensions, normalize: normalize}
+        attribute_names.each do |attribute_name|
+          raise Error, "has_neighbors already called for #{attribute_name.inspect}" if neighbor_attributes[attribute_name]
+          @neighbor_attributes[attribute_name] = {dimensions: dimensions, normalize: normalize}
 
-        attribute attribute_name, Neighbor::Vector.new(dimensions: dimensions, normalize: normalize, model: self, attribute_name: attribute_name)
+          attribute attribute_name, Neighbor::Vector.new(dimensions: dimensions, normalize: normalize, model: self, attribute_name: attribute_name)
+        end
 
-        return if @neighbor_attributes.size != 1
+        return if @neighbor_attributes.size != attribute_names.size
 
         scope :nearest_neighbors, ->(attribute_name, vector = nil, distance:) {
           if vector.nil? && !attribute_name.nil? && attribute_name.respond_to?(:to_a)

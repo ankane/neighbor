@@ -1,3 +1,7 @@
+## 0.3.1 (unreleased)
+
+- Added support for passing multiple attributes to `has_neighbors`
+
 ## 0.3.0 (2023-07-24)
 
 - Dropped support for Ruby < 3 and Active Record < 6.1
