@@ -254,6 +254,51 @@ movie.nearest_neighbors(:factors, distance: "cosine").first(5).map(&:name)
 
 See the complete code for [cube](examples/disco_item_recs_cube.rb) and [vector](examples/disco_item_recs_vector.rb)
 
+## Method Options
+
+There are 3 options available when calling with the `nearest_neighbor` method.
+
+### order
+
+```ruby
+movie = Movie.find_by(name: "Star Wars (1977)")
+# Order all results by the neighbor_distance column in descending order
+movie.nearest_neighbors(:factors, distance: "inner_product", order: { neighbor_distance: :desc })
+```
+
+### limit
+
+```ruby
+movie = Movie.find_by(name: "Star Wars (1977)")
+# Limit the results to 3 records
+movie.nearest_neighbors(:factors, distance: "inner_product", limit: 3)
+```
+
+### threshold
+
+```ruby
+movie = Movie.find_by(name: "Star Wars (1977)")
+# Only return records where the neighbor_distance is greater than or equal to 0.9
+movie.nearest_neighbors(:factors, distance: "inner_product", threshold: { gte: 0.9 })
+```
+
+### Multiple Options
+
+All options can be used at the same time or separately.
+
+```ruby
+movie = Movie.find_by(name: "Star Wars (1977)")
+
+# Only return 5 records where the neighbor_distance is greater than or equal to 0.9 in descending order
+movie.nearest_neighbors(
+  :factors,
+  distance: "inner_product", 
+  limit: 5,
+  threshold: { gte: 0.9 },
+  order: { neighbor_distance: :desc }
+)
+```
+
 ## Upgrading
 
 ### 0.2.0
