@@ -8,13 +8,13 @@ ActiveRecord::Schema.verbose = false
 ActiveRecord::Schema.define do
   enable_extension "vector"
 
-  create_table :articles, force: true do |t|
+  create_table :documents, force: true do |t|
     t.text :content
     t.vector :embedding, limit: 1536
   end
 end
 
-class Article < ActiveRecord::Base
+class Document < ActiveRecord::Base
   has_neighbors :embedding
 end
 
@@ -42,12 +42,11 @@ input = [
 ]
 embeddings = fetch_embeddings(input)
 
-articles = []
+documents = []
 input.zip(embeddings) do |content, embedding|
-  articles << {content: content, embedding: embedding}
+  documents << {content: content, embedding: embedding}
 end
-Article.insert_all!(articles) # use create! for Active Record < 6
+Document.insert_all!(documents)
 
-article = Article.first
-# use inner product for performance since embeddings are normalized
-pp article.nearest_neighbors(:embedding, distance: "inner_product").first(5).map(&:content)
+document = Document.first
+pp document.nearest_neighbors(:embedding, distance: "cosine").first(5).map(&:content)

@@ -147,14 +147,14 @@ Item.connection.execute("SET hnsw.ef_search = 100")
 Generate a model
 
 ```sh
-rails generate model Article content:text embedding:vector{1536}
+rails generate model Document content:text embedding:vector{1536}
 rails db:migrate
 ```
 
 And add `has_neighbors`
 
 ```ruby
-class Article < ApplicationRecord
+class Document < ApplicationRecord
   has_neighbors :embedding
 end
 ```
@@ -192,18 +192,18 @@ embeddings = fetch_embeddings(input)
 Store the embeddings
 
 ```ruby
-articles = []
+documents = []
 input.zip(embeddings) do |content, embedding|
-  articles << {content: content, embedding: embedding}
+  documents << {content: content, embedding: embedding}
 end
-Article.insert_all!(articles) # use create! for Active Record < 6
+Document.insert_all!(documents)
 ```
 
 And get similar articles
 
 ```ruby
-article = Article.first
-article.nearest_neighbors(:embedding, distance: "inner_product").first(5).map(&:content)
+document = Document.first
+document.nearest_neighbors(:embedding, distance: "cosine").first(5).map(&:content)
 ```
 
 See the [complete code](examples/openai_embeddings.rb)
