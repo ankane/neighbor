@@ -132,7 +132,7 @@ class NeighborTest < Minitest::Test
       Item.select(:id).find(1).nearest_neighbors(:embedding, distance: "euclidean")
     end
   end
-
+  
   def test_large_dimensions
     max_dimensions = vector? ? 16000 : 100
     error = assert_raises(ActiveRecord::StatementInvalid) do
