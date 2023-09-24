@@ -32,8 +32,16 @@ module Neighbor
 
         return if @neighbor_attributes.size != attribute_names.size
 
-        scope :nearest_neighbors, ->(attribute_name, vector = nil, options) {
-          distance = options.fetch(:distance)
+        scope :nearest_neighbors, ->(attribute_name, vector = nil, options = nil) {
+          # cannot use keyword arguments with scope with Ruby 3.2 and Active Record 6.1
+          # https://github.com/rails/rails/issues/46934
+          if options.nil? && vector.is_a?(Hash)
+            options = vector
+            vector = nil
+          end
+          raise ArgumentError, "missing keyword: :distance" unless options.is_a?(Hash) && options.key?(:distance)
+          distance = options.delete(:distance)
+
           if vector.nil? && !attribute_name.nil? && attribute_name.respond_to?(:to_a)
             vector = attribute_name
             attribute_name = :neighbor_vector
