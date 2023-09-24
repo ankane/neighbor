@@ -41,6 +41,7 @@ module Neighbor
           end
           raise ArgumentError, "missing keyword: :distance" unless options.is_a?(Hash) && options.key?(:distance)
           distance = options.delete(:distance)
+          raise ArgumentError, "unknown keywords: #{options.keys.map(&:inspect).join(", ")}" if options.any?
 
           if vector.nil? && !attribute_name.nil? && attribute_name.respond_to?(:to_a)
             vector = attribute_name
