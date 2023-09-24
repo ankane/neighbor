@@ -32,7 +32,8 @@ module Neighbor
 
         return if @neighbor_attributes.size != attribute_names.size
 
-        scope :nearest_neighbors, ->(attribute_name, vector = nil, distance:) {
+        scope :nearest_neighbors, ->(attribute_name, vector = nil, options) {
+          distance = options.fetch(:distance)
           if vector.nil? && !attribute_name.nil? && attribute_name.respond_to?(:to_a)
             vector = attribute_name
             attribute_name = :neighbor_vector
