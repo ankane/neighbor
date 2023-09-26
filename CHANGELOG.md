@@ -1,4 +1,4 @@
-## 0.3.1 (unreleased)
+## 0.3.1 (2023-09-25)
 
 - Added support for passing multiple attributes to `has_neighbors`
 - Fixed error with `nearest_neighbors` scope with Ruby 3.2 and Active Record 6.1
