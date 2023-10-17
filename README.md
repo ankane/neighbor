@@ -35,7 +35,7 @@ rails db:migrate
 Create a migration
 
 ```ruby
-class AddNeighborVectorToItems < ActiveRecord::Migration[7.0]
+class AddNeighborVectorToItems < ActiveRecord::Migration[7.1]
   def change
     add_column :items, :embedding, :cube
     # or
@@ -114,7 +114,7 @@ end
 For vector, add an approximate index to speed up queries. Create a migration with:
 
 ```ruby
-class AddIndexToItemsNeighborVector < ActiveRecord::Migration[7.0]
+class AddIndexToItemsNeighborVector < ActiveRecord::Migration[7.1]
   def change
     add_index :items, :embedding, using: :ivfflat, opclass: :vector_l2_ops
     # or with pgvector 0.5.0+
