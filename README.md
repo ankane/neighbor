@@ -14,7 +14,7 @@ gem "neighbor"
 
 ## Choose An Extension
 
-Neighbor supports two extensions: [cube](https://www.postgresql.org/docs/current/cube.html) and [vector](https://github.com/pgvector/pgvector). cube ships with Postgres, while vector supports approximate nearest neighbor search.
+Neighbor supports two extensions: [cube](https://www.postgresql.org/docs/current/cube.html) and [vector](https://github.com/pgvector/pgvector). cube ships with Postgres, while vector supports more dimensions and approximate nearest neighbor search.
 
 For cube, run:
 
