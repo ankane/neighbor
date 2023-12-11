@@ -10,10 +10,10 @@ module Neighbor
   module RegisterTypes
     def initialize_type_map(m = type_map)
       super
-      m.register_type "cube", ActiveRecord::ConnectionAdapters::PostgreSQL::OID::SpecializedString.new(:cube)
+      m.register_type "cube", Type::Cube.new
       m.register_type "vector" do |_, _, sql_type|
         limit = extract_limit(sql_type)
-        ActiveRecord::ConnectionAdapters::PostgreSQL::OID::SpecializedString.new(:vector, limit: limit)
+        Type::Vector.new(limit: limit)
       end
     end
   end
@@ -22,6 +22,8 @@ end
 ActiveSupport.on_load(:active_record) do
   require_relative "neighbor/model"
   require_relative "neighbor/vector"
+  require_relative "neighbor/type/cube"
+  require_relative "neighbor/type/vector"
 
   extend Neighbor::Model
 
