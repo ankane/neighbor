@@ -1,3 +1,8 @@
+## 0.3.2 (unreleased)
+
+- Added deprecation warning for `has_neighbors` without an attribute name
+- Added deprecation warning for `nearest_neighbors` without an attribute name
+
 ## 0.3.1 (2023-09-25)
 
 - Added support for passing multiple attributes to `has_neighbors`

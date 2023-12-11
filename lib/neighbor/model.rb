@@ -2,6 +2,7 @@ module Neighbor
   module Model
     def has_neighbors(*attribute_names, dimensions: nil, normalize: nil)
       if attribute_names.empty?
+        warn "[neighbor] has_neighbors without an attribute name is deprecated"
         attribute_names << :neighbor_vector
       else
         attribute_names.map!(&:to_sym)
@@ -44,6 +45,7 @@ module Neighbor
           raise ArgumentError, "unknown keywords: #{options.keys.map(&:inspect).join(", ")}" if options.any?
 
           if vector.nil? && !attribute_name.nil? && attribute_name.respond_to?(:to_a)
+            warn "[neighbor] nearest_neighbors without an attribute name is deprecated"
             vector = attribute_name
             attribute_name = :neighbor_vector
           end
@@ -123,7 +125,11 @@ module Neighbor
             .order(Arel.sql(order))
         }
 
-        def nearest_neighbors(attribute_name = :neighbor_vector, **options)
+        def nearest_neighbors(attribute_name = nil, **options)
+          if attribute_name.nil?
+            warn "[neighbor] nearest_neighbors without an attribute name is deprecated"
+            attribute_name = :neighbor_vector
+          end
           attribute_name = attribute_name.to_sym
           # important! check if neighbor attribute before calling send
           raise ArgumentError, "Invalid attribute" unless self.class.neighbor_attributes[attribute_name]
