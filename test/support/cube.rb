@@ -4,6 +4,7 @@ ActiveRecord::Schema.define do
   create_table :items, force: true do |t|
     t.cube :embedding
     t.cube :neighbor_vector
+    t.cube :factors
   end
 end
 

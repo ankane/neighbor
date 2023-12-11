@@ -215,6 +215,16 @@ class NeighborTest < Minitest::Test
     assert_equal Item.neighbor_attributes.keys, [:embedding, :neighbor_vector]
   end
 
+  def test_type
+    if vector?
+      Item.create!(factors: "[1,2,3]")
+      assert_equal "[1,2,3]", Item.last.factors
+    else
+      Item.create!(factors: "(1,2,3)")
+      assert_equal "(1, 2, 3)", Item.last.factors
+    end
+  end
+
   def create_items(cls, attribute = :embedding)
     vectors = [
       [1, 1, 1],

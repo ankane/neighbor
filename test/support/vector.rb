@@ -4,6 +4,7 @@ ActiveRecord::Schema.define do
   create_table :items, force: true do |t|
     t.vector :embedding, limit: 3
     t.vector :neighbor_vector, limit: 3
+    t.vector :factors, limit: 3
   end
 end
 
