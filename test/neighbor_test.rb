@@ -225,6 +225,15 @@ class NeighborTest < Minitest::Test
     else
       Item.create!(factors: "(1,2,3)")
       assert_equal "(1, 2, 3)", Item.last.factors
+
+      Item.create!(factors: [1, 2, 3])
+      assert_equal "(1, 2, 3)", Item.last.factors
+
+      Item.create!(factors: 1)
+      assert_equal "(1)", Item.last.factors
+
+      Item.create!(factors: [[1, 2, 3], [4, 5, 6]])
+      assert_equal "(1, 2, 3),(4, 5, 6)", Item.last.factors
     end
   end
 
