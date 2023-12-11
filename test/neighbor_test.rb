@@ -219,6 +219,9 @@ class NeighborTest < Minitest::Test
     if vector?
       Item.create!(factors: "[1,2,3]")
       assert_equal "[1,2,3]", Item.last.factors
+
+      Item.create!(factors: [1, 2, 3])
+      assert_equal "[1,2,3]", Item.last.factors
     else
       Item.create!(factors: "(1,2,3)")
       assert_equal "(1, 2, 3)", Item.last.factors
