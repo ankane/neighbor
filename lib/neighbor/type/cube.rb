@@ -17,6 +17,17 @@ module Neighbor
         end
       end
 
+      # TODO uncomment in 0.4.0
+      # def deserialize(value)
+      #   if value.nil?
+      #     super
+      #   elsif value.include?("),(")
+      #     value[1..-1].split("),(").map { |v| v.split(",").map(&:to_f) }
+      #   else
+      #     value[1..-1].split(",").map(&:to_f)
+      #   end
+      # end
+
       private
 
       def cast_point(value)
