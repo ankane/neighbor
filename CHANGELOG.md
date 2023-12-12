@@ -1,4 +1,4 @@
-## 0.3.2 (unreleased)
+## 0.3.2 (2023-12-12)
 
 - Added deprecation warning for `has_neighbors` without an attribute name
 - Added deprecation warning for `nearest_neighbors` without an attribute name
