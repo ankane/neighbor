@@ -100,7 +100,7 @@ module Neighbor
             if column_info[:type] == :vector
               connection.quote("[#{vector.map(&:to_f).join(", ")}]")
             else
-              "cube(array[#{vector.map(&:to_f).join(", ")}])"
+              connection.quote("(#{vector.map(&:to_f).join(", ")})")
             end
 
           order = "#{quoted_attribute} #{operator} #{query}"
