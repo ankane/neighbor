@@ -131,7 +131,7 @@ module Neighbor
             attribute_name = :neighbor_vector
           end
           attribute_name = attribute_name.to_sym
-          # important! check if neighbor attribute before calling send
+          # important! check if neighbor attribute before accessing
           raise ArgumentError, "Invalid attribute" unless self.class.neighbor_attributes[attribute_name]
 
           self.class
