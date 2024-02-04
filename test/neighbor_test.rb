@@ -126,6 +126,14 @@ class NeighborTest < Minitest::Test
     assert_equal "Expected 3 dimensions, not 2", error.message
   end
 
+  def test_scope_select
+    create_items(CosineItem)
+    item = CosineItem.select(:id, :factors).nearest_neighbors(:embedding, [3, 3, 3], distance: "euclidean").first
+    assert item.has_attribute?(:id)
+    assert item.has_attribute?(:factors)
+    refute item.has_attribute?(:embedding)
+  end
+
   def test_attribute_not_loaded
     create_items(Item)
     assert_raises(ActiveModel::MissingAttributeError) do

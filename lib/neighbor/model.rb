@@ -120,7 +120,8 @@ module Neighbor
             end
 
           # for select, use column_names instead of * to account for ignored columns
-          select(*column_names, "#{neighbor_distance} AS neighbor_distance")
+          select_columns = select_values.any? ? [] : column_names
+          select(*select_columns, "#{neighbor_distance} AS neighbor_distance")
             .where.not(attribute_name => nil)
             .order(Arel.sql(order))
         }
