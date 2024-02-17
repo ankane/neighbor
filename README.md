@@ -2,7 +2,7 @@
 
 Nearest neighbor search for Rails and Postgres
 
-[![Build Status](https://github.com/ankane/neighbor/workflows/build/badge.svg?branch=master)](https://github.com/ankane/neighbor/actions)
+[![Build Status](https://github.com/ankane/neighbor/actions/workflows/build.yml/badge.svg)](https://github.com/ankane/neighbor/actions)
 
 ## Installation
 
