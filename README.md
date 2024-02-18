@@ -116,9 +116,9 @@ For vector, add an approximate index to speed up queries. Create a migration wit
 ```ruby
 class AddIndexToItemsEmbedding < ActiveRecord::Migration[7.1]
   def change
-    add_index :items, :embedding, using: :ivfflat, opclass: :vector_l2_ops
-    # or with pgvector 0.5.0+
     add_index :items, :embedding, using: :hnsw, opclass: :vector_l2_ops
+    # or
+    add_index :items, :embedding, using: :ivfflat, opclass: :vector_l2_ops
   end
 end
 ```
