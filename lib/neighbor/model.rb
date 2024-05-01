@@ -73,6 +73,8 @@ module Neighbor
                 "<=>"
               when "euclidean"
                 "<->"
+              when "taxicab"
+                "<+>"
               end
             else
               case distance

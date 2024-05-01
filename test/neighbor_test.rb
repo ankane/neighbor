@@ -30,8 +30,6 @@ class NeighborTest < Minitest::Test
   end
 
   def test_taxicab
-    skip if vector?
-
     create_items(Item)
     result = Item.find(1).nearest_neighbors(:embedding, distance: "taxicab").first(3)
     assert_equal [3, 2], result.map(&:id)
