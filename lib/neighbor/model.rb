@@ -65,7 +65,8 @@ module Neighbor
           column_info = klass.type_for_attribute(attribute_name).column_info
 
           operator =
-            if column_info[:type] == :vector
+            case column_info[:type]
+            when :vector, :halfvec
               case distance
               when "inner_product"
                 "<#>"
@@ -99,7 +100,8 @@ module Neighbor
           # important! neighbor_vector should already be typecast
           # but use to_f as extra safeguard against SQL injection
           query =
-            if column_info[:type] == :vector
+            case column_info[:type]
+            when :vector, :halfvec
               connection.quote("[#{vector.map(&:to_f).join(", ")}]")
             else
               connection.quote("(#{vector.map(&:to_f).join(", ")})")
@@ -113,9 +115,9 @@ module Neighbor
           # cosine distance = 1 - cosine similarity
           # this transformation doesn't change the order, so only needed for select
           neighbor_distance =
-            if column_info[:type] != :vector && distance == "cosine"
+            if column_info[:type] == :cube && distance == "cosine"
               "POWER(#{order}, 2) / 2.0"
-            elsif column_info[:type] == :vector && distance == "inner_product"
+            elsif [:vector, :halfvec].include?(column_info[:type]) && distance == "inner_product"
               "(#{order}) * -1"
             else
               order

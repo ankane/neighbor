@@ -26,7 +26,7 @@ class NeighborTest < Minitest::Test
     create_items(Item)
     result = Item.find(1).nearest_neighbors(:embedding, distance: "euclidean").first(3)
     assert_equal [3, 2], result.map(&:id)
-    assert_elements_in_delta [1, 1.7320507764816284], result.map(&:neighbor_distance)
+    assert_elements_in_delta [1, Math.sqrt(3)], result.map(&:neighbor_distance)
   end
 
   def test_taxicab
@@ -218,7 +218,8 @@ class NeighborTest < Minitest::Test
   end
 
   def test_neighbor_attributes
-    assert_equal Item.neighbor_attributes.keys, [:embedding, :neighbor_vector]
+    assert_includes Item.neighbor_attributes.keys, :embedding
+    assert_includes Item.neighbor_attributes.keys, :neighbor_vector
   end
 
   def test_type
@@ -241,6 +242,42 @@ class NeighborTest < Minitest::Test
       Item.create!(factors: [[1, 2, 3], [4, 5, 6]])
       assert_equal "(1, 2, 3),(4, 5, 6)", Item.last.factors
     end
+  end
+
+  def test_halfvec_cosine
+    skip unless vector?
+
+    create_items(CosineItem, :half_embedding)
+    result = CosineItem.find(1).nearest_neighbors(:half_embedding, distance: "cosine").first(3)
+    assert_equal [2, 3], result.map(&:id)
+    assert_elements_in_delta [0, 0.05719095841050148], result.map(&:neighbor_distance)
+  end
+
+  def test_halfvec_euclidean
+    skip unless vector?
+
+    create_items(Item, :half_embedding)
+    result = Item.find(1).nearest_neighbors(:half_embedding, distance: "euclidean").first(3)
+    assert_equal [3, 2], result.map(&:id)
+    assert_elements_in_delta [1, Math.sqrt(3)], result.map(&:neighbor_distance)
+  end
+
+  def test_halfvec_taxicab
+    skip unless vector?
+
+    create_items(Item, :half_embedding)
+    result = Item.find(1).nearest_neighbors(:half_embedding, distance: "taxicab").first(3)
+    assert_equal [3, 2], result.map(&:id)
+    assert_elements_in_delta [1, 3], result.map(&:neighbor_distance)
+  end
+
+  def test_halfvec_inner_product
+    skip unless vector?
+
+    create_items(Item, :half_embedding)
+    result = Item.find(1).nearest_neighbors(:half_embedding, distance: "inner_product").first(3)
+    assert_equal [2, 3], result.map(&:id)
+    assert_elements_in_delta [6, 4], result.map(&:neighbor_distance)
   end
 
   def create_items(cls, attribute = :embedding)

@@ -5,16 +5,17 @@ ActiveRecord::Schema.define do
     t.vector :embedding, limit: 3
     t.vector :neighbor_vector, limit: 3
     t.vector :factors, limit: 3
+    t.halfvec :half_embedding, limit: 3
   end
 end
 
 class Item < ActiveRecord::Base
-  has_neighbors :embedding
+  has_neighbors :embedding, :half_embedding
   has_neighbors
 end
 
 class CosineItem < ActiveRecord::Base
-  has_neighbors :embedding
+  has_neighbors :embedding, :half_embedding
   self.table_name = "items"
 end
 

@@ -1,5 +1,6 @@
 ## 0.3.3 (unreleased)
 
+- Added support for `halfvec` type
 - Added support for `taxicab` distance with `vector` extension
 - Fixed issue with `nearest_neighbors` scope overriding `select` values
 

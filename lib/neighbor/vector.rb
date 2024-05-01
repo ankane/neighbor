@@ -50,7 +50,8 @@ module Neighbor
 
     def serialize(value)
       unless value.nil?
-        if column_info[:type] == :vector
+        case column_info[:type]
+        when :vector, :halfvec
           "[#{cast(value).join(", ")}]"
         else
           "(#{cast(value).join(", ")})"
