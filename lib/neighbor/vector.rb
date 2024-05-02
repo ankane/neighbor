@@ -57,26 +57,27 @@ module Neighbor
     end
 
     def serialize(value)
-      unless value.nil?
-        case column_info[:type]
-        when :vector, :halfvec
-          "[#{cast(value).join(", ")}]"
-        when :cube
-          "(#{cast(value).join(", ")})"
-        when :bit
-          cast(value)
-        else
-          raise "Unsupported type: #{column_info[:type]}"
-        end
-      end
+      base_type.cast(cast(value)) unless value.nil?
     end
 
     def deserialize(value)
+      base_type.deserialize(value) unless value.nil?
+    end
+
+    private
+
+    def base_type
       case column_info[:type]
+      when :vector
+        Type::Vector.new
+      when :halfvec
+        Type::Halfvec.new
+      when :cube
+        Type::Cube.new
       when :bit
-        value
+        ActiveRecord::ConnectionAdapters::PostgreSQL::OID::Bit.new
       else
-        value[1..-1].split(",").map(&:to_f) unless value.nil?
+        raise "Unsupported type: #{column_info[:type]}"
       end
     end
   end
