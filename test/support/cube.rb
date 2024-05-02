@@ -3,7 +3,6 @@ ActiveRecord::Schema.define do
 
   create_table :items, force: true do |t|
     t.cube :embedding
-    t.cube :neighbor_vector
     t.cube :factors
     t.bit :binary_embedding, limit: 3
   end
@@ -11,7 +10,6 @@ end
 
 class Item < ActiveRecord::Base
   has_neighbors :embedding, :binary_embedding
-  has_neighbors
 end
 
 class CosineItem < ActiveRecord::Base

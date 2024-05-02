@@ -191,15 +191,10 @@ class NeighborTest < Minitest::Test
   end
 
   def test_no_attribute
-    create_items(Item, :neighbor_vector)
-    result = Item.find(1).nearest_neighbors(distance: "euclidean").first(3)
-    assert_equal [3, 2], result.map(&:id)
-    assert_elements_in_delta [1, 1.7320507764816284], result.map(&:neighbor_distance)
-  end
-
-  def test_no_attribute_scope
-    create_items(Item, :neighbor_vector)
-    assert_equal [1], Item.nearest_neighbors([0, 0, 0], distance: "euclidean").limit(1).map(&:id)
+    error = assert_raises(ArgumentError) do
+      Item.has_neighbors
+    end
+    assert_equal "has_neighbors requires an attribute name", error.message
   end
 
   def test_invalid_attribute
@@ -219,7 +214,6 @@ class NeighborTest < Minitest::Test
 
   def test_neighbor_attributes
     assert_includes Item.neighbor_attributes.keys, :embedding
-    assert_includes Item.neighbor_attributes.keys, :neighbor_vector
   end
 
   def test_type

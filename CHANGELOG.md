@@ -4,6 +4,7 @@
 - Added support for `taxicab`, `hamming`, and `jaccard` distances with `vector` extension
 - Added deserialization for `cube` and `vector` columns without `has_neighbor`
 - Fixed issue with `nearest_neighbors` scope overriding `select` values
+- Removed default attribute name
 - Dropped support for Ruby < 3.1
 
 ## 0.3.2 (2023-12-12)
