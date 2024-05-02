@@ -3,10 +3,11 @@ ActiveRecord::Schema.define do
 
   create_table :items, force: true do |t|
     t.vector :embedding, limit: 3
-    t.vector :factors, limit: 3
     t.halfvec :half_embedding, limit: 3
     t.bit :binary_embedding, limit: 3
     t.sparsevec :sparse_embedding, limit: 3
+    t.vector :factors, limit: 3
+    t.vector :half_factors, limit: 3
   end
 end
 
