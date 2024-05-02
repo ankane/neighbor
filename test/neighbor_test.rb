@@ -281,6 +281,8 @@ class NeighborTest < Minitest::Test
   end
 
   def test_hamming
+    skip unless vector?
+
     Item.create!(id: 1, binary_embedding: "000")
     Item.create!(id: 2, binary_embedding: "101")
     Item.create!(id: 3, binary_embedding: "111")
@@ -290,6 +292,8 @@ class NeighborTest < Minitest::Test
   end
 
   def test_jaccard
+    skip unless vector?
+
     Item.create!(id: 1, binary_embedding: "000")
     Item.create!(id: 2, binary_embedding: "101")
     Item.create!(id: 3, binary_embedding: "111")
