@@ -1,8 +1,9 @@
-## 0.3.3 (unreleased)
+## 0.4.0 (unreleased)
 
 - Added support for `halfvec` type
 - Added support for `taxicab`, `hamming`, and `jaccard` distances with `vector` extension
 - Fixed issue with `nearest_neighbors` scope overriding `select` values
+- Dropped support for Ruby < 3.1
 
 ## 0.3.2 (2023-12-12)
 
