@@ -6,6 +6,7 @@ ActiveRecord::Schema.define do
     t.vector :factors, limit: 3
     t.halfvec :half_embedding, limit: 3
     t.bit :binary_embedding, limit: 3
+    t.sparsevec :sparse_embedding, limit: 3
   end
 end
 

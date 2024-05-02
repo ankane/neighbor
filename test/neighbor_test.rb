@@ -296,6 +296,13 @@ class NeighborTest < Minitest::Test
     assert_elements_in_delta [0.5, 2/3.0, 1], result.map(&:neighbor_distance)
   end
 
+  def test_sparsevec
+    skip unless vector?
+
+    Item.create!(sparse_embedding: "{1:1,2:2,3:3}/3")
+    assert_equal "{1:1,2:2,3:3}/3", Item.last.sparse_embedding
+  end
+
   def create_items(cls, attribute = :embedding)
     vectors = [
       [1, 1, 1],
