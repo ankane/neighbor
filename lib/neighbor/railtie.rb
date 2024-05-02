@@ -1,16 +1,16 @@
 module Neighbor
   class Railtie < Rails::Railtie
     generators do
+      require "rails/generators/generated_attribute"
+
       # rails generate model Item embedding:vector{3}
-      if defined?(Rails::Generators::GeneratedAttribute)
-        Rails::Generators::GeneratedAttribute.singleton_class.prepend(Neighbor::GeneratedAttribute)
-      end
+      Rails::Generators::GeneratedAttribute.singleton_class.prepend(Neighbor::GeneratedAttribute)
     end
   end
 
   module GeneratedAttribute
     def parse_type_and_options(type, *, **)
-      if type =~ /\A(vector)\{(\d+)\}\z/
+      if type =~ /\A(vector|halfvec|sparsevec)\{(\d+)\}\z/
         return $1, limit: $2.to_i
       end
       super
