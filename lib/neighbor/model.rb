@@ -94,20 +94,7 @@ module Neighbor
             raise Neighbor::Error, "Set normalize for cosine distance with cube"
           end
 
-          vector = Neighbor::Vector.cast(vector, dimensions: dimensions, normalize: normalize, column_info: column_info)
-
-          # important! neighbor_vector should already be typecast
-          # but use to_f as extra safeguard against SQL injection
-          query =
-            case column_info[:type]
-            when :bit
-              connection.quote(vector)
-            when :vector, :halfvec
-              connection.quote("[#{vector.map(&:to_f).join(", ")}]")
-            else
-              connection.quote("(#{vector.map(&:to_f).join(", ")})")
-            end
-
+          query = connection.quote(klass.type_for_attribute(attribute_name).serialize(vector))
           order = "#{quoted_attribute} #{operator} #{query}"
 
           # https://stats.stackexchange.com/questions/146221/is-cosine-similarity-identical-to-l2-normalized-euclidean-distance
