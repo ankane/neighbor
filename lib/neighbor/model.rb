@@ -66,6 +66,13 @@ module Neighbor
 
           operator =
             case column_info[:type]
+            when :bit
+              case distance
+              when "hamming"
+                "<~>"
+              when "jaccard"
+                "<%>"
+              end
             when :vector, :halfvec
               case distance
               when "inner_product"
@@ -101,6 +108,8 @@ module Neighbor
           # but use to_f as extra safeguard against SQL injection
           query =
             case column_info[:type]
+            when :bit
+              connection.quote(vector)
             when :vector, :halfvec
               connection.quote("[#{vector.map(&:to_f).join(", ")}]")
             else

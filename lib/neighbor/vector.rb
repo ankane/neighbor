@@ -9,10 +9,18 @@ module Neighbor
     end
 
     def self.cast(value, dimensions:, normalize:, column_info:)
-      value = value.to_a.map(&:to_f)
+      if column_info[:type] == :bit
+        value = value.to_s
+      else
+        value = value.to_a.map(&:to_f)
+      end
 
       dimensions ||= column_info[:dimensions]
       raise Error, "Expected #{dimensions} dimensions, not #{value.size}" if dimensions && value.size != dimensions
+
+      if column_info[:type] == :bit
+        return value
+      end
 
       raise Error, "Values must be finite" unless value.all?(&:finite?)
 
@@ -53,14 +61,23 @@ module Neighbor
         case column_info[:type]
         when :vector, :halfvec
           "[#{cast(value).join(", ")}]"
-        else
+        when :cube
           "(#{cast(value).join(", ")})"
+        when :bit
+          cast(value)
+        else
+          raise "Unsupported type: #{column_info[:type]}"
         end
       end
     end
 
     def deserialize(value)
-      value[1..-1].split(",").map(&:to_f) unless value.nil?
+      case column_info[:type]
+      when :bit
+        value
+      else
+        value[1..-1].split(",").map(&:to_f) unless value.nil?
+      end
     end
   end
 end

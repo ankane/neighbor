@@ -6,11 +6,12 @@ ActiveRecord::Schema.define do
     t.vector :neighbor_vector, limit: 3
     t.vector :factors, limit: 3
     t.halfvec :half_embedding, limit: 3
+    t.bit :binary_embedding, limit: 3
   end
 end
 
 class Item < ActiveRecord::Base
-  has_neighbors :embedding, :half_embedding
+  has_neighbors :embedding, :half_embedding, :binary_embedding
   has_neighbors
 end
 
