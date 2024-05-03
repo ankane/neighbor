@@ -5,9 +5,9 @@ module Neighbor
         :sparsevec
       end
 
+      # TODO improve
       def deserialize(value)
-        # TODO improve
-        value unless value.nil?
+        super
       end
     end
   end

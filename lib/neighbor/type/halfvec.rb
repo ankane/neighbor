@@ -7,13 +7,13 @@ module Neighbor
 
       def cast(value)
         if value.is_a?(Array)
-          "[#{value.join(",")}]"
-        else
-          super
+          value = "[#{value.join(",")}]"
         end
+        super(value)
       end
 
       def deserialize(value)
+        value = super
         value[1..-1].split(",").map(&:to_f) unless value.nil?
       end
     end
