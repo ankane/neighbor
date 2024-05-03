@@ -24,8 +24,6 @@ module Neighbor
           else
             value[1..-1].split(",").map(&:to_f)
           end
-        else
-          value
         end
       end
 
