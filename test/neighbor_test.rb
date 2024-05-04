@@ -238,6 +238,21 @@ class NeighborTest < Minitest::Test
 
       Item.create!(half_factors: [1, 2, 3])
       assert_equal [1, 2, 3], Item.last.half_factors
+
+      Item.create!(sparse_factors: "{1:1,3:2,5:3}/5")
+      factors = Item.last.sparse_factors
+      assert_equal 5, factors.dimensions
+      assert_equal [0, 2, 4], factors.indices
+      assert_equal [1, 2, 3], factors.values
+      assert_equal [1, 0, 2, 0, 3], factors.to_a
+
+      Item.create!(sparse_factors: [0, 4, 0, 5, 0])
+      factors = Item.last.sparse_factors
+      assert_equal [0, 4, 0, 5, 0], factors.to_a
+
+      Item.create!(sparse_factors: Neighbor::SparseVector.new(5, [1, 2, 4], [6, 7, 8]))
+      factors = Item.last.sparse_factors
+      assert_equal [0, 6, 7, 0, 8], factors.to_a
     else
       Item.create!(factors: "(1,2,3)")
       assert_equal [1, 2, 3], Item.last.factors
@@ -311,23 +326,40 @@ class NeighborTest < Minitest::Test
     assert_elements_in_delta [0.5, 2/3.0, 1], result.map(&:neighbor_distance)
   end
 
-  def test_sparsevec
+  def test_sparsevec_cosine
     skip unless vector?
 
-    Item.create!(sparse_embedding: "{1:1,3:2,5:3}/5")
-    embedding = Item.last.sparse_embedding
-    assert_equal 5, embedding.dimensions
-    assert_equal [0, 2, 4], embedding.indices
-    assert_equal [1, 2, 3], embedding.values
-    assert_equal [1, 0, 2, 0, 3], embedding.to_a
+    create_items(CosineItem, :sparse_embedding)
+    result = CosineItem.find(1).nearest_neighbors(:sparse_embedding, distance: "cosine").first(3)
+    assert_equal [2, 3], result.map(&:id)
+    assert_elements_in_delta [0, 0.05719095841050148], result.map(&:neighbor_distance)
+  end
 
-    Item.create!(sparse_embedding: [0, 4, 0, 5, 0])
-    embedding = Item.last.sparse_embedding
-    assert_equal [0, 4, 0, 5, 0], embedding.to_a
+  def test_sparsevec_euclidean
+    skip unless vector?
 
-    Item.create!(sparse_embedding: Neighbor::SparseVector.new(5, [1, 2, 4], [6, 7, 8]))
-    embedding = Item.last.sparse_embedding
-    assert_equal [0, 6, 7, 0, 8], embedding.to_a
+    create_items(Item, :sparse_embedding)
+    result = Item.find(1).nearest_neighbors(:sparse_embedding, distance: "euclidean").first(3)
+    assert_equal [3, 2], result.map(&:id)
+    assert_elements_in_delta [1, Math.sqrt(3)], result.map(&:neighbor_distance)
+  end
+
+  def test_sparsevec_taxicab
+    skip unless vector?
+
+    create_items(Item, :sparse_embedding)
+    result = Item.find(1).nearest_neighbors(:sparse_embedding, distance: "taxicab").first(3)
+    assert_equal [3, 2], result.map(&:id)
+    assert_elements_in_delta [1, 3], result.map(&:neighbor_distance)
+  end
+
+  def test_sparsevec_inner_product
+    skip unless vector?
+
+    create_items(Item, :sparse_embedding)
+    result = Item.find(1).nearest_neighbors(:sparse_embedding, distance: "inner_product").first(3)
+    assert_equal [2, 3], result.map(&:id)
+    assert_elements_in_delta [6, 4], result.map(&:neighbor_distance)
   end
 
   def test_from_dense

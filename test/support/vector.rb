@@ -5,20 +5,18 @@ ActiveRecord::Schema.define do
     t.vector :embedding, limit: 3
     t.halfvec :half_embedding, limit: 3
     t.bit :binary_embedding, limit: 3
-    t.sparsevec :sparse_embedding, limit: 5
+    t.sparsevec :sparse_embedding, limit: 3
     t.vector :factors, limit: 3
     t.halfvec :half_factors, limit: 3
+    t.sparsevec :sparse_factors, limit: 5
   end
 end
 
 class Item < ActiveRecord::Base
-  has_neighbors :embedding, :half_embedding, :binary_embedding
+  has_neighbors :embedding, :half_embedding, :binary_embedding, :sparse_embedding
 end
 
-class CosineItem < ActiveRecord::Base
-  has_neighbors :embedding, :half_embedding
-  self.table_name = "items"
-end
+CosineItem = Item
 
 class DimensionsItem < ActiveRecord::Base
   has_neighbors :embedding, dimensions: 3

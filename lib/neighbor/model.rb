@@ -65,7 +65,7 @@ module Neighbor
               when "jaccard"
                 "<%>"
               end
-            when :vector, :halfvec
+            when :vector, :halfvec, :sparsevec
               case distance
               when "inner_product"
                 "<#>"
@@ -76,7 +76,7 @@ module Neighbor
               when "taxicab"
                 "<+>"
               end
-            else
+            when :cube
               case distance
               when "taxicab"
                 "<#>"
@@ -85,6 +85,8 @@ module Neighbor
               when "euclidean", "cosine"
                 "<->"
               end
+            else
+              raise ArgumentError, "Unsupported type: #{column_info[:type]}"
             end
 
           raise ArgumentError, "Invalid distance: #{distance}" unless operator
@@ -105,7 +107,7 @@ module Neighbor
           neighbor_distance =
             if column_info[:type] == :cube && distance == "cosine"
               "POWER(#{order}, 2) / 2.0"
-            elsif [:vector, :halfvec].include?(column_info[:type]) && distance == "inner_product"
+            elsif [:vector, :halfvec, :sparsevec].include?(column_info[:type]) && distance == "inner_product"
               "(#{order}) * -1"
             else
               order

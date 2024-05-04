@@ -72,6 +72,8 @@ module Neighbor
         Type::Vector.new
       when :halfvec
         Type::Halfvec.new
+      when :sparsevec
+        Type::Sparsevec.new
       when :cube
         Type::Cube.new
       when :bit
