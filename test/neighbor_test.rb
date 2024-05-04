@@ -186,7 +186,16 @@ class NeighborTest < Minitest::Test
     file = Tempfile.new
     ActiveRecord::SchemaDumper.dump(ActiveRecord::Base.connection, file)
     file.rewind
-    refute_match "Could not dump table", file.read
+    contents = file.read
+    refute_match "Could not dump table", contents
+    if vector?
+      assert_match "t.vector", contents
+      assert_match "t.halfvec", contents
+      assert_match "t.bit", contents
+      assert_match "t.sparsevec", contents
+    else
+      assert_match "t.cube", contents
+    end
     load(file.path)
   end
 
