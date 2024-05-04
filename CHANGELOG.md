@@ -1,6 +1,6 @@
 ## 0.4.0 (unreleased)
 
-- Added support for `halfvec` type
+- Added support for `halfvec` and `sparsevec` types
 - Added support for `taxicab`, `hamming`, and `jaccard` distances with `vector` extension
 - Added deserialization for `cube` and `vector` columns without `has_neighbor`
 - Fixed issue with `nearest_neighbors` scope overriding `select` values
