@@ -96,8 +96,8 @@ class NeighborTest < Minitest::Test
     file.rewind
     contents = file.read
     refute_match "Could not dump table", contents
-    assert_match "t.vector", contents
     assert_match "t.cube", contents
+    assert_match "t.vector", contents
     assert_match "t.halfvec", contents
     assert_match "t.bit", contents
     assert_match "t.sparsevec", contents

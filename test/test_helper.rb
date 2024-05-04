@@ -15,14 +15,14 @@ ActiveRecord::Schema.define do
   enable_extension "vector"
 
   create_table :items, force: true do |t|
-    t.vector :embedding, limit: 3
     t.cube :cube_embedding
+    t.cube :cube_factors
+    t.vector :embedding, limit: 3
+    t.vector :factors, limit: 3
     t.halfvec :half_embedding, limit: 3
+    t.halfvec :half_factors, limit: 3
     t.bit :binary_embedding, limit: 3
     t.sparsevec :sparse_embedding, limit: 3
-    t.vector :factors, limit: 3
-    t.cube :cube_factors
-    t.halfvec :half_factors, limit: 3
     t.sparsevec :sparse_factors, limit: 5
   end
 end
