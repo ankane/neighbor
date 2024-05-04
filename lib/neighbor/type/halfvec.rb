@@ -1,6 +1,6 @@
 module Neighbor
   module Type
-    class Halfvec < ActiveRecord::Type::String
+    class Halfvec < ActiveRecord::Type::Value
       def type
         :halfvec
       end

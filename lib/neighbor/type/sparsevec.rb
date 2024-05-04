@@ -1,6 +1,6 @@
 module Neighbor
   module Type
-    class Sparsevec < ActiveRecord::Type::String
+    class Sparsevec < ActiveRecord::Type::Value
       def type
         :sparsevec
       end

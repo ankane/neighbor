@@ -1,6 +1,6 @@
 module Neighbor
   module Type
-    class Cube < ActiveRecord::Type::String
+    class Cube < ActiveRecord::Type::Value
       def type
         :cube
       end

@@ -1,6 +1,6 @@
 module Neighbor
   module Type
-    class Vector < ActiveRecord::Type::String
+    class Vector < ActiveRecord::Type::Value
       def type
         :vector
       end
