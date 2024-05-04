@@ -5,6 +5,16 @@ module Neighbor
         :sparsevec
       end
 
+      def cast(value)
+        if value.is_a?(Array)
+          value = SparseVector.from_dense(value)
+        end
+        if value.is_a?(SparseVector)
+          value = "{#{value.indices.zip(value.values).map { |i, v| "#{i + 1}:#{v}" }.join(",")}}/#{value.dimensions}"
+        end
+        super(value)
+      end
+
       def deserialize(value)
         value = super
         unless value.nil?

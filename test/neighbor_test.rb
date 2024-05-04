@@ -311,6 +311,17 @@ class NeighborTest < Minitest::Test
     assert_equal [0, 2, 4], embedding.indices
     assert_equal [1, 2, 3], embedding.values
     assert_equal [1, 0, 2, 0, 3], embedding.to_a
+
+    Item.create!(sparse_embedding: [0, 4, 0, 5, 0])
+    embedding = Item.last.sparse_embedding
+    assert_equal [0, 4, 0, 5, 0], embedding.to_a
+  end
+
+  def test_from_dense
+    embedding = Neighbor::SparseVector.from_dense([1, 0, 2, 0, 3])
+    assert_equal 5, embedding.dimensions
+    assert_equal [0, 2, 4], embedding.indices
+    assert_equal [1, 2, 3], embedding.values
   end
 
   def create_items(cls, attribute = :embedding)
