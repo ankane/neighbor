@@ -21,6 +21,10 @@ else
 end
 
 class Minitest::Test
+  def setup
+    Item.delete_all
+  end
+
   def assert_elements_in_delta(expected, actual)
     assert_equal expected.size, actual.size
     expected.zip(actual) do |exp, act|

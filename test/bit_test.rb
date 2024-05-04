@@ -3,7 +3,7 @@ require_relative "test_helper"
 class BitTest < Minitest::Test
   def setup
     skip unless vector?
-    Item.delete_all
+    super
   end
 
   def test_hamming

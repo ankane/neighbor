@@ -1,10 +1,6 @@
 require_relative "test_helper"
 
 class NeighborTest < Minitest::Test
-  def setup
-    Item.delete_all
-  end
-
   def test_cosine
     create_items(CosineItem)
     result = CosineItem.find(1).nearest_neighbors(:embedding, distance: "cosine").first(3)
