@@ -10,7 +10,7 @@ module Neighbor
 
     def to_a
       a = [0.0] * dimensions
-      @indices.zip(@values).each do |i, v|
+      @indices.zip(@values) do |i, v|
         a[i] = v
       end
       a
