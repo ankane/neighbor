@@ -232,27 +232,6 @@ class NeighborTest < Minitest::Test
 
       Item.create!(factors: [1, 2, 3])
       assert_equal [1, 2, 3], Item.last.factors
-
-      Item.create!(half_factors: "[1,2,3]")
-      assert_equal [1, 2, 3], Item.last.half_factors
-
-      Item.create!(half_factors: [1, 2, 3])
-      assert_equal [1, 2, 3], Item.last.half_factors
-
-      Item.create!(sparse_factors: "{1:1,3:2,5:3}/5")
-      factors = Item.last.sparse_factors
-      assert_equal 5, factors.dimensions
-      assert_equal [0, 2, 4], factors.indices
-      assert_equal [1, 2, 3], factors.values
-      assert_equal [1, 0, 2, 0, 3], factors.to_a
-
-      Item.create!(sparse_factors: [0, 4, 0, 5, 0])
-      factors = Item.last.sparse_factors
-      assert_equal [0, 4, 0, 5, 0], factors.to_a
-
-      Item.create!(sparse_factors: Neighbor::SparseVector.new(5, [1, 2, 4], [6, 7, 8]))
-      factors = Item.last.sparse_factors
-      assert_equal [0, 6, 7, 0, 8], factors.to_a
     else
       Item.create!(factors: "(1,2,3)")
       assert_equal [1, 2, 3], Item.last.factors

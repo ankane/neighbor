@@ -34,6 +34,23 @@ class SparsevecTest < Minitest::Test
     assert_elements_in_delta [6, 4], result.map(&:neighbor_distance)
   end
 
+  def test_type
+    Item.create!(sparse_factors: "{1:1,3:2,5:3}/5")
+    factors = Item.last.sparse_factors
+    assert_equal 5, factors.dimensions
+    assert_equal [0, 2, 4], factors.indices
+    assert_equal [1, 2, 3], factors.values
+    assert_equal [1, 0, 2, 0, 3], factors.to_a
+
+    Item.create!(sparse_factors: [0, 4, 0, 5, 0])
+    factors = Item.last.sparse_factors
+    assert_equal [0, 4, 0, 5, 0], factors.to_a
+
+    Item.create!(sparse_factors: Neighbor::SparseVector.new(5, [1, 2, 4], [6, 7, 8]))
+    factors = Item.last.sparse_factors
+    assert_equal [0, 6, 7, 0, 8], factors.to_a
+  end
+
   def test_from_dense
     embedding = Neighbor::SparseVector.from_dense([1, 0, 2, 0, 3])
     assert_equal 5, embedding.dimensions

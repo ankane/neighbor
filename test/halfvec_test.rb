@@ -33,4 +33,12 @@ class HalfvecTest < Minitest::Test
     assert_equal [2, 3], result.map(&:id)
     assert_elements_in_delta [6, 4], result.map(&:neighbor_distance)
   end
+
+  def test_type
+    Item.create!(half_factors: "[1,2,3]")
+    assert_equal [1, 2, 3], Item.last.half_factors
+
+    Item.create!(half_factors: [1, 2, 3])
+    assert_equal [1, 2, 3], Item.last.half_factors
+  end
 end
