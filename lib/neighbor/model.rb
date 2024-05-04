@@ -64,6 +64,8 @@ module Neighbor
                 "<~>"
               when "jaccard"
                 "<%>"
+              when "hamming2"
+                "#"
               end
             when :vector, :halfvec, :sparsevec
               case distance
@@ -98,6 +100,9 @@ module Neighbor
 
           query = connection.quote(klass.type_for_attribute(attribute_name).serialize(vector))
           order = "#{quoted_attribute} #{operator} #{query}"
+          if operator == "#"
+            order = "bit_count(#{order})"
+          end
 
           # https://stats.stackexchange.com/questions/146221/is-cosine-similarity-identical-to-l2-normalized-euclidean-distance
           # with normalized vectors:

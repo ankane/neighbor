@@ -15,6 +15,20 @@ class BitTest < Minitest::Test
     assert_elements_in_delta [0, 1, 2], result.map(&:neighbor_distance)
   end
 
+  def test_hamming2
+    create_bit_items
+    result = Item.find(1).nearest_neighbors(:binary_embedding, distance: "hamming2").first(3)
+    assert_equal [2, 3], result.map(&:id)
+    assert_elements_in_delta [2, 3], result.map(&:neighbor_distance)
+  end
+
+  def test_hamming2_scope
+    create_bit_items
+    result = Item.nearest_neighbors(:binary_embedding, "101", distance: "hamming2").first(5)
+    assert_equal [2, 3, 1], result.map(&:id)
+    assert_elements_in_delta [0, 1, 2], result.map(&:neighbor_distance)
+  end
+
   def test_jaccard
     create_bit_items
     result = Item.find(2).nearest_neighbors(:binary_embedding, distance: "jaccard").first(3)
