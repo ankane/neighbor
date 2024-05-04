@@ -49,6 +49,12 @@ class LargeDimensionsItem < ActiveRecord::Base
   self.table_name = "items"
 end
 
+class DefaultScopeItem < ActiveRecord::Base
+  default_scope { order(id: :desc) }
+  has_neighbors :embedding
+  self.table_name = "items"
+end
+
 class Minitest::Test
   def setup
     Item.delete_all
