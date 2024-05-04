@@ -1,14 +1,9 @@
 require_relative "test_helper"
 
 class SparsevecTest < Minitest::Test
-  def setup
-    skip unless vector?
-    super
-  end
-
   def test_cosine
-    create_items(CosineItem, :sparse_embedding)
-    result = CosineItem.find(1).nearest_neighbors(:sparse_embedding, distance: "cosine").first(3)
+    create_items(Item, :sparse_embedding)
+    result = Item.find(1).nearest_neighbors(:sparse_embedding, distance: "cosine").first(3)
     assert_equal [2, 3], result.map(&:id)
     assert_elements_in_delta [0, 0.05719095841050148], result.map(&:neighbor_distance)
   end

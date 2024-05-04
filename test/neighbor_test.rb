@@ -1,69 +1,20 @@
 require_relative "test_helper"
 
 class NeighborTest < Minitest::Test
-  def test_cosine
-    create_items(CosineItem)
-    result = CosineItem.find(1).nearest_neighbors(:embedding, distance: "cosine").first(3)
-    assert_equal [2, 3], result.map(&:id)
-    assert_elements_in_delta [0, 0.05719095841050148], result.map(&:neighbor_distance)
-  end
-
-  def test_cosine_no_normalize
-    skip if vector?
-
-    create_items(Item)
-    error = assert_raises(Neighbor::Error) do
-      Item.find(1).nearest_neighbors(:embedding, distance: "cosine").first(3)
-    end
-    assert_equal "Set normalize for cosine distance with cube", error.message
-  end
-
-  def test_euclidean
-    create_items(Item)
-    result = Item.find(1).nearest_neighbors(:embedding, distance: "euclidean").first(3)
-    assert_equal [3, 2], result.map(&:id)
-    assert_elements_in_delta [1, Math.sqrt(3)], result.map(&:neighbor_distance)
-  end
-
-  def test_taxicab
-    create_items(Item)
-    result = Item.find(1).nearest_neighbors(:embedding, distance: "taxicab").first(3)
-    assert_equal [3, 2], result.map(&:id)
-    assert_elements_in_delta [1, 3], result.map(&:neighbor_distance)
-  end
-
-  def test_chebyshev
-    skip if vector?
-
-    create_items(Item)
-    result = Item.find(1).nearest_neighbors(:embedding, distance: "chebyshev").first(3)
-    assert_equal [2, 3], result.map(&:id).sort # same distance
-    assert_elements_in_delta [1, 1], result.map(&:neighbor_distance)
-  end
-
-  def test_inner_product
-    skip unless vector?
-
-    create_items(Item)
-    result = Item.find(1).nearest_neighbors(:embedding, distance: "inner_product").first(3)
-    assert_equal [2, 3], result.map(&:id)
-    assert_elements_in_delta [6, 4], result.map(&:neighbor_distance)
-  end
-
   def test_relation
-    create_items(Item)
+    create_items(Item, :embedding)
     assert_equal [2], Item.find(1).nearest_neighbors(:embedding, distance: "euclidean").where(id: 2).map(&:id)
   end
 
   # need to use unscope or count(:all)
   def test_relation_count
-    create_items(Item)
+    create_items(Item, :embedding)
     assert_equal 2, Item.find(1).nearest_neighbors(:embedding, distance: "euclidean").unscope(:select).count
     assert_equal 2, Item.find(2).nearest_neighbors(:embedding, distance: "euclidean").count(:all)
   end
 
   def test_empty
-    create_items(CosineItem)
+    create_items(CosineItem, :embedding)
     CosineItem.create!(id: 4, embedding: nil)
 
     result = CosineItem.find(1).nearest_neighbors(:embedding, distance: "cosine").first(3)
@@ -73,39 +24,8 @@ class NeighborTest < Minitest::Test
     assert_empty CosineItem.find(4).nearest_neighbors(:embedding, distance: "cosine").first(3)
   end
 
-  def test_cosine_zero
-    create_items(CosineItem)
-    CosineItem.create!(id: 4, embedding: [0, 0, 0])
-    assert_equal [0, 0, 0], CosineItem.last.embedding
-
-    expected = vector? ? "[0,0,0]" : "(0, 0, 0)"
-    assert_equal expected, CosineItem.connection.select_all("SELECT embedding FROM items WHERE id = 4").first["embedding"]
-
-    result = CosineItem.find(3).nearest_neighbors(:embedding, distance: "cosine").to_a.last
-    assert_equal 4, result.id
-    if vector?
-      assert result.neighbor_distance.nan?
-    else
-      assert_in_delta 0.5, result.neighbor_distance
-    end
-
-    result = CosineItem.find(4).nearest_neighbors(:embedding, distance: "cosine").first(3)
-    if vector?
-      assert result.map(&:neighbor_distance).all?(&:nan?)
-    else
-      assert_elements_in_delta [0.5, 0.5, 0.5], result.map(&:neighbor_distance)
-    end
-  end
-
-  # private, but make sure doesn't update in-place
-  def test_cast
-    vector = [1, 2, 3]
-    Neighbor::Vector.cast(vector, dimensions: 3, normalize: true, column_info: {type: :cube})
-    assert_equal [1, 2, 3], vector
-  end
-
   def test_scope
-    create_items(CosineItem)
+    create_items(CosineItem, :embedding)
     result = CosineItem.nearest_neighbors(:embedding, [3, 3, 3], distance: "cosine").first(5)
     assert_equal 3, result.size
     assert_equal [1, 2], result.map(&:id).first(2).sort # same distance
@@ -121,7 +41,7 @@ class NeighborTest < Minitest::Test
   end
 
   def test_scope_select
-    create_items(CosineItem)
+    create_items(CosineItem, :embedding)
     item = CosineItem.select(:id, :factors).nearest_neighbors(:embedding, [3, 3, 3], distance: "euclidean").first
     assert item.has_attribute?(:id)
     assert item.has_attribute?(:factors)
@@ -129,18 +49,10 @@ class NeighborTest < Minitest::Test
   end
 
   def test_attribute_not_loaded
-    create_items(Item)
+    create_items(Item, :embedding)
     assert_raises(ActiveModel::MissingAttributeError) do
       Item.select(:id).find(1).nearest_neighbors(:embedding, distance: "euclidean")
     end
-  end
-
-  def test_large_dimensions
-    max_dimensions = vector? ? 16000 : 100
-    error = assert_raises(ActiveRecord::StatementInvalid) do
-      LargeDimensionsItem.create!(embedding: (max_dimensions + 1).times.to_a)
-    end
-    assert_match "cannot have more than #{max_dimensions} dimensions", error.message
   end
 
   def test_invalid_distance
@@ -184,14 +96,11 @@ class NeighborTest < Minitest::Test
     file.rewind
     contents = file.read
     refute_match "Could not dump table", contents
-    if vector?
-      assert_match "t.vector", contents
-      assert_match "t.halfvec", contents
-      assert_match "t.bit", contents
-      assert_match "t.sparsevec", contents
-    else
-      assert_match "t.cube", contents
-    end
+    assert_match "t.vector", contents
+    assert_match "t.cube", contents
+    assert_match "t.halfvec", contents
+    assert_match "t.bit", contents
+    assert_match "t.sparsevec", contents
     load(file.path)
   end
 
@@ -203,7 +112,7 @@ class NeighborTest < Minitest::Test
   end
 
   def test_invalid_attribute
-    create_items(Item)
+    create_items(Item, :embedding)
     error = assert_raises(ArgumentError) do
       Item.find(1).nearest_neighbors(:bad, distance: "euclidean")
     end
@@ -219,27 +128,5 @@ class NeighborTest < Minitest::Test
 
   def test_neighbor_attributes
     assert_includes Item.neighbor_attributes.keys, :embedding
-  end
-
-  def test_type
-    if vector?
-      Item.create!(factors: "[1,2,3]")
-      assert_equal [1, 2, 3], Item.last.factors
-
-      Item.create!(factors: [1, 2, 3])
-      assert_equal [1, 2, 3], Item.last.factors
-    else
-      Item.create!(factors: "(1,2,3)")
-      assert_equal [1, 2, 3], Item.last.factors
-
-      Item.create!(factors: [1, 2, 3])
-      assert_equal [1, 2, 3], Item.last.factors
-
-      Item.create!(factors: 1)
-      assert_equal [1], Item.last.factors
-
-      Item.create!(factors: [[1, 2, 3], [4, 5, 6]])
-      assert_equal [[1, 2, 3], [4, 5, 6]], Item.last.factors
-    end
   end
 end

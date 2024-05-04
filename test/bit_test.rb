@@ -1,11 +1,6 @@
 require_relative "test_helper"
 
 class BitTest < Minitest::Test
-  def setup
-    skip unless vector?
-    super
-  end
-
   def test_hamming
     Item.create!(id: 1, binary_embedding: "000")
     Item.create!(id: 2, binary_embedding: "101")

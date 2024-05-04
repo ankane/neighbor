@@ -1,14 +1,9 @@
 require_relative "test_helper"
 
 class HalfvecTest < Minitest::Test
-  def setup
-    skip unless vector?
-    super
-  end
-
   def test_cosine
-    create_items(CosineItem, :half_embedding)
-    result = CosineItem.find(1).nearest_neighbors(:half_embedding, distance: "cosine").first(3)
+    create_items(Item, :half_embedding)
+    result = Item.find(1).nearest_neighbors(:half_embedding, distance: "cosine").first(3)
     assert_equal [2, 3], result.map(&:id)
     assert_elements_in_delta [0, 0.05719095841050148], result.map(&:neighbor_distance)
   end

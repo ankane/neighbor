@@ -286,10 +286,5 @@ git clone https://github.com/ankane/neighbor.git
 cd neighbor
 bundle install
 createdb neighbor_test
-
-# cube
 bundle exec rake test
-
-# vector
-EXT=vector bundle exec rake test
 ```

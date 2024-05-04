@@ -10,14 +10,43 @@ ActiveRecord::Base.logger = logger
 
 ActiveRecord::Base.establish_connection adapter: "postgresql", database: "neighbor_test"
 
-def vector?
-  ENV["EXT"] == "vector"
+ActiveRecord::Schema.define do
+  enable_extension "cube"
+  enable_extension "vector"
+
+  create_table :items, force: true do |t|
+    t.vector :embedding, limit: 3
+    t.cube :cube_embedding
+    t.halfvec :half_embedding, limit: 3
+    t.bit :binary_embedding, limit: 3
+    t.sparsevec :sparse_embedding, limit: 3
+    t.vector :factors, limit: 3
+    t.cube :cube_factors
+    t.halfvec :half_factors, limit: 3
+    t.sparsevec :sparse_factors, limit: 5
+  end
 end
 
-if vector?
-  require_relative "support/vector"
-else
-  require_relative "support/cube"
+class Item < ActiveRecord::Base
+  has_neighbors :embedding, :cube_embedding, :half_embedding, :binary_embedding, :sparse_embedding
+end
+
+class CosineItem < ActiveRecord::Base
+  has_neighbors :embedding
+  has_neighbors :cube_embedding, normalize: true
+  self.table_name = "items"
+end
+
+class DimensionsItem < ActiveRecord::Base
+  has_neighbors :embedding, dimensions: 3
+  has_neighbors :cube_embedding, dimensions: 3
+  self.table_name = "items"
+end
+
+class LargeDimensionsItem < ActiveRecord::Base
+  has_neighbors :embedding, dimensions: 16001
+  has_neighbors :cube_embedding, dimensions: 101
+  self.table_name = "items"
 end
 
 class Minitest::Test
@@ -32,7 +61,7 @@ class Minitest::Test
     end
   end
 
-  def create_items(cls, attribute = :embedding)
+  def create_items(cls, attribute)
     vectors = [
       [1, 1, 1],
       [2, 2, 2],
