@@ -2,6 +2,7 @@
 require "active_support"
 
 # modules
+require_relative "neighbor/sparse_vector"
 require_relative "neighbor/version"
 
 module Neighbor
