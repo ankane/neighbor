@@ -305,11 +305,12 @@ class NeighborTest < Minitest::Test
   def test_sparsevec
     skip unless vector?
 
-    Item.create!(sparse_embedding: "{1:1,2:2,3:3}/3")
+    Item.create!(sparse_embedding: "{1:1,3:2,5:3}/5")
     embedding = Item.last.sparse_embedding
-    assert_equal 3, embedding.dimensions
-    assert_equal [0, 1, 2], embedding.indices
+    assert_equal 5, embedding.dimensions
+    assert_equal [0, 2, 4], embedding.indices
     assert_equal [1, 2, 3], embedding.values
+    assert_equal [1, 0, 2, 0, 3], embedding.to_a
   end
 
   def create_items(cls, attribute = :embedding)
