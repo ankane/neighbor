@@ -8,15 +8,25 @@ module Neighbor
       @attribute_name = attribute_name
     end
 
-    def self.validate_dimensions(value, dimensions)
-      raise Error, "Expected #{dimensions} dimensions, not #{value.size}" if dimensions && value.size != dimensions
+    def self.validate_dimensions(value, type, expected)
+      dimensions = type == :sparsevec ? value.dimensions : value.size
+      raise Error, "Expected #{expected} dimensions, not #{dimensions}" if expected && dimensions != expected
     end
 
-    def self.validate_finite(value)
-      raise Error, "Values must be finite" unless value.all?(&:finite?)
+    def self.validate_finite(value, type)
+      case type
+      when :bit
+        true
+      when :sparsevec
+        value.values.all?(&:finite?)
+      else
+        value.all?(&:finite?)
+      end
     end
 
-    def self.normalize(value)
+    def self.normalize(value, type)
+      raise Error, "Normalize not supported for type" unless [:cube, :vector, :halfvec].include?(type)
+
       norm = Math.sqrt(value.sum { |v| v * v })
 
       # store zero vector as all zeros
@@ -28,16 +38,13 @@ module Neighbor
     def self.cast(value, dimensions:, normalize:, column_info:)
       value = base_type(column_info).cast(value)
 
-      # TODO fix
-      value = value.to_a if value.is_a?(SparseVector)
+      validate_dimensions(value, column_info[:type], dimensions || column_info[:dimensions])
 
-      validate_dimensions(value, dimensions || column_info[:dimensions])
-      validate_finite(value) if column_info[:type] != :bit
+      if !validate_finite(value, column_info[:type])
+        raise Error, "Values must be finite"
+      end
 
-      value = self.normalize(value) if normalize
-
-      # TODO fix
-      value = base_type(column_info).cast(value) if column_info[:type] == :sparsevec
+      value = self.normalize(value, column_info[:type]) if normalize
 
       value
     end
