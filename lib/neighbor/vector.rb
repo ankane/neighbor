@@ -11,8 +11,6 @@ module Neighbor
     def self.cast(value, dimensions:, normalize:, column_info:)
       value = base_type(column_info).cast(value)
 
-      # TODO check rank of cube
-
       # TODO fix
       value = value.to_a if value.is_a?(SparseVector)
 
@@ -23,10 +21,10 @@ module Neighbor
         return value
       end
 
+      value = value.map(&:to_f)
       raise Error, "Values must be finite" unless value.all?(&:finite?)
 
       if normalize
-        value = value.map(&:to_f)
         norm = Math.sqrt(value.sum { |v| v * v })
 
         # store zero vector as all zeros
