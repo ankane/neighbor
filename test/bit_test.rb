@@ -44,10 +44,10 @@ class BitTest < Minitest::Test
   end
 
   def test_invalid_dimensions
-    error = assert_raises(Neighbor::Error) do
+    error = assert_raises(ActiveRecord::RecordInvalid) do
       Item.create!(binary_embedding: "01")
     end
-    assert_equal "Expected 3 dimensions, not 2", error.message
+    assert_equal "Validation failed: Binary embedding must have 3 dimensions", error.message
   end
 
   def create_bit_items

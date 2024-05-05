@@ -73,23 +73,23 @@ class CubeTest < Minitest::Test
   end
 
   def test_invalid_dimensions
-    error = assert_raises(Neighbor::Error) do
+    error = assert_raises(ActiveRecord::RecordInvalid) do
       DimensionsItem.create!(cube_embedding: [1, 1])
     end
-    assert_equal "Expected 3 dimensions, not 2", error.message
+    assert_equal "Validation failed: Cube embedding must have 3 dimensions", error.message
   end
 
   def test_infinite
-    error = assert_raises(Neighbor::Error) do
+    error = assert_raises(ActiveRecord::RecordInvalid) do
       Item.create!(cube_embedding: [Float::INFINITY, 0, 0])
     end
-    assert_equal "Values must be finite", error.message
+    assert_equal "Validation failed: Cube embedding must have finite values", error.message
   end
 
   def test_nan
-    error = assert_raises(Neighbor::Error) do
+    error = assert_raises(ActiveRecord::RecordInvalid) do
       Item.create!(cube_embedding: [Float::NAN, 0, 0])
     end
-    assert_equal "Values must be finite", error.message
+    assert_equal "Validation failed: Cube embedding must have finite values", error.message
   end
 end

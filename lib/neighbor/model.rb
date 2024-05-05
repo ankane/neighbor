@@ -33,7 +33,16 @@ module Neighbor
           self.class.neighbor_attributes.each do |k, v|
             value = read_attribute(k)
             next if value.nil?
-            Neighbor::Utils.validate(value, dimensions: v[:dimensions], column_info: self.class.columns_hash[k.to_s])
+
+            column_info = self.class.columns_hash[k.to_s]
+            dimensions = v[:dimensions] || column_info&.limit
+
+            if !Neighbor::Utils.validate_dimensions(value, column_info&.type, dimensions).nil?
+              errors.add(k, "must have #{dimensions} dimensions")
+            end
+            if !Neighbor::Utils.validate_finite(value, column_info&.type)
+              errors.add(k, "must have finite values")
+            end
           end
         end
 

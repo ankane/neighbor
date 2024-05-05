@@ -6,6 +6,7 @@
 - Added support for composite primary keys
 - Changed `nearest_neighbors` to replace previous `order` scopes
 - Changed `normalize` option to use `before_save` callback
+- Changed dimensions and finite values checks to use Active Record validations
 - Fixed issue with `nearest_neighbors` scope overriding `select` values
 - Removed default attribute name
 - Dropped support for Ruby < 3.1
