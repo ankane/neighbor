@@ -64,4 +64,18 @@ class VectorTest < Minitest::Test
     end
     assert_equal "Expected 3 dimensions, not 2", error.message
   end
+
+  def test_infinite
+    error = assert_raises(Neighbor::Error) do
+      Item.create!(embedding: [Float::INFINITY, 0, 0])
+    end
+    assert_equal "Values must be finite", error.message
+  end
+
+  def test_nan
+    error = assert_raises(Neighbor::Error) do
+      Item.create!(embedding: [Float::NAN, 0, 0])
+    end
+    assert_equal "Values must be finite", error.message
+  end
 end
