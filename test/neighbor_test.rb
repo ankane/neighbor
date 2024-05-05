@@ -50,8 +50,8 @@ class NeighborTest < Minitest::Test
 
   def test_default_scope
     create_items(Item, :embedding)
-    assert_equal [3, 2, 1], DefaultScopeItem.nearest_neighbors(:embedding, [0, 0, 0], distance: "euclidean").pluck(:id)
-    assert_equal [3, 2], DefaultScopeItem.find(1).nearest_neighbors(:embedding, distance: "euclidean").pluck(:id)
+    assert_equal [1, 2, 3], DefaultScopeItem.nearest_neighbors(:embedding, [0, 0, 0], distance: "euclidean").pluck(:id)
+    assert_equal [2, 3], DefaultScopeItem.find(1).nearest_neighbors(:embedding, distance: "euclidean").pluck(:id)
   end
 
   def test_attribute_not_loaded

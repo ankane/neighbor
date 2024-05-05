@@ -50,7 +50,7 @@ class LargeDimensionsItem < ActiveRecord::Base
 end
 
 class DefaultScopeItem < ActiveRecord::Base
-  default_scope { order(id: :desc) }
+  default_scope { order(:id) }
   has_neighbors :embedding
   self.table_name = "items"
 end
