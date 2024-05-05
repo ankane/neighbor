@@ -79,7 +79,6 @@ module Neighbor
 
           quoted_attribute = "#{connection.quote_table_name(table_name)}.#{connection.quote_column_name(attribute_name)}"
 
-          column_attribute = klass.type_for_attribute(attribute_name)
           column_info = columns_hash[attribute_name.to_s]
           column_type = column_info&.type
 
@@ -125,6 +124,7 @@ module Neighbor
             raise Neighbor::Error, "Set normalize for cosine distance with cube"
           end
 
+          column_attribute = klass.type_for_attribute(attribute_name)
           vector = column_attribute.cast(vector)
           Neighbor::Utils.validate(vector, dimensions: dimensions, column_info: column_info)
           vector = Neighbor::Utils.normalize(vector, column_info: column_info) if normalize
