@@ -8,6 +8,14 @@ module Neighbor
       @attribute_name = attribute_name
     end
 
+    def self.validate_dimensions(value, dimensions)
+      raise Error, "Expected #{dimensions} dimensions, not #{value.size}" if dimensions && value.size != dimensions
+    end
+
+    def self.validate_finite(value)
+      raise Error, "Values must be finite" unless value.all?(&:finite?)
+    end
+
     def self.normalize(value)
       norm = Math.sqrt(value.sum { |v| v * v })
 
@@ -23,15 +31,8 @@ module Neighbor
       # TODO fix
       value = value.to_a if value.is_a?(SparseVector)
 
-      dimensions ||= column_info[:dimensions]
-      raise Error, "Expected #{dimensions} dimensions, not #{value.size}" if dimensions && value.size != dimensions
-
-      if column_info[:type] == :bit
-        return value
-      end
-
-      value = value.map(&:to_f)
-      raise Error, "Values must be finite" unless value.all?(&:finite?)
+      validate_dimensions(value, dimensions || column_info[:dimensions])
+      validate_finite(value) if column_info[:type] != :bit
 
       value = self.normalize(value) if normalize
 
