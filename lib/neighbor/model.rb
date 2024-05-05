@@ -54,7 +54,8 @@ module Neighbor
 
           quoted_attribute = "#{connection.quote_table_name(table_name)}.#{connection.quote_column_name(attribute_name)}"
 
-          column_type = klass.type_for_attribute(attribute_name).column_info[:type]
+          column_attribute = klass.type_for_attribute(attribute_name)
+          column_type = column_attribute.column_info[:type]
 
           operator =
             case column_type
@@ -98,7 +99,7 @@ module Neighbor
             raise Neighbor::Error, "Set normalize for cosine distance with cube"
           end
 
-          query = connection.quote(klass.type_for_attribute(attribute_name).serialize(vector))
+          query = connection.quote(column_attribute.serialize(vector))
           order = "#{quoted_attribute} #{operator} #{query}"
           if operator == "#"
             order = "bit_count(#{order})"
