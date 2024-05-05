@@ -26,6 +26,7 @@ module Neighbor
       raise Error, "Values must be finite" unless value.all?(&:finite?)
 
       if normalize
+        value = value.map(&:to_f)
         norm = Math.sqrt(value.sum { |v| v * v })
 
         # store zero vector as all zeros
