@@ -37,7 +37,7 @@ module Neighbor
           end
         end
 
-        # TODO move to normalizes when Rails 7.0 no longer supported
+        # TODO move to normalizes when Rails < 7.1 no longer supported
         before_save do
           self.class.neighbor_attributes.each do |k, v|
             next unless v[:normalize]
