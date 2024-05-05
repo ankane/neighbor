@@ -39,8 +39,7 @@ module Neighbor
     end
 
     def self.column_info(model, attribute_name)
-      attribute_name = attribute_name.to_s
-      column = model.columns.detect { |c| c.name == attribute_name }
+      column = model.columns_hash[attribute_name.to_s]
       {
         type: column.try(:type),
         dimensions: column.try(:limit)
