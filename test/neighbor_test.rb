@@ -1,6 +1,38 @@
 require_relative "test_helper"
 
 class NeighborTest < Minitest::Test
+  def test_schema
+    file = Tempfile.new
+    ActiveRecord::SchemaDumper.dump(ActiveRecord::Base.connection, file)
+    file.rewind
+    contents = file.read
+    refute_match "Could not dump table", contents
+    assert_match "t.cube", contents
+    assert_match "t.vector", contents
+    assert_match "t.halfvec", contents
+    assert_match "t.bit", contents
+    assert_match "t.sparsevec", contents
+    load(file.path)
+  end
+
+  def test_neighbor_attributes
+    assert_includes Item.neighbor_attributes.keys, :embedding
+  end
+
+  def test_no_attribute
+    error = assert_raises(ArgumentError) do
+      Item.has_neighbors
+    end
+    assert_equal "has_neighbors requires an attribute name", error.message
+  end
+
+  def test_already_defined
+    error = assert_raises(Neighbor::Error) do
+      Item.has_neighbors :embedding
+    end
+    assert_equal "has_neighbors already called for :embedding", error.message
+  end
+
   def test_relation
     create_items(Item, :embedding)
     assert_equal [2], Item.find(1).nearest_neighbors(:embedding, distance: "euclidean").where(id: 2).map(&:id)
@@ -68,34 +100,6 @@ class NeighborTest < Minitest::Test
     assert_equal "Invalid distance: bad", error.message
   end
 
-  def test_already_defined
-    error = assert_raises(Neighbor::Error) do
-      Item.has_neighbors :embedding
-    end
-    assert_equal "has_neighbors already called for :embedding", error.message
-  end
-
-  def test_schema
-    file = Tempfile.new
-    ActiveRecord::SchemaDumper.dump(ActiveRecord::Base.connection, file)
-    file.rewind
-    contents = file.read
-    refute_match "Could not dump table", contents
-    assert_match "t.cube", contents
-    assert_match "t.vector", contents
-    assert_match "t.halfvec", contents
-    assert_match "t.bit", contents
-    assert_match "t.sparsevec", contents
-    load(file.path)
-  end
-
-  def test_no_attribute
-    error = assert_raises(ArgumentError) do
-      Item.has_neighbors
-    end
-    assert_equal "has_neighbors requires an attribute name", error.message
-  end
-
   def test_invalid_attribute
     create_items(Item, :embedding)
     error = assert_raises(ArgumentError) do
@@ -109,9 +113,5 @@ class NeighborTest < Minitest::Test
       Item.nearest_neighbors(:bad, [0, 0, 0], distance: "euclidean")
     end
     assert_equal "Invalid attribute", error.message
-  end
-
-  def test_neighbor_attributes
-    assert_includes Item.neighbor_attributes.keys, :embedding
   end
 end
