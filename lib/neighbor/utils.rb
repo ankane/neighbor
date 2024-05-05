@@ -16,8 +16,16 @@ module Neighbor
       end
     end
 
-    def self.normalize(value, type)
-      raise Error, "Normalize not supported for type" unless [:cube, :vector, :halfvec].include?(type)
+    def self.validate(value, dimensions:, column_info:)
+      validate_dimensions(value, column_info&.type, dimensions || column_info&.limit)
+
+      if !validate_finite(value, column_info&.type)
+        raise Error, "Values must be finite"
+      end
+    end
+
+    def self.normalize(value, column_info:)
+      raise Error, "Normalize not supported for type" unless [:cube, :vector, :halfvec].include?(column_info&.type)
 
       norm = Math.sqrt(value.sum { |v| v * v })
 
@@ -25,18 +33,6 @@ module Neighbor
       # since NaN makes the distance always 0
       # could also throw error
       norm > 0 ? value.map { |v| v / norm } : value
-    end
-
-    def self.cast(value, dimensions:, normalize:, column_info:)
-      validate_dimensions(value, column_info&.type, dimensions || column_info&.limit)
-
-      if !validate_finite(value, column_info&.type)
-        raise Error, "Values must be finite"
-      end
-
-      value = self.normalize(value, column_info&.type) if normalize
-
-      value
     end
   end
 end

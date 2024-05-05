@@ -35,7 +35,8 @@ module Neighbor
             next if value.nil?
 
             column_info = self.class.columns_hash[k.to_s]
-            self[k] = Neighbor::Utils.cast(value, dimensions: v[:dimensions], normalize: v[:normalize], column_info: column_info)
+            Neighbor::Utils.validate(value, dimensions: v[:dimensions], column_info: column_info)
+            self[k] = Neighbor::Utils.normalize(value, column_info: column_info) if v[:normalize]
           end
         end
 
@@ -109,7 +110,9 @@ module Neighbor
           end
 
           vector = column_attribute.cast(vector)
-          vector = Neighbor::Utils.cast(vector, dimensions: dimensions, normalize: normalize, column_info: column_info)
+          Neighbor::Utils.validate(vector, dimensions: dimensions, column_info: column_info)
+          vector = Neighbor::Utils.normalize(vector, column_info: column_info) if normalize
+
           query = connection.quote(column_attribute.serialize(vector))
           order = "#{quoted_attribute} #{operator} #{query}"
           if operator == "#"
