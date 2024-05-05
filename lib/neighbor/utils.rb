@@ -2,7 +2,9 @@ module Neighbor
   module Utils
     def self.validate_dimensions(value, type, expected)
       dimensions = type == :sparsevec ? value.dimensions : value.size
-      raise Error, "Expected #{expected} dimensions, not #{dimensions}" if expected && dimensions != expected
+      if expected && dimensions != expected
+        "Expected #{expected} dimensions, not #{dimensions}"
+      end
     end
 
     def self.validate_finite(value, type)
@@ -17,7 +19,9 @@ module Neighbor
     end
 
     def self.validate(value, dimensions:, column_info:)
-      validate_dimensions(value, column_info&.type, dimensions || column_info&.limit)
+      if (message = validate_dimensions(value, column_info&.type, dimensions || column_info&.limit))
+        raise Error, message
+      end
 
       if !validate_finite(value, column_info&.type)
         raise Error, "Values must be finite"
