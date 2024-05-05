@@ -29,14 +29,21 @@ module Neighbor
 
         return if @neighbor_attributes.size != attribute_names.size
 
-        before_save do
+        validate do
           self.class.neighbor_attributes.each do |k, v|
             value = read_attribute(k)
             next if value.nil?
+            Neighbor::Utils.validate(value, dimensions: v[:dimensions], column_info: self.class.columns_hash[k.to_s])
+          end
+        end
 
-            column_info = self.class.columns_hash[k.to_s]
-            Neighbor::Utils.validate(value, dimensions: v[:dimensions], column_info: column_info)
-            self[k] = Neighbor::Utils.normalize(value, column_info: column_info) if v[:normalize]
+        # TODO move to normalizes when Rails 7.0 no longer supported
+        before_save do
+          self.class.neighbor_attributes.each do |k, v|
+            next unless v[:normalize]
+            value = read_attribute(k)
+            next if value.nil?
+            self[k] = Neighbor::Utils.normalize(value, column_info: self.class.columns_hash[k.to_s])
           end
         end
 
