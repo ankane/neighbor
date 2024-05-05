@@ -52,4 +52,11 @@ class SparsevecTest < Minitest::Test
     assert_equal [0, 2, 4], embedding.indices
     assert_equal [1, 2, 3], embedding.values
   end
+
+  def test_invalid_dimensions
+    error = assert_raises(Neighbor::Error) do
+      Item.create!(sparse_embedding: Neighbor::SparseVector.new(2, [], []))
+    end
+    assert_equal "Expected 3 dimensions, not 2", error.message
+  end
 end
