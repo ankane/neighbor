@@ -9,11 +9,10 @@ module Neighbor
     end
 
     def self.cast(value, dimensions:, normalize:, column_info:)
-      if column_info[:type] == :bit
-        value = value.to_s
-      else
-        value = value.to_a.map(&:to_f)
-      end
+      value = base_type(column_info).cast(value)
+
+      # TODO fix
+      value = value.to_a if value.is_a?(SparseVector)
 
       dimensions ||= column_info[:dimensions]
       raise Error, "Expected #{dimensions} dimensions, not #{value.size}" if dimensions && value.size != dimensions
@@ -30,9 +29,7 @@ module Neighbor
         # store zero vector as all zeros
         # since NaN makes the distance always 0
         # could also throw error
-
-        # safe to update in-place since earlier map dups
-        value.map! { |v| v / norm } if norm > 0
+        value = value.map { |v| v / norm } if norm > 0
       end
 
       value
@@ -66,6 +63,10 @@ module Neighbor
     private
 
     def base_type
+      self.class.base_type(column_info)
+    end
+
+    def self.base_type(column_info)
       case column_info[:type]
       when :vector
         Type::Vector.new
