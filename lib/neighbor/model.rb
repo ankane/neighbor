@@ -54,10 +54,10 @@ module Neighbor
 
           quoted_attribute = "#{connection.quote_table_name(table_name)}.#{connection.quote_column_name(attribute_name)}"
 
-          column_info = klass.type_for_attribute(attribute_name).column_info
+          column_type = klass.type_for_attribute(attribute_name).column_info[:type]
 
           operator =
-            case column_info[:type]
+            case column_type
             when :bit
               case distance
               when "hamming"
@@ -88,13 +88,13 @@ module Neighbor
                 "<->"
               end
             else
-              raise ArgumentError, "Unsupported type: #{column_info[:type]}"
+              raise ArgumentError, "Unsupported type: #{column_type}"
             end
 
           raise ArgumentError, "Invalid distance: #{distance}" unless operator
 
           # ensure normalize set (can be true or false)
-          if distance == "cosine" && column_info[:type] == :cube && normalize.nil?
+          if distance == "cosine" && column_type == :cube && normalize.nil?
             raise Neighbor::Error, "Set normalize for cosine distance with cube"
           end
 
@@ -110,9 +110,9 @@ module Neighbor
           # cosine distance = 1 - cosine similarity
           # this transformation doesn't change the order, so only needed for select
           neighbor_distance =
-            if column_info[:type] == :cube && distance == "cosine"
+            if column_type == :cube && distance == "cosine"
               "POWER(#{order}, 2) / 2.0"
-            elsif [:vector, :halfvec, :sparsevec].include?(column_info[:type]) && distance == "inner_product"
+            elsif [:vector, :halfvec, :sparsevec].include?(column_type) && distance == "inner_product"
               "(#{order}) * -1"
             else
               order
