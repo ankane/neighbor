@@ -12,9 +12,16 @@ module Neighbor
         super(value)
       end
 
-      def deserialize(value)
-        value = super
-        value[1..-1].split(",").map(&:to_f) unless value.nil?
+      private
+
+      def cast_value(value)
+        if value.is_a?(String)
+          value[1..-1].split(",").map(&:to_f)
+        elsif value.is_a?(Array)
+          value.map(&:to_f)
+        else
+          raise "can't cast #{value.class.name} to vector"
+        end
       end
     end
   end

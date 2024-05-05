@@ -11,6 +11,8 @@ module Neighbor
     def self.cast(value, dimensions:, normalize:, column_info:)
       value = base_type(column_info).cast(value)
 
+      # TODO check rank of cube
+
       # TODO fix
       value = value.to_a if value.is_a?(SparseVector)
 
@@ -31,6 +33,9 @@ module Neighbor
         # could also throw error
         value = value.map { |v| v / norm } if norm > 0
       end
+
+      # TODO fix
+      value = base_type(column_info).cast(value) if column_info[:type] == :sparsevec
 
       value
     end

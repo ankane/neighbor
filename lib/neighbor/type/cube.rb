@@ -16,18 +16,23 @@ module Neighbor
         super(value)
       end
 
-      def deserialize(value)
-        value = super
-        unless value.nil?
+      private
+
+      def cast_value(value)
+        if value.is_a?(Array)
+          value
+        elsif value.is_a?(Numeric)
+          [value]
+        elsif value.is_a?(String)
           if value.include?("),(")
             value[1..-1].split("),(").map { |v| v.split(",").map(&:to_f) }
           else
             value[1..-1].split(",").map(&:to_f)
           end
+        else
+          raise "can't cast #{value.class.name} to cube"
         end
       end
-
-      private
 
       def serialize_point(value)
         "(#{value.map(&:to_f).join(", ")})"

@@ -6,18 +6,18 @@ module Neighbor
       end
 
       def serialize(value)
-        if value.is_a?(Array)
-          value = SparseVector.from_dense(value)
-        end
         if value.is_a?(SparseVector)
           value = "{#{value.indices.zip(value.values).map { |i, v| "#{i + 1}:#{v}" }.join(",")}}/#{value.dimensions}"
         end
         super(value)
       end
 
-      def deserialize(value)
-        value = super
-        unless value.nil?
+      private
+
+      def cast_value(value)
+        if value.is_a?(SparseVector)
+          value
+        elsif value.is_a?(String)
           elements, dimensions = value.split("/")
           indices = []
           values = []
@@ -27,6 +27,10 @@ module Neighbor
             values << v.to_f
           end
           SparseVector.new(dimensions.to_i, indices, values)
+        elsif value.is_a?(Array)
+          value = SparseVector.from_dense(value)
+        else
+          raise "can't cast #{value.class.name} to sparsevec"
         end
       end
     end
