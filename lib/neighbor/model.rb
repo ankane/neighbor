@@ -55,7 +55,7 @@ module Neighbor
           quoted_attribute = "#{connection.quote_table_name(table_name)}.#{connection.quote_column_name(attribute_name)}"
 
           column_attribute = klass.type_for_attribute(attribute_name)
-          column_type = column_attribute.column_info[:type]
+          column_type = columns_hash[attribute_name.to_s]&.type
 
           operator =
             case column_type
