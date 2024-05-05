@@ -5,6 +5,7 @@
 - Added deserialization for `cube` and `vector` columns without `has_neighbor`
 - Added support for composite primary keys
 - Changed `nearest_neighbors` to replace previous `order` scopes
+- Changed `normalize` option to use `before_save` callback
 - Fixed issue with `nearest_neighbors` scope overriding `select` values
 - Removed default attribute name
 - Dropped support for Ruby < 3.1
