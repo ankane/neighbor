@@ -16,7 +16,7 @@ class NeighborTest < Minitest::Test
   end
 
   def test_neighbor_attributes
-    assert_includes Item.neighbor_attributes.keys, :embedding
+    assert_equal Item.neighbor_attributes.keys.sort, [:embedding, :cube_embedding, :half_embedding, :binary_embedding, :sparse_embedding].sort
   end
 
   def test_no_attribute
