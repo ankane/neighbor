@@ -8,6 +8,15 @@ module Neighbor
       @attribute_name = attribute_name
     end
 
+    def self.normalize(value)
+      norm = Math.sqrt(value.sum { |v| v * v })
+
+      # store zero vector as all zeros
+      # since NaN makes the distance always 0
+      # could also throw error
+      norm > 0 ? value.map { |v| v / norm } : value
+    end
+
     def self.cast(value, dimensions:, normalize:, column_info:)
       value = base_type(column_info).cast(value)
 
@@ -24,14 +33,7 @@ module Neighbor
       value = value.map(&:to_f)
       raise Error, "Values must be finite" unless value.all?(&:finite?)
 
-      if normalize
-        norm = Math.sqrt(value.sum { |v| v * v })
-
-        # store zero vector as all zeros
-        # since NaN makes the distance always 0
-        # could also throw error
-        value = value.map { |v| v / norm } if norm > 0
-      end
+      value = self.normalize(value) if normalize
 
       # TODO fix
       value = base_type(column_info).cast(value) if column_info[:type] == :sparsevec
