@@ -55,6 +55,9 @@ class DefaultScopeItem < ActiveRecord::Base
   self.table_name = "items"
 end
 
+# ensure has_neighbors does not cause model schema to load
+raise "has_neighbors loading model schema early" if Item.send(:schema_loaded?)
+
 class Minitest::Test
   def setup
     Item.delete_all
