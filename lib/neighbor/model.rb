@@ -122,7 +122,7 @@ module Neighbor
           select_columns = select_values.any? ? [] : column_names
           select(*select_columns, "#{neighbor_distance} AS neighbor_distance")
             .where.not(attribute_name => nil)
-            .order(Arel.sql(order))
+            .reorder(Arel.sql(order))
         }
 
         def nearest_neighbors(attribute_name, **options)

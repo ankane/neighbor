@@ -3,6 +3,7 @@
 - Added support for `halfvec` and `sparsevec` types
 - Added support for `taxicab`, `hamming`, and `jaccard` distances with `vector` extension
 - Added deserialization for `cube` and `vector` columns without `has_neighbor`
+- Changed `nearest_neighbors` to replace previous `order` scopes
 - Fixed issue with `nearest_neighbors` scope overriding `select` values
 - Removed default attribute name
 - Dropped support for Ruby < 3.1
