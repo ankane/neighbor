@@ -38,23 +38,19 @@ module Neighbor
     def self.cast(value, dimensions:, normalize:, column_info:)
       value = base_type(column_info).cast(value)
 
-      validate_dimensions(value, column_info[:type], dimensions || column_info[:dimensions])
+      validate_dimensions(value, column_info&.type, dimensions || column_info&.limit)
 
-      if !validate_finite(value, column_info[:type])
+      if !validate_finite(value, column_info&.type)
         raise Error, "Values must be finite"
       end
 
-      value = self.normalize(value, column_info[:type]) if normalize
+      value = self.normalize(value, column_info&.type) if normalize
 
       value
     end
 
     def self.column_info(model, attribute_name)
-      column = model.columns_hash[attribute_name.to_s]
-      {
-        type: column.try(:type),
-        dimensions: column.try(:limit)
-      }
+      model.columns_hash[attribute_name.to_s]
     end
 
     # need to be careful to avoid loading column info before needed
@@ -81,7 +77,7 @@ module Neighbor
     end
 
     def self.base_type(column_info)
-      case column_info[:type]
+      case column_info&.type
       when :vector
         Type::Vector.new
       when :halfvec
@@ -93,7 +89,7 @@ module Neighbor
       when :bit
         ActiveRecord::ConnectionAdapters::PostgreSQL::OID::Bit.new
       else
-        raise "Unsupported type: #{column_info[:type]}"
+        raise "Unsupported type: #{column_info&.type}"
       end
     end
   end

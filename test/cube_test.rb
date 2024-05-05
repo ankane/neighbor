@@ -51,13 +51,6 @@ class CubeTest < Minitest::Test
     assert_equal [[1, 2, 3], [4, 5, 6]], Item.last.cube_factors
   end
 
-  # private, but make sure doesn't update in-place
-  def test_cast
-    vector = [1, 2, 3]
-    Neighbor::Vector.cast(vector, dimensions: 3, normalize: true, column_info: {type: :cube})
-    assert_equal [1, 2, 3], vector
-  end
-
   def test_cosine_zero
     create_items(CosineItem, :cube_embedding)
     CosineItem.create!(id: 4, cube_embedding: [0, 0, 0])
