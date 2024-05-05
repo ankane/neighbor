@@ -5,12 +5,12 @@ module Neighbor
         :cube
       end
 
-      def cast(value)
+      def serialize(value)
         if value.is_a?(Array)
           if value.first.is_a?(Array)
-            value = value.map { |v| cast_point(v) }.join(", ")
+            value = value.map { |v| serialize_point(v) }.join(", ")
           else
-            value = cast_point(value)
+            value = serialize_point(value)
           end
         end
         super(value)
@@ -29,7 +29,7 @@ module Neighbor
 
       private
 
-      def cast_point(value)
+      def serialize_point(value)
         "(#{value.map(&:to_f).join(", ")})"
       end
     end

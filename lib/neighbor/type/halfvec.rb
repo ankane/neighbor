@@ -5,7 +5,7 @@ module Neighbor
         :halfvec
       end
 
-      def cast(value)
+      def serialize(value)
         if value.is_a?(Array)
           value = "[#{value.join(",")}]"
         end

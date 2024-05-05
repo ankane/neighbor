@@ -5,7 +5,7 @@ module Neighbor
         :sparsevec
       end
 
-      def cast(value)
+      def serialize(value)
         if value.is_a?(Array)
           value = SparseVector.from_dense(value)
         end

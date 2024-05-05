@@ -56,7 +56,7 @@ module Neighbor
     end
 
     def serialize(value)
-      base_type.cast(cast(value)) unless value.nil?
+      base_type.serialize(cast(value)) unless value.nil?
     end
 
     def deserialize(value)
