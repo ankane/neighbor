@@ -57,4 +57,11 @@ class VectorTest < Minitest::Test
     end
     assert_match "cannot have more than 16000 dimensions", error.message
   end
+
+  def test_invalid_dimensions
+    error = assert_raises(Neighbor::Error) do
+      Item.create!(embedding: [1, 1])
+    end
+    assert_equal "Expected 3 dimensions, not 2", error.message
+  end
 end

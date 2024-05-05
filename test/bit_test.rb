@@ -43,6 +43,13 @@ class BitTest < Minitest::Test
     assert_elements_in_delta [0.5, 2/3.0, 1], result.map(&:neighbor_distance)
   end
 
+  def test_invalid_dimensions
+    error = assert_raises(Neighbor::Error) do
+      Item.create!(binary_embedding: "01")
+    end
+    assert_equal "Expected 3 dimensions, not 2", error.message
+  end
+
   def create_bit_items
     Item.create!(id: 1, binary_embedding: "000")
     Item.create!(id: 2, binary_embedding: "101")

@@ -36,4 +36,11 @@ class HalfvecTest < Minitest::Test
     Item.create!(half_factors: [1, 2, 3])
     assert_equal [1, 2, 3], Item.last.half_factors
   end
+
+  def test_invalid_dimensions
+    error = assert_raises(Neighbor::Error) do
+      Item.create!(half_embedding: [1, 1])
+    end
+    assert_equal "Expected 3 dimensions, not 2", error.message
+  end
 end

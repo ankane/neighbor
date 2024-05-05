@@ -68,13 +68,6 @@ class NeighborTest < Minitest::Test
     assert_equal "Invalid distance: bad", error.message
   end
 
-  def test_invalid_dimensions
-    error = assert_raises(Neighbor::Error) do
-      DimensionsItem.create!(embedding: [1, 1])
-    end
-    assert_equal "Expected 3 dimensions, not 2", error.message
-  end
-
   def test_infinite
     error = assert_raises(Neighbor::Error) do
       Item.create!(embedding: [Float::INFINITY, 0, 0])
