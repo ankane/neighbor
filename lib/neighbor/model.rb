@@ -25,11 +25,19 @@ module Neighbor
         attribute_names.each do |attribute_name|
           raise Error, "has_neighbors already called for #{attribute_name.inspect}" if neighbor_attributes[attribute_name]
           @neighbor_attributes[attribute_name] = {dimensions: dimensions, normalize: normalize}
-
-          attribute attribute_name, Neighbor::Vector.new(dimensions: dimensions, normalize: normalize, model: self, attribute_name: attribute_name)
         end
 
         return if @neighbor_attributes.size != attribute_names.size
+
+        before_save do
+          self.class.neighbor_attributes.each do |k, v|
+            value = read_attribute(k)
+            next if value.nil?
+
+            column_info = self.class.columns_hash[k.to_s]
+            self[k] = Neighbor::Utils.cast(value, dimensions: v[:dimensions], normalize: v[:normalize], column_info: column_info)
+          end
+        end
 
         scope :nearest_neighbors, ->(attribute_name, vector = nil, options = nil) {
           # cannot use keyword arguments with scope with Ruby 3.2 and Active Record 6.1
@@ -55,7 +63,8 @@ module Neighbor
           quoted_attribute = "#{connection.quote_table_name(table_name)}.#{connection.quote_column_name(attribute_name)}"
 
           column_attribute = klass.type_for_attribute(attribute_name)
-          column_type = columns_hash[attribute_name.to_s]&.type
+          column_info = columns_hash[attribute_name.to_s]
+          column_type = column_info&.type
 
           operator =
             case column_type
@@ -99,6 +108,8 @@ module Neighbor
             raise Neighbor::Error, "Set normalize for cosine distance with cube"
           end
 
+          vector = column_attribute.cast(vector)
+          vector = Neighbor::Utils.cast(vector, dimensions: dimensions, normalize: normalize, column_info: column_info)
           query = connection.quote(column_attribute.serialize(vector))
           order = "#{quoted_attribute} #{operator} #{query}"
           if operator == "#"

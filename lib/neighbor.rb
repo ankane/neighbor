@@ -3,6 +3,7 @@ require "active_support"
 
 # modules
 require_relative "neighbor/sparse_vector"
+require_relative "neighbor/utils"
 require_relative "neighbor/version"
 
 module Neighbor
@@ -30,7 +31,6 @@ end
 
 ActiveSupport.on_load(:active_record) do
   require_relative "neighbor/model"
-  require_relative "neighbor/vector"
   require_relative "neighbor/type/cube"
   require_relative "neighbor/type/halfvec"
   require_relative "neighbor/type/sparsevec"
