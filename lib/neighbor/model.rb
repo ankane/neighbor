@@ -149,6 +149,8 @@ module Neighbor
               order
             end
 
+          order = 'neighbor_distance' if order == neighbor_distance
+
           # for select, use column_names instead of * to account for ignored columns
           select_columns = select_values.any? ? [] : column_names
           select(*select_columns, "#{neighbor_distance} AS neighbor_distance")
