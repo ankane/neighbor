@@ -3,7 +3,8 @@ require_relative "test_helper"
 class NeighborTest < Minitest::Test
   def test_schema
     file = Tempfile.new
-    ActiveRecord::SchemaDumper.dump(ActiveRecord::Base.connection, file)
+    connection = ActiveRecord::VERSION::STRING.to_f >= 7.2 ? ActiveRecord::Base.connection_pool : ActiveRecord::Base.connection
+    ActiveRecord::SchemaDumper.dump(connection, file)
     file.rewind
     contents = file.read
     refute_match "Could not dump table", contents
