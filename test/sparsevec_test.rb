@@ -47,8 +47,9 @@ class SparsevecTest < Minitest::Test
   end
 
   def test_from_dense
-    embedding = Neighbor::SparseVector.from_dense([1, 0, 2, 0, 3])
-    assert_equal 5, embedding.dimensions
+    embedding = Neighbor::SparseVector.from_dense([1, 0, 2, 0, 3, 0])
+    assert_equal [1, 0, 2, 0, 3, 0], embedding.to_a
+    assert_equal 6, embedding.dimensions
     assert_equal [0, 2, 4], embedding.indices
     assert_equal [1, 2, 3], embedding.values
   end
