@@ -33,13 +33,13 @@ movies = []
 recommender.item_ids.each do |item_id|
   movies << {name: item_id, factors: recommender.item_factors(item_id)}
 end
-Movie.insert_all!(movies) # use create! for Active Record < 6
+Movie.insert_all!(movies)
 
 users = []
 recommender.user_ids.each do |user_id|
   users << {id: user_id, factors: recommender.user_factors(user_id)}
 end
-User.insert_all!(users) # use create! for Active Record < 6
+User.insert_all!(users)
 
 user = User.find(123)
 pp Movie.nearest_neighbors(:factors, user.factors, distance: "inner_product").first(5).map(&:name)
