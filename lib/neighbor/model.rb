@@ -56,13 +56,9 @@ module Neighbor
           end
         end
 
-        scope :nearest_neighbors, ->(attribute_name, vector = nil, options = nil) {
-          # cannot use keyword arguments with scope with Ruby 3.2 and Active Record 6.1
-          # https://github.com/rails/rails/issues/46934
-          if options.nil? && vector.is_a?(Hash)
-            options = vector
-            vector = nil
-          end
+        # cannot use keyword arguments with scope with Ruby 3.2 and Active Record 6.1
+        # https://github.com/rails/rails/issues/46934
+        scope :nearest_neighbors, ->(attribute_name, vector, options = nil) {
           raise ArgumentError, "missing keyword: :distance" unless options.is_a?(Hash) && options.key?(:distance)
           distance = options.delete(:distance)
           raise ArgumentError, "unknown keywords: #{options.keys.map(&:inspect).join(", ")}" if options.any?
