@@ -25,6 +25,12 @@ ActiveRecord::Schema.define do
     t.sparsevec :sparse_embedding, limit: 3
     t.sparsevec :sparse_factors, limit: 5
   end
+
+  create_table :products, primary_key: [:store_id, :name], force: true do |t|
+    t.integer :store_id
+    t.string :name
+    t.vector :embedding, limit: 3
+  end
 end
 
 class Item < ActiveRecord::Base
@@ -53,6 +59,10 @@ class DefaultScopeItem < ActiveRecord::Base
   default_scope { order(:id) }
   has_neighbors :embedding
   self.table_name = "items"
+end
+
+class Product < ActiveRecord::Base
+  has_neighbors :embedding
 end
 
 # ensure has_neighbors does not cause model schema to load

@@ -16,6 +16,17 @@ class NeighborTest < Minitest::Test
     load(file.path)
   end
 
+  def test_composite_primary_key
+    skip if ActiveRecord::VERSION::STRING.to_f < 7.1
+
+    Product.create!(id: [1, "A"], embedding: [1, 1, 1])
+    Product.create!(id: [1, "B"], embedding: [2, 2, 2])
+    Product.create!(id: [2, "A"], embedding: [1, 1, 2])
+
+    result = Product.first.nearest_neighbors(:embedding, distance: "euclidean").first(3)
+    assert_equal [[2, "A"], [1, "B"]], result.map(&:id)
+  end
+
   def test_neighbor_attributes
     assert_equal Item.neighbor_attributes.keys.sort, [:embedding, :cube_embedding, :half_embedding, :binary_embedding, :sparse_embedding].sort
   end
