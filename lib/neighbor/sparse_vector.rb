@@ -9,7 +9,7 @@ module Neighbor
     end
 
     def to_a
-      a = [0.0] * dimensions
+      a = Array.new(dimensions, 0.0)
       @indices.zip(@values) do |i, v|
         a[i] = v
       end
