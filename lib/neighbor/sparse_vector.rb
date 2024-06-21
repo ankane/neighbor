@@ -20,7 +20,7 @@ module Neighbor
       a = a.to_a
       dimensions = a.size
       indices = a.filter_map.with_index { |v, i| v != 0 ? i : nil }
-      values = indices.map { |i| a[i] }
+      values = indices.map { |i| a[i].to_f }
       SparseVector.new(dimensions, indices, values)
     end
   end
