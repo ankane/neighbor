@@ -18,17 +18,9 @@ module Neighbor
         if value.is_a?(SparseVector)
           value
         elsif value.is_a?(String)
-          elements, dimensions = value.split("/")
-          indices = []
-          values = []
-          elements[1..-2].split(",").each do |e|
-            i, v = e.split(":")
-            indices << i.to_i - 1
-            values << v.to_f
-          end
-          SparseVector.new(dimensions.to_i, indices, values)
+          SparseVector.from_text(value)
         elsif value.is_a?(Array)
-          value = SparseVector.from_dense(value)
+          value = SparseVector.new(value)
         else
           raise "can't cast #{value.class.name} to sparsevec"
         end

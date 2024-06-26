@@ -41,13 +41,13 @@ class SparsevecTest < Minitest::Test
     factors = Item.last.sparse_factors
     assert_equal [0, 4, 0, 5, 0], factors.to_a
 
-    Item.create!(sparse_factors: Neighbor::SparseVector.new(5, [1, 2, 4], [6, 7, 8]))
+    Item.create!(sparse_factors: Neighbor::SparseVector.new({1 => 6, 2 => 7, 4 => 8}, 5))
     factors = Item.last.sparse_factors
     assert_equal [0, 6, 7, 0, 8], factors.to_a
   end
 
   def test_from_dense
-    embedding = Neighbor::SparseVector.from_dense([1, 0, 2, 0, 3, 0])
+    embedding = Neighbor::SparseVector.new([1, 0, 2, 0, 3, 0])
     assert_equal [1, 0, 2, 0, 3, 0], embedding.to_a
     assert_equal 6, embedding.dimensions
     assert_equal [0, 2, 4], embedding.indices
@@ -56,7 +56,7 @@ class SparsevecTest < Minitest::Test
 
   def test_invalid_dimensions
     error = assert_raises(ActiveRecord::RecordInvalid) do
-      Item.create!(sparse_embedding: Neighbor::SparseVector.new(2, [], []))
+      Item.create!(sparse_embedding: Neighbor::SparseVector.new({}, 2))
     end
     assert_equal "Validation failed: Sparse embedding must have 3 dimensions", error.message
   end
