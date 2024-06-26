@@ -98,6 +98,17 @@ class NeighborTest < Minitest::Test
     assert_equal [3, 2], DefaultScopeItem.find(1).nearest_neighbors(:embedding, distance: "euclidean").pluck(:id)
   end
 
+  def test_pluck
+    create_items(Item, :embedding)
+    assert_equal [1, 3, 2], Item.nearest_neighbors(:embedding, [0, 0, 0], distance: "euclidean").pluck(:id)
+  end
+
+  def test_reselect
+    create_items(Item, :embedding)
+    result = Item.nearest_neighbors(:embedding, [0, 0, 0], distance: "euclidean").reselect(:id).first(5)
+    assert_equal [1, 3, 2], result.map(&:id)
+  end
+
   def test_attribute_not_loaded
     create_items(Item, :embedding)
     assert_raises(ActiveModel::MissingAttributeError) do
