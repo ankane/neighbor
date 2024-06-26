@@ -1,4 +1,4 @@
-## 0.4.0 (unreleased)
+## 0.4.0 (2024-06-25)
 
 - Added support for `halfvec` and `sparsevec` types
 - Added support for `taxicab`, `hamming`, and `jaccard` distances with `vector` extension
