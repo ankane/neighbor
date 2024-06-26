@@ -7,7 +7,7 @@ module Neighbor
 
       def serialize(value)
         if value.is_a?(Array)
-          value = "[#{value.join(",")}]"
+          value = "[#{value.map(&:to_f).join(",")}]"
         end
         super(value)
       end

@@ -7,7 +7,7 @@ module Neighbor
 
       def serialize(value)
         if value.is_a?(SparseVector)
-          value = "{#{value.indices.zip(value.values).map { |i, v| "#{i + 1}:#{v}" }.join(",")}}/#{value.dimensions}"
+          value = "{#{value.indices.zip(value.values).map { |i, v| "#{i.to_i + 1}:#{v.to_f}" }.join(",")}}/#{value.dimensions.to_i}"
         end
         super(value)
       end
