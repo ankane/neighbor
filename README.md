@@ -76,9 +76,11 @@ Supported values are:
 
 - `euclidean`
 - `cosine`
-- `taxicab` (cube only)
+- `taxicab`
 - `chebyshev` (cube only)
 - `inner_product` (vector only)
+- `hamming` (vector only)
+- `jaccard` (vector only)
 
 For cosine distance with cube, vectors must be normalized before being stored.
 
