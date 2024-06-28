@@ -139,6 +139,42 @@ Or the number of probes with IVFFlat
 Item.connection.execute("SET ivfflat.probes = 3")
 ```
 
+## Half-Precision Vectors
+
+Use the `halfvec` type to store half-precision vectors
+
+```ruby
+class AddEmbeddingToItems < ActiveRecord::Migration[7.1]
+  def change
+    add_column :items, :embedding, :halfvec, limit: 3 # dimensions
+  end
+end
+```
+
+## Binary Vectors
+
+Use the `bit` type to store binary vectors
+
+```ruby
+class AddEmbeddingToItems < ActiveRecord::Migration[7.1]
+  def change
+    add_column :items, :embedding, :bit, limit: 3 # dimensions
+  end
+end
+```
+
+## Sparse Vectors
+
+Use the `sparsevec` type to store sparse vectors
+
+```ruby
+class AddEmbeddingToItems < ActiveRecord::Migration[7.1]
+  def change
+    add_column :items, :embedding, :sparsevec, limit: 3 # dimensions
+  end
+end
+```
+
 ## Examples
 
 - [OpenAI Embeddings](#openai-embeddings)
