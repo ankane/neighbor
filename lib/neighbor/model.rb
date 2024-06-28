@@ -50,6 +50,7 @@ module Neighbor
         before_save do
           self.class.neighbor_attributes.each do |k, v|
             next unless v[:normalize]
+            next unless attribute_changed?(k)
             value = read_attribute(k)
             next if value.nil?
             self[k] = Neighbor::Utils.normalize(value, column_info: self.class.columns_hash[k.to_s])
