@@ -76,17 +76,6 @@ module Neighbor
 
           quoted_attribute = "#{connection.quote_table_name(table_name)}.#{connection.quote_column_name(attribute_name)}"
 
-          if !precision.nil?
-            case precision.to_s
-            when "half"
-              cast_dimensions = dimensions || columns_hash[attribute_name.to_s]&.limit
-              raise ArgumentError, "Unknown dimensions" unless cast_dimensions
-              quoted_attribute += "::halfvec(%d)" % cast_dimensions.to_i
-            else
-              raise ArgumentError, "Invalid precision"
-            end
-          end
-
           column_info = columns_hash[attribute_name.to_s]
           column_type = column_info&.type
 
@@ -138,6 +127,18 @@ module Neighbor
           vector = Neighbor::Utils.normalize(vector, column_info: column_info) if normalize
 
           query = connection.quote(column_attribute.serialize(vector))
+
+          if !precision.nil?
+            case precision.to_s
+            when "half"
+              cast_dimensions = dimensions || column_info&.limit
+              raise ArgumentError, "Unknown dimensions" unless cast_dimensions
+              quoted_attribute += "::halfvec(%d)" % cast_dimensions.to_i
+            else
+              raise ArgumentError, "Invalid precision"
+            end
+          end
+
           order = "#{quoted_attribute} #{operator} #{query}"
           if operator == "#"
             order = "bit_count(#{order})"
