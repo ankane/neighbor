@@ -40,6 +40,13 @@ class VectorTest < Minitest::Test
     assert_index_scan relation
   end
 
+  def test_invalid_precision
+    error = assert_raises(ArgumentError) do
+      Item.nearest_neighbors(:embedding, [1, 2, 3], distance: "euclidean", precision: "bad")
+    end
+    assert_equal "Invalid precision", error.message
+  end
+
   def test_type
     Item.create!(factors: "[1,2,3]")
     assert_equal [1, 2, 3], Item.last.factors
