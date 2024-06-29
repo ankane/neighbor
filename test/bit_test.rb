@@ -43,6 +43,10 @@ class BitTest < Minitest::Test
     assert_elements_in_delta [0.5, 2/3.0, 1], result.map(&:neighbor_distance)
   end
 
+  def test_index_scan
+    assert_index_scan Item.nearest_neighbors(:binary_embedding, "101", distance: "hamming")
+  end
+
   def test_invalid_dimensions
     error = assert_raises(ActiveRecord::RecordInvalid) do
       Item.create!(binary_embedding: "01")

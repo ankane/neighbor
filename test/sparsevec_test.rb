@@ -29,6 +29,10 @@ class SparsevecTest < Minitest::Test
     assert_elements_in_delta [6, 4], result.map(&:neighbor_distance)
   end
 
+  def test_index_scan
+    assert_index_scan Item.nearest_neighbors(:sparse_embedding, [0, 0, 0], distance: "cosine")
+  end
+
   def test_type
     Item.create!(sparse_factors: "{1:1,3:2,5:3}/5")
     factors = Item.last.sparse_factors

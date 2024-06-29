@@ -37,6 +37,10 @@ class CubeTest < Minitest::Test
     assert_elements_in_delta [1, 1], result.map(&:neighbor_distance)
   end
 
+  def test_index_scan
+    assert_index_scan Item.nearest_neighbors(:cube_embedding, [0, 0, 0], distance: "euclidean")
+  end
+
   def test_type
     Item.create!(cube_factors: "(1,2,3)")
     assert_equal [1, 2, 3], Item.last.cube_factors

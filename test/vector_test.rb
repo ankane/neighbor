@@ -29,6 +29,10 @@ class VectorTest < Minitest::Test
     assert_elements_in_delta [6, 4], result.map(&:neighbor_distance)
   end
 
+  def test_index_scan
+    assert_index_scan Item.nearest_neighbors(:embedding, [0, 0, 0], distance: "cosine")
+  end
+
   def test_type
     Item.create!(factors: "[1,2,3]")
     assert_equal [1, 2, 3], Item.last.factors
