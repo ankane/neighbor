@@ -34,7 +34,10 @@ class VectorTest < Minitest::Test
   end
 
   def test_half_precision
-    assert_index_scan Item.nearest_neighbors(:embedding, [0, 0, 0], distance: "euclidean", precision: "half")
+    create_items(Item, :embedding)
+    relation = Item.nearest_neighbors(:embedding, [0, 0, 0], distance: "euclidean", precision: "half")
+    assert_equal [1, 3, 2], relation.pluck(:id)
+    assert_index_scan relation
   end
 
   def test_type
