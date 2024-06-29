@@ -151,6 +151,24 @@ class AddEmbeddingToItems < ActiveRecord::Migration[7.1]
 end
 ```
 
+## Half-Precision Indexing
+
+Index vectors at half precision for smaller indexes
+
+```ruby
+class AddIndexToItemsEmbedding < ActiveRecord::Migration[7.1]
+  def change
+    add_index :items, "(embedding::halfvec(3)) vector_l2_ops", using: :hnsw
+  end
+end
+```
+
+Get the nearest neighbors [unreleased]
+
+```ruby
+Item.nearest_neighbors(:embedding, [0.9, 1.3, 1.1], distance: "euclidean", precision: "half").first(5)
+```
+
 ## Binary Vectors
 
 Use the `bit` type to store binary vectors

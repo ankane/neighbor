@@ -30,6 +30,7 @@ ActiveRecord::Schema.define do
   add_index :items, :half_embedding, using: :hnsw, opclass: :halfvec_cosine_ops
   add_index :items, :binary_embedding, using: :hnsw, opclass: :bit_hamming_ops
   add_index :items, :sparse_embedding, using: :hnsw, opclass: :sparsevec_cosine_ops
+  add_index :items, "(embedding::halfvec(3)) halfvec_l2_ops", using: :hnsw
 
   create_table :products, primary_key: [:store_id, :name], force: true do |t|
     t.integer :store_id

@@ -33,6 +33,10 @@ class VectorTest < Minitest::Test
     assert_index_scan Item.nearest_neighbors(:embedding, [0, 0, 0], distance: "cosine")
   end
 
+  def test_half_precision
+    assert_index_scan Item.nearest_neighbors(:embedding, [0, 0, 0], distance: "euclidean", precision: "half")
+  end
+
   def test_type
     Item.create!(factors: "[1,2,3]")
     assert_equal [1, 2, 3], Item.last.factors

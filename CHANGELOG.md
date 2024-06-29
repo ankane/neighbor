@@ -1,3 +1,7 @@
+## 0.4.1 (unreleased)
+
+- Added `precision` option
+
 ## 0.4.0 (2024-06-25)
 
 - Added support for `halfvec` and `sparsevec` types
