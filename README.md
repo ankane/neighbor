@@ -251,7 +251,7 @@ def fetch_embeddings(input)
   }
   data = {
     input: input,
-    model: "text-embedding-ada-002"
+    model: "text-embedding-3-small"
   }
 
   response = Net::HTTP.post(URI(url), data.to_json, headers).tap(&:value)
