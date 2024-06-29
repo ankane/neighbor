@@ -335,18 +335,6 @@ movie.nearest_neighbors(:factors, distance: "cosine").first(5).map(&:name)
 
 See the complete code for [cube](examples/disco_item_recs_cube.rb) and [vector](examples/disco_item_recs_vector.rb)
 
-## Upgrading
-
-### 0.2.0
-
-The `distance` option has been moved from `has_neighbors` to `nearest_neighbors`, and there is no longer a default. If you use cosine distance, set:
-
-```ruby
-class Item < ApplicationRecord
-  has_neighbors normalize: true
-end
-```
-
 ## History
 
 View the [changelog](https://github.com/ankane/neighbor/blob/master/CHANGELOG.md)
