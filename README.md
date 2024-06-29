@@ -211,6 +211,13 @@ class AddEmbeddingToItems < ActiveRecord::Migration[7.1]
 end
 ```
 
+Get the nearest neighbors
+
+```ruby
+embedding = Neighbor::SparseVector.new({0 => 0.9, 1 => 1.3, 2 => 1.1}, 3)
+Item.nearest_neighbors(:embedding, embedding, distance: "euclidean").first(5)
+```
+
 ## Examples
 
 - [OpenAI Embeddings](#openai-embeddings)
