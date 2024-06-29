@@ -187,6 +187,18 @@ Get the nearest neighbors by Hamming distance
 Item.nearest_neighbors(:embedding, "101", distance: "hamming").first(5)
 ```
 
+## Binary Quantization
+
+Use expression indexing for binary quantization
+
+```ruby
+class AddIndexToItemsEmbedding < ActiveRecord::Migration[7.1]
+  def change
+    add_index :items, "(binary_quantize(embedding)::bit(3)) bit_hamming_ops", using: :hnsw
+  end
+end
+```
+
 ## Sparse Vectors
 
 Use the `sparsevec` type to store sparse vectors
