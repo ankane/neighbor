@@ -100,7 +100,7 @@ class Minitest::Test
   def assert_index_scan(relation)
     Item.transaction do
       Item.connection.execute("SET LOCAL enable_seqscan = off")
-      assert_match "Index Scan", relation.limit(5).explain
+      assert_match "Index Scan", relation.limit(5).explain.inspect
     end
   end
 end
