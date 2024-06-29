@@ -181,6 +181,12 @@ class AddEmbeddingToItems < ActiveRecord::Migration[7.1]
 end
 ```
 
+Get the nearest neighbors by Hamming distance
+
+```ruby
+Item.nearest_neighbors(:embedding, "101", distance: "hamming").first(5)
+```
+
 ## Sparse Vectors
 
 Use the `sparsevec` type to store sparse vectors
