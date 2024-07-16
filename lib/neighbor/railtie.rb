@@ -10,7 +10,7 @@ module Neighbor
 
   module GeneratedAttribute
     def parse_type_and_options(type, *, **)
-      if type =~ /\A(vector|halfvec|sparsevec)\{(\d+)\}\z/
+      if type =~ /\A(vector|halfvec|bit|sparsevec)\{(\d+)\}\z/
         return $1, limit: $2.to_i
       end
       super

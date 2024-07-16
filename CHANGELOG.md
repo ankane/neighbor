@@ -1,6 +1,7 @@
 ## 0.4.1 (unreleased)
 
 - Added `precision` option
+- Added support for `bit` dimensions to model generator
 
 ## 0.4.0 (2024-06-25)
 
