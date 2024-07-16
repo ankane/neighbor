@@ -280,7 +280,7 @@ end
 Document.insert_all!(documents)
 ```
 
-And get similar articles
+And get similar documents
 
 ```ruby
 document = Document.first
