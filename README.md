@@ -221,6 +221,7 @@ Item.nearest_neighbors(:embedding, embedding, distance: "euclidean").first(5)
 ## Examples
 
 - [OpenAI Embeddings](#openai-embeddings)
+- [Cohere Embeddings](#cohere-embeddings)
 - [Disco Recommendations](#disco-recommendations)
 
 ### OpenAI Embeddings
@@ -288,6 +289,80 @@ document.nearest_neighbors(:embedding, distance: "cosine").first(5).map(&:conten
 ```
 
 See the [complete code](examples/openai_embeddings.rb)
+
+### Cohere Embeddings
+
+Generate a model
+
+```sh
+rails generate model Document content:text embedding:bit{1024}
+rails db:migrate
+```
+
+And add `has_neighbors`
+
+```ruby
+class Document < ApplicationRecord
+  has_neighbors :embedding
+end
+```
+
+Create a method to call the [embed API](https://docs.cohere.com/reference/embed)
+
+```ruby
+def fetch_embeddings(input, input_type)
+  url = "https://api.cohere.com/v1/embed"
+  headers = {
+    "Authorization" => "Bearer #{ENV.fetch("CO_API_KEY")}",
+    "Content-Type" => "application/json"
+  }
+  data = {
+    texts: input,
+    model: "embed-english-v3.0",
+    input_type: input_type,
+    embedding_types: ["ubinary"]
+  }
+
+  response = Net::HTTP.post(URI(url), data.to_json, headers).tap(&:value)
+  JSON.parse(response.body)["embeddings"]["ubinary"].map { |e| e.map { |v| v.chr.unpack1("B*") }.join }
+end
+```
+
+Pass your input
+
+```ruby
+input = [
+  "The dog is barking",
+  "The cat is purring",
+  "The bear is growling"
+]
+embeddings = fetch_embeddings(input, "search_document")
+```
+
+Store the embeddings
+
+```ruby
+documents = []
+input.zip(embeddings) do |content, embedding|
+  documents << {content: content, embedding: embedding}
+end
+Document.insert_all!(documents)
+```
+
+Embed the search query
+
+```ruby
+query = "forest"
+query_embedding = fetch_embeddings([query], "search_query")[0]
+```
+
+And search the documents
+
+```ruby
+Document.nearest_neighbors(:embedding, query_embedding, distance: "hamming").first(5).map(&:content)
+```
+
+See the [complete code](examples/cohere_embeddings.rb)
 
 ### Disco Recommendations
 
