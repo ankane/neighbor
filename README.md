@@ -35,7 +35,7 @@ rails db:migrate
 Create a migration
 
 ```ruby
-class AddEmbeddingToItems < ActiveRecord::Migration[7.1]
+class AddEmbeddingToItems < ActiveRecord::Migration[7.2]
   def change
     add_column :items, :embedding, :cube
     # or
@@ -116,7 +116,7 @@ end
 For vector, add an approximate index to speed up queries. Create a migration with:
 
 ```ruby
-class AddIndexToItemsEmbedding < ActiveRecord::Migration[7.1]
+class AddIndexToItemsEmbedding < ActiveRecord::Migration[7.2]
   def change
     add_index :items, :embedding, using: :hnsw, opclass: :vector_l2_ops
     # or
@@ -144,7 +144,7 @@ Item.connection.execute("SET ivfflat.probes = 3")
 Use the `halfvec` type to store half-precision vectors
 
 ```ruby
-class AddEmbeddingToItems < ActiveRecord::Migration[7.1]
+class AddEmbeddingToItems < ActiveRecord::Migration[7.2]
   def change
     add_column :items, :embedding, :halfvec, limit: 3 # dimensions
   end
@@ -156,7 +156,7 @@ end
 Index vectors at half precision for smaller indexes
 
 ```ruby
-class AddIndexToItemsEmbedding < ActiveRecord::Migration[7.1]
+class AddIndexToItemsEmbedding < ActiveRecord::Migration[7.2]
   def change
     add_index :items, "(embedding::halfvec(3)) vector_l2_ops", using: :hnsw
   end
@@ -174,7 +174,7 @@ Item.nearest_neighbors(:embedding, [0.9, 1.3, 1.1], distance: "euclidean", preci
 Use the `bit` type to store binary vectors
 
 ```ruby
-class AddEmbeddingToItems < ActiveRecord::Migration[7.1]
+class AddEmbeddingToItems < ActiveRecord::Migration[7.2]
   def change
     add_column :items, :embedding, :bit, limit: 3 # dimensions
   end
@@ -192,7 +192,7 @@ Item.nearest_neighbors(:embedding, "101", distance: "hamming").first(5)
 Use expression indexing for binary quantization
 
 ```ruby
-class AddIndexToItemsEmbedding < ActiveRecord::Migration[7.1]
+class AddIndexToItemsEmbedding < ActiveRecord::Migration[7.2]
   def change
     add_index :items, "(binary_quantize(embedding)::bit(3)) bit_hamming_ops", using: :hnsw
   end
@@ -204,7 +204,7 @@ end
 Use the `sparsevec` type to store sparse vectors
 
 ```ruby
-class AddEmbeddingToItems < ActiveRecord::Migration[7.1]
+class AddEmbeddingToItems < ActiveRecord::Migration[7.2]
   def change
     add_column :items, :embedding, :sparsevec, limit: 3 # dimensions
   end
