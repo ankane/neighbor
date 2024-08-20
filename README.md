@@ -222,6 +222,8 @@ Item.nearest_neighbors(:embedding, embedding, distance: "euclidean").first(5)
 
 - [OpenAI Embeddings](#openai-embeddings)
 - [Cohere Embeddings](#cohere-embeddings)
+- [Sentence Embeddings](#sentence-embeddings)
+- [Sparse Embeddings](#sparse-embeddings)
 - [Disco Recommendations](#disco-recommendations)
 
 ### OpenAI Embeddings
@@ -363,6 +365,135 @@ Document.nearest_neighbors(:embedding, query_embedding, distance: "hamming").fir
 ```
 
 See the [complete code](examples/cohere_embeddings.rb)
+
+### Sentence Embeddings
+
+You can generate embeddings locally with [Transformers.rb](https://github.com/ankane/transformers-ruby).
+
+Generate a model
+
+```sh
+rails generate model Document content:text embedding:vector{384}
+rails db:migrate
+```
+
+And add `has_neighbors`
+
+```ruby
+class Document < ApplicationRecord
+  has_neighbors :embedding
+end
+```
+
+Load a [model](https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2)
+
+```ruby
+model = Transformers::SentenceTransformer.new("sentence-transformers/all-MiniLM-L6-v2")
+```
+
+Pass your input
+
+```ruby
+input = [
+  "The dog is barking",
+  "The cat is purring",
+  "The bear is growling"
+]
+embeddings = model.encode(input)
+```
+
+Store the embeddings
+
+```ruby
+documents = []
+input.zip(embeddings) do |content, embedding|
+  documents << {content: content, embedding: embedding}
+end
+Document.insert_all!(documents)
+```
+
+And get similar documents
+
+```ruby
+document = Document.first
+document.nearest_neighbors(:embedding, distance: "cosine").first(5).map(&:content)
+```
+
+See the [complete code](examples/sentence_embeddings.rb)
+
+### Sparse Embeddings
+
+You can generate sparse embeddings locally with [Transformers.rb](https://github.com/ankane/transformers-ruby).
+
+Generate a model
+
+```sh
+rails generate model Document content:text embedding:sparsevec{30522}
+rails db:migrate
+```
+
+And add `has_neighbors`
+
+```ruby
+class Document < ApplicationRecord
+  has_neighbors :embedding
+end
+```
+
+Load a [model](https://huggingface.co/opensearch-project/opensearch-neural-sparse-encoding-v1) and create a method to generate embeddings
+
+```ruby
+model_id = "opensearch-project/opensearch-neural-sparse-encoding-v1"
+model = Transformers::AutoModelForMaskedLM.from_pretrained(model_id)
+tokenizer = Transformers::AutoTokenizer.from_pretrained(model_id)
+special_token_ids = tokenizer.special_tokens_map.map { |_, token| tokenizer.vocab[token] }
+
+generate_embeddings = lambda do |input|
+  feature = tokenizer.(input, padding: true, truncation: true, return_tensors: "pt", return_token_type_ids: false)
+  output = model.(**feature)[0]
+
+  values, _ = Torch.max(output * feature[:attention_mask].unsqueeze(-1), dim: 1)
+  values = Torch.log(1 + Torch.relu(values))
+  values[0.., special_token_ids] = 0
+  values.to_a
+end
+```
+
+Pass your input
+
+```ruby
+input = [
+  "The dog is barking",
+  "The cat is purring",
+  "The bear is growling"
+]
+embeddings = generate_embeddings.(input)
+```
+
+Store the embeddings
+
+```ruby
+documents = []
+input.zip(embeddings) do |content, embedding|
+  documents << {content: content, embedding: Neighbor::SparseVector.new(embedding)}
+end
+Document.insert_all!(documents)
+```
+
+Embed the search query
+
+```ruby
+query = "forest"
+query_embedding = generate_embeddings.([query])[0]
+```
+
+And search the documents
+
+```ruby
+Document.nearest_neighbors(:embedding, Neighbor::SparseVector.new(query_embedding), distance: "inner_product").first(5).map(&:content)
+```
+
+See the [complete code](examples/sparse_embeddings.rb)
 
 ### Disco Recommendations
 
