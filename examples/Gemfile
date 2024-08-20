@@ -4,3 +4,4 @@ gemspec path: ".."
 
 gem "disco"
 gem "pg"
+gem "transformers-rb"
