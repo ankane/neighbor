@@ -1,3 +1,7 @@
+# good resources
+# https://opensearch.org/blog/improving-document-retrieval-with-sparse-semantic-encoders/
+# https://huggingface.co/opensearch-project/opensearch-neural-sparse-encoding-v1
+
 require "active_record"
 require "neighbor"
 require "transformers-rb"
