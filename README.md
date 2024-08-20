@@ -440,23 +440,27 @@ class Document < ApplicationRecord
 end
 ```
 
-Load a [model](https://huggingface.co/opensearch-project/opensearch-neural-sparse-encoding-v1) and create a method to generate embeddings
+Load a [model](https://huggingface.co/opensearch-project/opensearch-neural-sparse-encoding-v1) to generate embeddings
 
 ```ruby
-model_id = "opensearch-project/opensearch-neural-sparse-encoding-v1"
-model = Transformers::AutoModelForMaskedLM.from_pretrained(model_id)
-tokenizer = Transformers::AutoTokenizer.from_pretrained(model_id)
-special_token_ids = tokenizer.special_tokens_map.map { |_, token| tokenizer.vocab[token] }
+class EmbeddingModel
+  def initialize(model_id)
+    @model = Transformers::AutoModelForMaskedLM.from_pretrained(model_id)
+    @tokenizer = Transformers::AutoTokenizer.from_pretrained(model_id)
+    @special_token_ids = @tokenizer.special_tokens_map.map { |_, token| @tokenizer.vocab[token] }
+  end
 
-generate_embeddings = lambda do |input|
-  feature = tokenizer.(input, padding: true, truncation: true, return_tensors: "pt", return_token_type_ids: false)
-  output = model.(**feature)[0]
-
-  values, _ = Torch.max(output * feature[:attention_mask].unsqueeze(-1), dim: 1)
-  values = Torch.log(1 + Torch.relu(values))
-  values[0.., special_token_ids] = 0
-  values.to_a
+  def embed(input)
+    feature = @tokenizer.(input, padding: true, truncation: true, return_tensors: "pt", return_token_type_ids: false)
+    output = @model.(**feature)[0]
+    values = Torch.max(output * feature[:attention_mask].unsqueeze(-1), dim: 1)[0]
+    values = Torch.log(1 + Torch.relu(values))
+    values[0.., @special_token_ids] = 0
+    values.to_a
+  end
 end
+
+model = EmbeddingModel.new("opensearch-project/opensearch-neural-sparse-encoding-v1")
 ```
 
 Pass your input
@@ -467,7 +471,7 @@ input = [
   "The cat is purring",
   "The bear is growling"
 ]
-embeddings = generate_embeddings.(input)
+embeddings = model.embed(input)
 ```
 
 Store the embeddings
@@ -484,7 +488,7 @@ Embed the search query
 
 ```ruby
 query = "forest"
-query_embedding = generate_embeddings.([query])[0]
+query_embedding = model.embed([query])[0]
 ```
 
 And search the documents
