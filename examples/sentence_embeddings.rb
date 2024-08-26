@@ -1,6 +1,6 @@
 require "active_record"
+require "informers"
 require "neighbor"
-require "transformers-rb"
 
 ActiveRecord::Base.establish_connection adapter: "postgresql", database: "neighbor_test"
 ActiveRecord::Schema.verbose = false
@@ -17,14 +17,14 @@ class Document < ActiveRecord::Base
   has_neighbors :embedding
 end
 
-model = Transformers::SentenceTransformer.new("sentence-transformers/all-MiniLM-L6-v2")
+model = Informers::Model.new("sentence-transformers/all-MiniLM-L6-v2")
 
 input = [
   "The dog is barking",
   "The cat is purring",
   "The bear is growling"
 ]
-embeddings = model.encode(input)
+embeddings = model.embed(input)
 
 documents = []
 input.zip(embeddings) do |content, embedding|

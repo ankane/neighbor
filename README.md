@@ -368,7 +368,7 @@ See the [complete code](examples/cohere_embeddings.rb)
 
 ### Sentence Embeddings
 
-You can generate embeddings locally with [Transformers.rb](https://github.com/ankane/transformers-ruby).
+You can generate embeddings locally with [Informers](https://github.com/ankane/informers).
 
 Generate a model
 
@@ -388,7 +388,7 @@ end
 Load a [model](https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2)
 
 ```ruby
-model = Transformers::SentenceTransformer.new("sentence-transformers/all-MiniLM-L6-v2")
+model = Informers::Model.new("sentence-transformers/all-MiniLM-L6-v2")
 ```
 
 Pass your input
@@ -399,7 +399,7 @@ input = [
   "The cat is purring",
   "The bear is growling"
 ]
-embeddings = model.encode(input)
+embeddings = model.embed(input)
 ```
 
 Store the embeddings
