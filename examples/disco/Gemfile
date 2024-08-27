@@ -2,6 +2,5 @@ source "https://rubygems.org"
 
 gemspec path: "../.."
 
-gem "activerecord", "< 7.2"
 gem "disco"
 gem "pg"
