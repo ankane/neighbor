@@ -1,4 +1,4 @@
-## 0.4.2 (unreleased)
+## 0.4.2 (2024-08-27)
 
 - Fixed error with `nil` values
 
