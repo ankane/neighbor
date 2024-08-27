@@ -70,17 +70,25 @@ Get the nearest neighbors to a vector
 Item.nearest_neighbors(:embedding, [0.9, 1.3, 1.1], distance: "euclidean").first(5)
 ```
 
-## Distance
+Records returned from `nearest_neighbors` will have a `neighbor_distance` attribute
+
+```ruby
+nearest_item = item.nearest_neighbors(:embedding, distance: "euclidean").first
+nearest_item.neighbor_distance
+```
+
+See the additional docs for [cube](#cube) and [pgvector](#pgvector)
+
+## cube
+
+### Distance
 
 Supported values are:
 
 - `euclidean`
 - `cosine`
 - `taxicab`
-- `chebyshev` (cube only)
-- `inner_product` (pgvector only)
-- `hamming` (pgvector only)
-- `jaccard` (pgvector only)
+- `chebyshev`
 
 For cosine distance with cube, vectors must be normalized before being stored.
 
@@ -92,16 +100,9 @@ end
 
 For inner product with cube, see [this example](examples/disco/user_recs_cube.rb).
 
-Records returned from `nearest_neighbors` will have a `neighbor_distance` attribute
+### Dimensions
 
-```ruby
-nearest_item = item.nearest_neighbors(:embedding, distance: "euclidean").first
-nearest_item.neighbor_distance
-```
-
-## Dimensions
-
-The `cube` type can have up to 100 dimensions by default. See the [Postgres docs](https://www.postgresql.org/docs/current/cube.html) for how to increase this. The `vector` type can have up to 16,000 dimensions, and vectors with up to 2,000 dimensions can be indexed.
+The `cube` type can have up to 100 dimensions by default. See the [Postgres docs](https://www.postgresql.org/docs/current/cube.html) for how to increase this.
 
 For cube, it’s a good idea to specify the number of dimensions to ensure all records have the same number.
 
@@ -111,9 +112,26 @@ class Item < ApplicationRecord
 end
 ```
 
-## Indexing
+## pgvector
 
-For pgvector, add an approximate index to speed up queries. Create a migration with:
+### Distance
+
+Supported values are:
+
+- `euclidean`
+- `cosine`
+- `taxicab`
+- `inner_product`
+- `hamming`
+- `jaccard`
+
+### Dimensions
+
+The `vector` type can have up to 16,000 dimensions, and vectors with up to 2,000 dimensions can be indexed.
+
+### Indexing
+
+Add an approximate index to speed up queries. Create a migration with:
 
 ```ruby
 class AddIndexToItemsEmbedding < ActiveRecord::Migration[7.2]
@@ -139,7 +157,7 @@ Or the number of probes with IVFFlat
 Item.connection.execute("SET ivfflat.probes = 3")
 ```
 
-## Half-Precision Vectors
+### Half-Precision Vectors
 
 Use the `halfvec` type to store half-precision vectors
 
@@ -151,7 +169,7 @@ class AddEmbeddingToItems < ActiveRecord::Migration[7.2]
 end
 ```
 
-## Half-Precision Indexing
+### Half-Precision Indexing
 
 Index vectors at half precision for smaller indexes
 
@@ -169,7 +187,7 @@ Get the nearest neighbors
 Item.nearest_neighbors(:embedding, [0.9, 1.3, 1.1], distance: "euclidean", precision: "half").first(5)
 ```
 
-## Binary Vectors
+### Binary Vectors
 
 Use the `bit` type to store binary vectors
 
@@ -187,7 +205,7 @@ Get the nearest neighbors by Hamming distance
 Item.nearest_neighbors(:embedding, "101", distance: "hamming").first(5)
 ```
 
-## Binary Quantization
+### Binary Quantization
 
 Use expression indexing for binary quantization
 
@@ -199,7 +217,7 @@ class AddIndexToItemsEmbedding < ActiveRecord::Migration[7.2]
 end
 ```
 
-## Sparse Vectors
+### Sparse Vectors
 
 Use the `sparsevec` type to store sparse vectors
 
