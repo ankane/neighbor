@@ -14,7 +14,7 @@ gem "neighbor"
 
 ## Choose An Extension
 
-Neighbor supports two extensions: [cube](https://www.postgresql.org/docs/current/cube.html) and [vector](https://github.com/pgvector/pgvector). cube ships with Postgres, while vector supports more dimensions and approximate nearest neighbor search.
+Neighbor supports two extensions: [cube](https://www.postgresql.org/docs/current/cube.html) and [pgvector](https://github.com/pgvector/pgvector). cube ships with Postgres, while pgvector supports more dimensions and approximate nearest neighbor search.
 
 For cube, run:
 
@@ -23,7 +23,7 @@ rails generate neighbor:cube
 rails db:migrate
 ```
 
-For vector, [install pgvector](https://github.com/pgvector/pgvector#installation) and run:
+For pgvector, [install the extension](https://github.com/pgvector/pgvector#installation) and run:
 
 ```sh
 rails generate neighbor:vector
@@ -78,9 +78,9 @@ Supported values are:
 - `cosine`
 - `taxicab`
 - `chebyshev` (cube only)
-- `inner_product` (vector only)
-- `hamming` (vector only)
-- `jaccard` (vector only)
+- `inner_product` (pgvector only)
+- `hamming` (pgvector only)
+- `jaccard` (pgvector only)
 
 For cosine distance with cube, vectors must be normalized before being stored.
 
@@ -101,7 +101,7 @@ nearest_item.neighbor_distance
 
 ## Dimensions
 
-The cube data type can have up to 100 dimensions by default. See the [Postgres docs](https://www.postgresql.org/docs/current/cube.html) for how to increase this. The vector data type can have up to 16,000 dimensions, and vectors with up to 2,000 dimensions can be indexed.
+The `cube` type can have up to 100 dimensions by default. See the [Postgres docs](https://www.postgresql.org/docs/current/cube.html) for how to increase this. The `vector` type can have up to 16,000 dimensions, and vectors with up to 2,000 dimensions can be indexed.
 
 For cube, it’s a good idea to specify the number of dimensions to ensure all records have the same number.
 
@@ -113,7 +113,7 @@ end
 
 ## Indexing
 
-For vector, add an approximate index to speed up queries. Create a migration with:
+For pgvector, add an approximate index to speed up queries. Create a migration with:
 
 ```ruby
 class AddIndexToItemsEmbedding < ActiveRecord::Migration[7.2]
@@ -543,7 +543,7 @@ movie = Movie.find_by(name: "Star Wars (1977)")
 movie.nearest_neighbors(:factors, distance: "cosine").first(5).map(&:name)
 ```
 
-See the complete code for [cube](examples/disco/item_recs_cube.rb) and [vector](examples/disco/item_recs_vector.rb)
+See the complete code for [cube](examples/disco/item_recs_cube.rb) and [pgvector](examples/disco/item_recs_vector.rb)
 
 ## History
 
