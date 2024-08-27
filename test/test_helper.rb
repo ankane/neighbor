@@ -8,6 +8,10 @@ logger = ActiveSupport::Logger.new(ENV["VERBOSE"] ? STDOUT : nil)
 ActiveRecord::Schema.verbose = false unless ENV["VERBOSE"]
 ActiveRecord::Base.logger = logger
 
+if ActiveRecord::VERSION::MAJOR >= 7
+  ActiveRecord::Base.partial_inserts = false
+end
+
 ActiveRecord::Base.establish_connection adapter: "postgresql", database: "neighbor_test"
 
 ActiveRecord::Schema.define do

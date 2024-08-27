@@ -19,7 +19,7 @@ module Neighbor
           value
         elsif value.is_a?(String)
           SparseVector.from_text(value)
-        elsif value.respond_to?(:to_a)
+        elsif Utils.array?(value)
           value = SparseVector.new(value.to_a)
         else
           raise "can't cast #{value.class.name} to sparsevec"

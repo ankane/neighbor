@@ -6,7 +6,7 @@ module Neighbor
       end
 
       def serialize(value)
-        if value.respond_to?(:to_a)
+        if Utils.array?(value)
           value = value.to_a
           if value.first.is_a?(Array)
             value = value.map { |v| serialize_point(v) }.join(", ")
@@ -20,7 +20,7 @@ module Neighbor
       private
 
       def cast_value(value)
-        if value.respond_to?(:to_a)
+        if Utils.array?(value)
           value.to_a
         elsif value.is_a?(Numeric)
           [value]

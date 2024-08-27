@@ -1,3 +1,7 @@
+## 0.4.2 (unreleased)
+
+- Fixed error with `nil` values
+
 ## 0.4.1 (2024-08-26)
 
 - Added `precision` option

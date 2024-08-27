@@ -38,5 +38,9 @@ module Neighbor
       # could also throw error
       norm > 0 ? value.map { |v| v / norm } : value
     end
+
+    def self.array?(value)
+      !value.nil? && value.respond_to?(:to_a)
+    end
   end
 end
