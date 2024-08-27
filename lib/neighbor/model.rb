@@ -133,7 +133,7 @@ module Neighbor
             when "half"
               cast_dimensions = dimensions || column_info&.limit
               raise ArgumentError, "Unknown dimensions" unless cast_dimensions
-              quoted_attribute += "::halfvec(#{cast_dimensions.to_i})"
+              quoted_attribute += "::halfvec(#{connection.quote(cast_dimensions.to_i)})"
             else
               raise ArgumentError, "Invalid precision"
             end
