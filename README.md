@@ -124,9 +124,9 @@ end
 Supported values are:
 
 - `euclidean`
+- `inner_product`
 - `cosine`
 - `taxicab`
-- `inner_product`
 - `hamming`
 - `jaccard`
 
