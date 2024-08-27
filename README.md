@@ -77,7 +77,12 @@ nearest_item = item.nearest_neighbors(:embedding, distance: "euclidean").first
 nearest_item.neighbor_distance
 ```
 
-See the additional docs for [cube](#cube) and [pgvector](#pgvector)
+See the additional docs for:
+
+- [cube](#cube)
+- [pgvector](#pgvector)
+
+Or check out some [examples](#examples)
 
 ## cube
 
