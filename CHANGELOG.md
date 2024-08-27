@@ -2,6 +2,7 @@
 
 - Added `precision` option
 - Added support for `bit` dimensions to model generator
+- Fixed error with Numo arrays
 
 ## 0.4.0 (2024-06-25)
 
