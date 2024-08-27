@@ -290,7 +290,7 @@ document = Document.first
 document.nearest_neighbors(:embedding, distance: "cosine").first(5).map(&:content)
 ```
 
-See the [complete code](examples/openai_embeddings.rb)
+See the [complete code](examples/openai/example.rb)
 
 ### Cohere Embeddings
 
@@ -364,7 +364,7 @@ And search the documents
 Document.nearest_neighbors(:embedding, query_embedding, distance: "hamming").first(5).map(&:content)
 ```
 
-See the [complete code](examples/cohere_embeddings.rb)
+See the [complete code](examples/cohere/example.rb)
 
 ### Sentence Embeddings
 
@@ -419,7 +419,7 @@ document = Document.first
 document.nearest_neighbors(:embedding, distance: "cosine").first(5).map(&:content)
 ```
 
-See the [complete code](examples/sentence_embeddings.rb)
+See the [complete code](examples/informers/example.rb)
 
 ### Sparse Embeddings
 
@@ -497,7 +497,7 @@ And search the documents
 Document.nearest_neighbors(:embedding, Neighbor::SparseVector.new(query_embedding), distance: "inner_product").first(5).map(&:content)
 ```
 
-See the [complete code](examples/sparse_embeddings.rb)
+See the [complete code](examples/sparse/example.rb)
 
 ### Disco Recommendations
 
@@ -543,7 +543,7 @@ movie = Movie.find_by(name: "Star Wars (1977)")
 movie.nearest_neighbors(:factors, distance: "cosine").first(5).map(&:name)
 ```
 
-See the complete code for [cube](examples/disco_item_recs_cube.rb) and [vector](examples/disco_item_recs_vector.rb)
+See the complete code for [cube](examples/disco/item_recs_cube.rb) and [vector](examples/disco/item_recs_vector.rb)
 
 ## History
 

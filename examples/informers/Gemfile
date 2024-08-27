@@ -1,8 +1,6 @@
 source "https://rubygems.org"
 
-gemspec path: ".."
+gemspec path: "../.."
 
-gem "disco"
 gem "informers", ">= 1"
 gem "pg"
-gem "transformers-rb"
