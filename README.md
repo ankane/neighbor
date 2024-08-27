@@ -90,7 +90,7 @@ class Item < ApplicationRecord
 end
 ```
 
-For inner product with cube, see [this example](examples/disco_user_recs_cube.rb).
+For inner product with cube, see [this example](examples/disco/user_recs_cube.rb).
 
 Records returned from `nearest_neighbors` will have a `neighbor_distance` attribute
 
