@@ -163,7 +163,7 @@ class AddIndexToItemsEmbedding < ActiveRecord::Migration[7.2]
 end
 ```
 
-Get the nearest neighbors [unreleased]
+Get the nearest neighbors
 
 ```ruby
 Item.nearest_neighbors(:embedding, [0.9, 1.3, 1.1], distance: "euclidean", precision: "half").first(5)

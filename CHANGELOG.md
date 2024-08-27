@@ -1,4 +1,4 @@
-## 0.4.1 (unreleased)
+## 0.4.1 (2024-08-26)
 
 - Added `precision` option
 - Added support for `bit` dimensions to model generator
