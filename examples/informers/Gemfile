@@ -2,5 +2,5 @@ source "https://rubygems.org"
 
 gemspec path: "../.."
 
-gem "informers", ">= 1"
+gem "informers", ">= 1.0.2"
 gem "pg"

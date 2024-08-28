@@ -411,7 +411,7 @@ end
 Load a [model](https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2)
 
 ```ruby
-model = Informers::Model.new("sentence-transformers/all-MiniLM-L6-v2")
+model = Informers.pipeline("embedding", "sentence-transformers/all-MiniLM-L6-v2")
 ```
 
 Pass your input
@@ -422,7 +422,7 @@ input = [
   "The cat is purring",
   "The bear is growling"
 ]
-embeddings = model.embed(input)
+embeddings = model.(input)
 ```
 
 Store the embeddings

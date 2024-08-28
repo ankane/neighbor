@@ -17,14 +17,14 @@ class Document < ActiveRecord::Base
   has_neighbors :embedding
 end
 
-model = Informers::Model.new("sentence-transformers/all-MiniLM-L6-v2")
+model = Informers.pipeline("embedding", "sentence-transformers/all-MiniLM-L6-v2")
 
 input = [
   "The dog is barking",
   "The cat is purring",
   "The bear is growling"
 ]
-embeddings = model.embed(input)
+embeddings = model.(input)
 
 documents = []
 input.zip(embeddings) do |content, embedding|
