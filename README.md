@@ -246,7 +246,7 @@ Item.nearest_neighbors(:embedding, embedding, distance: "euclidean").first(5)
 - [OpenAI Embeddings](#openai-embeddings)
 - [Cohere Embeddings](#cohere-embeddings)
 - [Sentence Embeddings](#sentence-embeddings)
-- [Sparse Embeddings](#sparse-embeddings)
+- [Sparse Search](#sparse-search)
 - [Disco Recommendations](#disco-recommendations)
 
 ### OpenAI Embeddings
@@ -444,7 +444,7 @@ document.nearest_neighbors(:embedding, distance: "cosine").first(5).map(&:conten
 
 See the [complete code](examples/informers/example.rb)
 
-### Sparse Embeddings
+### Sparse Search
 
 You can generate sparse embeddings locally with [Transformers.rb](https://github.com/ankane/transformers-ruby).
 
