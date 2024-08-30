@@ -504,7 +504,7 @@ query = "growling bear"
 keyword_results = Document.keyword_search(query).limit(20).load_async
 ```
 
-And semantic search (the query prefix is specific to the [embedding model](https://huggingface.co/mixedbread-ai/mxbai-embed-large-v1#mxbai-embed-large-v1))
+And semantic search in parallel (the query prefix is specific to the [embedding model](https://huggingface.co/mixedbread-ai/mxbai-embed-large-v1#mxbai-embed-large-v1))
 
 ```ruby
 query_prefix = "Represent this sentence for searching relevant passages: "
