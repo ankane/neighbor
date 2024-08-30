@@ -15,6 +15,11 @@ end
 
 class Document < ActiveRecord::Base
   has_neighbors :embedding
+
+  scope :keyword_search, ->(query) {
+    where("to_tsvector('english', content) @@ plainto_tsquery('english', ?)", query)
+      .order(Arel.sql("ts_rank_cd(to_tsvector('english', content), plainto_tsquery('english', ?)) DESC", query))
+  }
 end
 
 embed = Informers.pipeline("embedding", "mixedbread-ai/mxbai-embed-large-v1")
@@ -34,11 +39,7 @@ end
 Document.insert_all!(documents)
 
 query = "growling bear"
-keyword_results =
-  Document
-    .where("to_tsvector('english', content) @@ plainto_tsquery('english', ?)", query)
-    .order(Arel.sql("ts_rank_cd(to_tsvector('english', content), plainto_tsquery('english', ?)) DESC", query))
-    .first(20)
+keyword_results = Document.keyword_search(query).first(20)
 
 # the query prefix is specific to the embedding model (https://huggingface.co/mixedbread-ai/mxbai-embed-large-v1)
 query_prefix = "Represent this sentence for searching relevant passages: "

@@ -456,11 +456,16 @@ rails generate model Document content:text embedding:vector{1024}
 rails db:migrate
 ```
 
-And add `has_neighbors`
+And add `has_neighbors` and a scope for keyword search
 
 ```ruby
 class Document < ApplicationRecord
   has_neighbors :embedding
+
+  scope :keyword_search, ->(query) {
+    where("to_tsvector('english', content) @@ plainto_tsquery('english', ?)", query)
+      .order(Arel.sql("ts_rank_cd(to_tsvector('english', content), plainto_tsquery('english', ?)) DESC", query))
+  }
 end
 ```
 
@@ -496,11 +501,7 @@ Perform keyword search
 
 ```ruby
 query = "growling bear"
-keyword_results =
-  Document
-    .where("to_tsvector('english', content) @@ plainto_tsquery('english', ?)", query)
-    .order(Arel.sql("ts_rank_cd(to_tsvector('english', content), plainto_tsquery('english', ?)) DESC", query))
-    .first(20)
+keyword_results = Document.keyword_search(query).first(20)
 ```
 
 And semantic search (the query prefix is specific to the [embedding model](https://huggingface.co/mixedbread-ai/mxbai-embed-large-v1#mxbai-embed-large-v1))
