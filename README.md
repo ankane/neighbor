@@ -501,7 +501,7 @@ Perform keyword search
 
 ```ruby
 query = "growling bear"
-keyword_results = Document.keyword_search(query).first(20)
+keyword_results = Document.keyword_search(query).limit(20).load_async
 ```
 
 And semantic search (the query prefix is specific to the [embedding model](https://huggingface.co/mixedbread-ai/mxbai-embed-large-v1#mxbai-embed-large-v1))
@@ -509,7 +509,7 @@ And semantic search (the query prefix is specific to the [embedding model](https
 ```ruby
 query_prefix = "Represent this sentence for searching relevant passages: "
 query_embedding = embed.(query_prefix + query)
-semantic_results = Document.nearest_neighbors(:embedding, query_embedding, distance: "cosine").first(20)
+semantic_results = Document.nearest_neighbors(:embedding, query_embedding, distance: "cosine").limit(20).load_async
 ```
 
 And rerank the results
