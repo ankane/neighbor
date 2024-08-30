@@ -463,8 +463,8 @@ class Document < ApplicationRecord
   has_neighbors :embedding
 
   scope :keyword_search, ->(query) {
-    where("to_tsvector('english', content) @@ plainto_tsquery('english', ?)", query)
-      .order(Arel.sql("ts_rank_cd(to_tsvector('english', content), plainto_tsquery('english', ?)) DESC", query))
+    where("to_tsvector(content) @@ plainto_tsquery(?)", query)
+      .order(Arel.sql("ts_rank_cd(to_tsvector(content), plainto_tsquery(?)) DESC", query))
   }
 end
 ```
