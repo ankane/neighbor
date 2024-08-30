@@ -1,3 +1,4 @@
+require "bundler/setup"
 require "active_record"
 require "disco"
 require "neighbor"

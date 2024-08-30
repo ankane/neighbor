@@ -1,3 +1,4 @@
+require "bundler/setup"
 require "json"
 require "net/http"
 require "active_record"
