@@ -503,7 +503,7 @@ keyword_results =
     .first(20)
 ```
 
-And semantic search (the query prefix is specific to the [embedding model](https://huggingface.co/mixedbread-ai/mxbai-embed-large-v1))
+And semantic search (the query prefix is specific to the [embedding model](https://huggingface.co/mixedbread-ai/mxbai-embed-large-v1#mxbai-embed-large-v1))
 
 ```ruby
 query_prefix = "Represent this sentence for searching relevant passages: "
