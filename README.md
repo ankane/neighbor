@@ -452,7 +452,7 @@ You can use Neighbor for hybrid search with [Informers](https://github.com/ankan
 Generate a model
 
 ```sh
-rails generate model Document content:text embedding:vector{384}
+rails generate model Document content:text embedding:vector{1024}
 rails db:migrate
 ```
 
@@ -464,10 +464,10 @@ class Document < ApplicationRecord
 end
 ```
 
-Load models for [embedding](https://huggingface.co/Xenova/multi-qa-MiniLM-L6-cos-v1) and [reranking](https://huggingface.co/mixedbread-ai/mxbai-rerank-base-v1)
+Load models for embedding and reranking
 
 ```ruby
-embed = Informers.pipeline("embedding", "Xenova/multi-qa-MiniLM-L6-cos-v1")
+embed = Informers.pipeline("embedding", "mixedbread-ai/mxbai-embed-large-v1")
 rerank = Informers.pipeline("reranking", "mixedbread-ai/mxbai-rerank-base-v1")
 ```
 
@@ -503,10 +503,11 @@ keyword_results =
     .first(20)
 ```
 
-And semantic search
+And semantic search (the query prefix is specific to the [embedding model](https://huggingface.co/mixedbread-ai/mxbai-embed-large-v1))
 
 ```ruby
-query_embedding = embed.(query)
+query_prefix = "Represent this sentence for searching relevant passages: "
+query_embedding = embed.(query_prefix + query)
 semantic_results = Document.nearest_neighbors(:embedding, query_embedding, distance: "cosine").first(20)
 ```
 
