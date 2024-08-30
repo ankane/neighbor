@@ -471,7 +471,7 @@ embed = Informers.pipeline("embedding", "mixedbread-ai/mxbai-embed-large-v1")
 rerank = Informers.pipeline("reranking", "mixedbread-ai/mxbai-rerank-base-v1")
 ```
 
-Pass your input
+Generate embeddings
 
 ```ruby
 input = [
@@ -482,7 +482,7 @@ input = [
 embeddings = embed.(input)
 ```
 
-Store the embeddings
+And store them
 
 ```ruby
 documents = []
