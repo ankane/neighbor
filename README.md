@@ -246,6 +246,7 @@ Item.nearest_neighbors(:embedding, embedding, distance: "euclidean").first(5)
 - [OpenAI Embeddings](#openai-embeddings)
 - [Cohere Embeddings](#cohere-embeddings)
 - [Sentence Embeddings](#sentence-embeddings)
+- [Hybrid Search](#hybrid-search)
 - [Sparse Search](#sparse-search)
 - [Disco Recommendations](#disco-recommendations)
 
@@ -443,6 +444,80 @@ document.nearest_neighbors(:embedding, distance: "cosine").first(5).map(&:conten
 ```
 
 See the [complete code](examples/informers/example.rb)
+
+### Hybrid Search
+
+You can use Neighbor for hybrid search with [Informers](https://github.com/ankane/informers).
+
+Generate a model
+
+```sh
+rails generate model Document content:text embedding:vector{384}
+rails db:migrate
+```
+
+And add `has_neighbors`
+
+```ruby
+class Document < ApplicationRecord
+  has_neighbors :embedding
+end
+```
+
+Load models for [embedding](https://huggingface.co/Xenova/multi-qa-MiniLM-L6-cos-v1) and [reranking](https://huggingface.co/mixedbread-ai/mxbai-rerank-base-v1)
+
+```ruby
+embed = Informers.pipeline("embedding", "Xenova/multi-qa-MiniLM-L6-cos-v1")
+rerank = Informers.pipeline("reranking", "mixedbread-ai/mxbai-rerank-base-v1")
+```
+
+Pass your input
+
+```ruby
+input = [
+  "The dog is barking",
+  "The cat is purring",
+  "The bear is growling"
+]
+embeddings = embed.(input)
+```
+
+Store the embeddings
+
+```ruby
+documents = []
+input.zip(embeddings) do |content, embedding|
+  documents << {content: content, embedding: embedding}
+end
+Document.insert_all!(documents)
+```
+
+Perform keyword search
+
+```ruby
+query = "growling bear"
+keyword_results =
+  Document
+    .where("to_tsvector('english', content) @@ plainto_tsquery('english', ?)", query)
+    .order(Arel.sql("ts_rank_cd(to_tsvector('english', content), plainto_tsquery('english', ?)) DESC", query))
+    .first(20)
+```
+
+And semantic search
+
+```ruby
+query_embedding = embed.(query)
+semantic_results = Document.nearest_neighbors(:embedding, query_embedding, distance: "cosine").first(20)
+```
+
+And rerank the results
+
+```ruby
+results = (semantic_results + keyword_results).uniq(&:id)
+rerank.(query, results.map(&:content), top_k: 5).map { |v| results[v[:doc_id]] }
+```
+
+See the [complete code](examples/hybrid/example.rb)
 
 ### Sparse Search
 
