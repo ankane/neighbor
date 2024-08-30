@@ -26,7 +26,7 @@ movies = []
 recommender.item_ids.each do |item_id|
   movies << {name: item_id, factors: recommender.item_factors(item_id)}
 end
-Movie.insert_all!(movies)
+Movie.create!(movies)
 
 movie = Movie.find_by(name: "Star Wars (1977)")
 pp movie.nearest_neighbors(:factors, distance: "cosine").first(5).map(&:name)
