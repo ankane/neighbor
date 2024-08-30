@@ -514,7 +514,7 @@ semantic_results = Document.nearest_neighbors(:embedding, query_embedding, dista
 And rerank the results
 
 ```ruby
-results = (semantic_results + keyword_results).uniq(&:id)
+results = (keyword_results + semantic_results).uniq(&:id)
 rerank.(query, results.map(&:content), top_k: 5).map { |v| results[v[:doc_id]] }
 ```
 

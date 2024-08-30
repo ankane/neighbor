@@ -45,5 +45,5 @@ query_prefix = "Represent this sentence for searching relevant passages: "
 query_embedding = embed.(query_prefix + query)
 semantic_results = Document.nearest_neighbors(:embedding, query_embedding, distance: "cosine").first(20)
 
-results = (semantic_results + keyword_results).uniq(&:id)
+results = (keyword_results + semantic_results).uniq(&:id)
 p rerank.(query, results.map(&:content), top_k: 5).map { |v| results[v[:doc_id]] }.map(&:content)
