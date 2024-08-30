@@ -243,12 +243,12 @@ Item.nearest_neighbors(:embedding, embedding, distance: "euclidean").first(5)
 
 ## Examples
 
-- [OpenAI Embeddings](#openai-embeddings)
-- [Cohere Embeddings](#cohere-embeddings)
-- [Sentence Embeddings](#sentence-embeddings)
-- [Hybrid Search](#hybrid-search)
-- [Sparse Search](#sparse-search)
-- [Disco Recommendations](#disco-recommendations)
+- [Embeddings](#openai-embeddings) with OpenAI
+- [Binary embeddings](#cohere-embeddings) with Cohere
+- [Sentence embeddings](#sentence-embeddings) with Informers
+- [Hybrid search](#hybrid-search) with Informers
+- [Sparse search](#sparse-search) with Transformers.rb
+- [Recommendations](#disco-recommendations) with Disco
 
 ### OpenAI Embeddings
 
