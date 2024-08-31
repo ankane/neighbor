@@ -1,3 +1,7 @@
+## 0.4.3 (unreleased)
+
+- Added `rrf` method
+
 ## 0.4.2 (2024-08-27)
 
 - Fixed error with `nil` values
