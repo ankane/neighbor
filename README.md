@@ -469,31 +469,26 @@ class Document < ApplicationRecord
 end
 ```
 
-Load a model for embedding
+Create some documents
 
 ```ruby
-embed = Informers.pipeline("embedding", "mixedbread-ai/mxbai-embed-large-v1")
-```
-
-Generate embeddings
-
-```ruby
-input = [
+texts = [
   "The dog is barking",
   "The cat is purring",
   "The bear is growling"
 ]
-embeddings = embed.(input)
+documents = Document.create!(texts.map { |v| {content: v} })
 ```
 
-And store them
+Generate an embedding for each document
 
 ```ruby
-documents = []
-input.zip(embeddings) do |content, embedding|
-  documents << {content: content, embedding: embedding}
+embed = Informers.pipeline("embedding", "mixedbread-ai/mxbai-embed-large-v1")
+embeddings = embed.(documents.map(&:content))
+
+documents.zip(embeddings) do |document, embedding|
+  document.update!(embedding: embedding)
 end
-Document.insert_all!(documents)
 ```
 
 Perform keyword search

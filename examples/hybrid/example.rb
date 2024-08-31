@@ -24,20 +24,19 @@ class Document < ActiveRecord::Base
   }
 end
 
-embed = Informers.pipeline("embedding", "mixedbread-ai/mxbai-embed-large-v1")
-
-input = [
+texts = [
   "The dog is barking",
   "The cat is purring",
   "The bear is growling"
 ]
-embeddings = embed.(input)
+documents = Document.create!(texts.map { |v| {content: v} })
 
-documents = []
-input.zip(embeddings) do |content, embedding|
-  documents << {content: content, embedding: embedding}
+embed = Informers.pipeline("embedding", "mixedbread-ai/mxbai-embed-large-v1")
+embeddings = embed.(documents.map(&:content))
+
+documents.zip(embeddings) do |document, embedding|
+  document.update!(embedding: embedding)
 end
-Document.insert_all!(documents)
 
 query = "growling bear"
 keyword_results = Document.search(query).limit(20).load_async
