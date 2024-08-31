@@ -25,7 +25,6 @@ class Document < ActiveRecord::Base
 end
 
 embed = Informers.pipeline("embedding", "mixedbread-ai/mxbai-embed-large-v1")
-rerank = Informers.pipeline("reranking", "mixedbread-ai/mxbai-rerank-base-v1")
 
 input = [
   "The dog is barking",
@@ -48,5 +47,10 @@ query_prefix = "Represent this sentence for searching relevant passages: "
 query_embedding = embed.(query_prefix + query)
 semantic_results = Document.nearest_neighbors(:embedding, query_embedding, distance: "cosine").limit(20).load_async
 
+# to combine the results, use a reranking model
+rerank = Informers.pipeline("reranking", "mixedbread-ai/mxbai-rerank-base-v1")
 results = (keyword_results + semantic_results).uniq(&:id)
 p rerank.(query, results.map(&:content), top_k: 5).map { |v| results[v[:doc_id]] }.map(&:content)
+
+# or Reciprocal Rank Fusion (RRF)
+p Neighbor::Reranking.rrf(keyword_results, semantic_results).map { |v| v[:result].content }

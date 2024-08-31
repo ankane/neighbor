@@ -469,11 +469,10 @@ class Document < ApplicationRecord
 end
 ```
 
-Load models for embedding and reranking
+Load a model for embedding
 
 ```ruby
 embed = Informers.pipeline("embedding", "mixedbread-ai/mxbai-embed-large-v1")
-rerank = Informers.pipeline("reranking", "mixedbread-ai/mxbai-rerank-base-v1")
 ```
 
 Generate embeddings
@@ -512,11 +511,18 @@ query_embedding = embed.(query_prefix + query)
 semantic_results = Document.nearest_neighbors(:embedding, query_embedding, distance: "cosine").limit(20).load_async
 ```
 
-And rerank the results
+To combine the results, use a reranking model
 
 ```ruby
-results = (keyword_results + semantic_results).uniq(&:id)
+rerank = Informers.pipeline("reranking", "mixedbread-ai/mxbai-rerank-base-v1")
+results = (keyword_results + semantic_results).uniq
 rerank.(query, results.map(&:content), top_k: 5).map { |v| results[v[:doc_id]] }
+```
+
+Or Reciprocal Rank Fusion (RRF) [unreleased]
+
+```ruby
+Neighbor::Reranking.rrf(keyword_results, semantic_results)
 ```
 
 See the [complete code](examples/hybrid/example.rb)
