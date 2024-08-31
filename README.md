@@ -462,7 +462,7 @@ And add `has_neighbors` and a scope for keyword search
 class Document < ApplicationRecord
   has_neighbors :embedding
 
-  scope :keyword_search, ->(query) {
+  scope :search, ->(query) {
     where("to_tsvector(content) @@ plainto_tsquery(?)", query)
       .order(Arel.sql("ts_rank_cd(to_tsvector(content), plainto_tsquery(?)) DESC", query))
   }
@@ -500,7 +500,7 @@ Perform keyword search
 
 ```ruby
 query = "growling bear"
-keyword_results = Document.keyword_search(query).limit(20).load_async
+keyword_results = Document.search(query).limit(20).load_async
 ```
 
 And semantic search in parallel (the query prefix is specific to the [embedding model](https://huggingface.co/mixedbread-ai/mxbai-embed-large-v1#mxbai-embed-large-v1))
@@ -508,7 +508,8 @@ And semantic search in parallel (the query prefix is specific to the [embedding 
 ```ruby
 query_prefix = "Represent this sentence for searching relevant passages: "
 query_embedding = embed.(query_prefix + query)
-semantic_results = Document.nearest_neighbors(:embedding, query_embedding, distance: "cosine").limit(20).load_async
+semantic_results =
+  Document.nearest_neighbors(:embedding, query_embedding, distance: "cosine").limit(20).load_async
 ```
 
 To combine the results, use a reranking model

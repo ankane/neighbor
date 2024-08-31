@@ -18,7 +18,7 @@ end
 class Document < ActiveRecord::Base
   has_neighbors :embedding
 
-  scope :keyword_search, ->(query) {
+  scope :search, ->(query) {
     where("to_tsvector(content) @@ plainto_tsquery(?)", query)
       .order(Arel.sql("ts_rank_cd(to_tsvector(content), plainto_tsquery(?)) DESC", query))
   }
@@ -40,7 +40,7 @@ end
 Document.insert_all!(documents)
 
 query = "growling bear"
-keyword_results = Document.keyword_search(query).limit(20).load_async
+keyword_results = Document.search(query).limit(20).load_async
 
 # the query prefix is specific to the embedding model (https://huggingface.co/mixedbread-ai/mxbai-embed-large-v1)
 query_prefix = "Represent this sentence for searching relevant passages: "
