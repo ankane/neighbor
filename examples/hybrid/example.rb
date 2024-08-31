@@ -48,7 +48,7 @@ semantic_results = Document.nearest_neighbors(:embedding, query_embedding, dista
 
 # to combine the results, use a reranking model
 rerank = Informers.pipeline("reranking", "mixedbread-ai/mxbai-rerank-base-v1")
-results = (keyword_results + semantic_results).uniq(&:id)
+results = (keyword_results + semantic_results).uniq
 p rerank.(query, results.map(&:content), top_k: 5).map { |v| results[v[:doc_id]] }.map(&:content)
 
 # or Reciprocal Rank Fusion (RRF)
