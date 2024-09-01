@@ -8,11 +8,11 @@ class NeighborTest < Minitest::Test
     file.rewind
     contents = file.read
     refute_match "Could not dump table", contents
-    assert_match "t.cube", contents
-    assert_match "t.vector", contents
-    assert_match "t.halfvec", contents
-    assert_match "t.bit", contents
-    assert_match "t.sparsevec", contents
+    assert_match %{t.cube "cube_embedding"}, contents
+    assert_match %{t.vector "embedding", limit: 3}, contents
+    assert_match %{t.halfvec "half_embedding", limit: 3}, contents
+    assert_match %{t.bit "binary_embedding", limit: 3}, contents
+    assert_match %{t.sparsevec "sparse_embedding", limit: 3}, contents
     load(file.path)
   end
 
