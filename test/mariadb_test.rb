@@ -42,4 +42,25 @@ class MariadbTest < Minitest::Test
     MariadbItem.connection.execute("INSERT INTO mariadb_items (embedding) VALUES (Vec_FromText('[1,2,3]'))")
     assert_equal [1, 2, 3], MariadbItem.last.embedding
   end
+
+  def test_invalid_dimensions
+    error = assert_raises(ActiveRecord::RecordInvalid) do
+      MariadbDimensionsItem.create!(embedding: [1, 1])
+    end
+    assert_equal "Validation failed: Embedding must have 3 dimensions", error.message
+  end
+
+  def test_infinite
+    error = assert_raises(ActiveRecord::RecordInvalid) do
+      MariadbItem.create!(embedding: [Float::INFINITY, 0, 0])
+    end
+    assert_equal "Validation failed: Embedding must have finite values", error.message
+  end
+
+  def test_nan
+    error = assert_raises(ActiveRecord::RecordInvalid) do
+      MariadbItem.create!(embedding: [Float::NAN, 0, 0])
+    end
+    assert_equal "Validation failed: Embedding must have finite values", error.message
+  end
 end

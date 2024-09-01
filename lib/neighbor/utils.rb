@@ -9,7 +9,7 @@ module Neighbor
 
     def self.validate_finite(value, type)
       case type
-      when :bit, :binary # TODO remove :binary
+      when :bit
         true
       when :sparsevec
         value.values.all?(&:finite?)

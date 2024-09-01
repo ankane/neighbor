@@ -62,4 +62,27 @@ class MysqlTest < Minitest::Test
     # refute_match "Could not dump table", contents
     # assert_match %{t.vector "embedding", limit: 3}, contents
   end
+
+  def test_invalid_dimensions
+    skip # TODO remove in 0.5.0
+
+    error = assert_raises(ActiveRecord::RecordInvalid) do
+      MysqlItem.create!(embedding: [1, 1])
+    end
+    assert_equal "Validation failed: Embedding must have 3 dimensions", error.message
+  end
+
+  def test_infinite
+    error = assert_raises(ActiveRecord::RecordInvalid) do
+      MysqlItem.create!(embedding: [Float::INFINITY, 0, 0])
+    end
+    assert_equal "Validation failed: Embedding must have finite values", error.message
+  end
+
+  def test_nan
+    error = assert_raises(ActiveRecord::RecordInvalid) do
+      MysqlItem.create!(embedding: [Float::NAN, 0, 0])
+    end
+    assert_equal "Validation failed: Embedding must have finite values", error.message
+  end
 end

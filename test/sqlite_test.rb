@@ -42,4 +42,26 @@ class SqliteTest < Minitest::Test
       assert_match %{Could not dump table "items"}, contents
     end
   end
+
+  def test_invalid_dimensions
+    # TODO improve
+    error = assert_raises(ActiveRecord::StatementInvalid) do
+      SqliteItem.create!(embedding: [1, 1])
+    end
+    assert_match "Expected 3 dimensions but received 2.", error.message
+  end
+
+  def test_infinite
+    error = assert_raises(ActiveRecord::RecordInvalid) do
+      SqliteItem.create!(embedding: [Float::INFINITY, 0, 0])
+    end
+    assert_equal "Validation failed: Embedding must have finite values", error.message
+  end
+
+  def test_nan
+    error = assert_raises(ActiveRecord::RecordInvalid) do
+      SqliteItem.create!(embedding: [Float::NAN, 0, 0])
+    end
+    assert_equal "Validation failed: Embedding must have finite values", error.message
+  end
 end
