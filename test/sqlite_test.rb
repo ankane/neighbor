@@ -1,4 +1,5 @@
 require_relative "test_helper"
+require_relative "support/sqlite"
 
 class SqliteTest < Minitest::Test
   def setup

@@ -1,6 +1,10 @@
 require_relative "test_helper"
 
 class RerankingTest < Minitest::Test
+  def setup
+    Item.delete_all
+  end
+
   def test_rrf
     create_items(Item, :embedding)
     items = Item.order(:id).to_a

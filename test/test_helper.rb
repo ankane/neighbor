@@ -12,16 +12,7 @@ if ActiveRecord::VERSION::MAJOR >= 7
   ActiveRecord::Base.partial_inserts = false
 end
 
-require_relative "support/postgresql" if ENV["TEST_POSTGRESQL"]
-require_relative "support/mariadb" if ENV["TEST_MARIADB"]
-require_relative "support/mysql" if ENV["TEST_MYSQL"]
-require_relative "support/sqlite" if ENV["TEST_SQLITE"]
-
 class Minitest::Test
-  def setup
-    Item.delete_all
-  end
-
   def assert_elements_in_delta(expected, actual)
     assert_equal expected.size, actual.size
     expected.zip(actual) do |exp, act|

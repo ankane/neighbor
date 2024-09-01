@@ -1,6 +1,11 @@
 require_relative "test_helper"
+require_relative "support/postgresql"
 
 class NeighborTest < Minitest::Test
+  def setup
+    Item.delete_all
+  end
+
   def test_schema
     file = Tempfile.new
     connection = ActiveRecord::VERSION::STRING.to_f >= 7.2 ? PostgresRecord.connection_pool : PostgresRecord.connection

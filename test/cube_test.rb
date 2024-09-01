@@ -1,6 +1,11 @@
 require_relative "test_helper"
+require_relative "support/postgresql"
 
 class CubeTest < Minitest::Test
+  def setup
+    Item.delete_all
+  end
+
   def test_cosine
     create_items(CosineItem, :cube_embedding)
     result = CosineItem.find(1).nearest_neighbors(:cube_embedding, distance: "cosine").first(3)

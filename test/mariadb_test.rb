@@ -1,4 +1,5 @@
 require_relative "test_helper"
+require_relative "support/mariadb"
 
 class MariadbTest < Minitest::Test
   def setup

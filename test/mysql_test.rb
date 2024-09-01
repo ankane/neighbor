@@ -1,4 +1,5 @@
 require_relative "test_helper"
+require_relative "support/mysql"
 
 class MysqlTest < Minitest::Test
   def setup
