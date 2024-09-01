@@ -18,14 +18,16 @@ Add this line to your application’s Gemfile:
 gem "neighbor"
 ```
 
-For Postgres with pgvector, [install the extension](https://github.com/pgvector/pgvector#installation) and run:
+For Postgres, choose an extension: [pgvector](https://github.com/pgvector/pgvector) or [cube](https://www.postgresql.org/docs/current/cube.html). cube ships with Postgres, while pgvector supports more dimensions and approximate nearest neighbor search.
+
+For pgvector, [install the extension](https://github.com/pgvector/pgvector#installation) and run:
 
 ```sh
 rails generate neighbor:vector
 rails db:migrate
 ```
 
-For Postgres with cube, run:
+For cube, run:
 
 ```sh
 rails generate neighbor:cube
