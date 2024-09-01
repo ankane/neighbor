@@ -4,9 +4,9 @@ Nearest neighbor search for Rails
 
 Supports:
 
-- PostgreSQL (pgvector and cube)
+- Postgres (pgvector and cube)
 - MariaDB 10.6+ (unreleased)
-- MySQL 9+ (requires HeatWave, unreleased)
+- MySQL 9+ (searching requires HeatWave, unreleased)
 
 [![Build Status](https://github.com/ankane/neighbor/actions/workflows/build.yml/badge.svg)](https://github.com/ankane/neighbor/actions)
 
@@ -18,14 +18,14 @@ Add this line to your application’s Gemfile:
 gem "neighbor"
 ```
 
-For PostgreSQL with pgvector, [install the extension](https://github.com/pgvector/pgvector#installation) and run:
+For Postgres with pgvector, [install the extension](https://github.com/pgvector/pgvector#installation) and run:
 
 ```sh
 rails generate neighbor:vector
 rails db:migrate
 ```
 
-For PostgreSQL with cube, run:
+For Postgres with cube, run:
 
 ```sh
 rails generate neighbor:cube
@@ -39,10 +39,10 @@ Create a migration
 ```ruby
 class AddEmbeddingToItems < ActiveRecord::Migration[7.2]
   def change
-    # PostgreSQL pgvector and MySQL
+    # Postgres pgvector and MySQL
     add_column :items, :embedding, :vector, limit: 3 # dimensions
 
-    # PostgreSQL cube
+    # Postgres cube
     add_column :items, :embedding, :cube
 
     # MariaDB
@@ -86,45 +86,12 @@ nearest_item.neighbor_distance
 
 See the additional docs for:
 
-- [cube](#cube)
-- [pgvector](#pgvector)
+- [Postgres: pgvector](#postgres-pgvector)
+- [Postgres: cube](#postgres-cube)
 
 Or check out some [examples](#examples)
 
-## cube
-
-### Distance
-
-Supported values are:
-
-- `euclidean`
-- `cosine`
-- `taxicab`
-- `chebyshev`
-
-For cosine distance with cube, vectors must be normalized before being stored.
-
-```ruby
-class Item < ApplicationRecord
-  has_neighbors :embedding, normalize: true
-end
-```
-
-For inner product with cube, see [this example](examples/disco/user_recs_cube.rb).
-
-### Dimensions
-
-The `cube` type can have up to 100 dimensions by default. See the [Postgres docs](https://www.postgresql.org/docs/current/cube.html) for how to increase this.
-
-For cube, it’s a good idea to specify the number of dimensions to ensure all records have the same number.
-
-```ruby
-class Item < ApplicationRecord
-  has_neighbors :embedding, dimensions: 3
-end
-```
-
-## pgvector
+## Postgres: pgvector
 
 ### Distance
 
@@ -246,6 +213,39 @@ Get the nearest neighbors
 ```ruby
 embedding = Neighbor::SparseVector.new({0 => 0.9, 1 => 1.3, 2 => 1.1}, 3)
 Item.nearest_neighbors(:embedding, embedding, distance: "euclidean").first(5)
+```
+
+## Postgres: cube
+
+### Distance
+
+Supported values are:
+
+- `euclidean`
+- `cosine`
+- `taxicab`
+- `chebyshev`
+
+For cosine distance with cube, vectors must be normalized before being stored.
+
+```ruby
+class Item < ApplicationRecord
+  has_neighbors :embedding, normalize: true
+end
+```
+
+For inner product with cube, see [this example](examples/disco/user_recs_cube.rb).
+
+### Dimensions
+
+The `cube` type can have up to 100 dimensions by default. See the [Postgres docs](https://www.postgresql.org/docs/current/cube.html) for how to increase this.
+
+For cube, it’s a good idea to specify the number of dimensions to ensure all records have the same number.
+
+```ruby
+class Item < ApplicationRecord
+  has_neighbors :embedding, dimensions: 3
+end
 ```
 
 ## Examples
