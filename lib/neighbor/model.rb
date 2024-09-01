@@ -129,10 +129,11 @@ module Neighbor
                 case distance
                 when "cosine"
                   "COSINE"
-                when "inner_product"
-                  "DOT"
                 when "euclidean"
                   "EUCLIDEAN"
+                # TODO support
+                # when "inner_product"
+                #   "DOT"
                 end
               else
                 raise ArgumentError, "Unsupported type: #{column_type}"
