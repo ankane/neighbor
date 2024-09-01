@@ -41,10 +41,10 @@ Create a migration
 ```ruby
 class AddEmbeddingToItems < ActiveRecord::Migration[7.2]
   def change
-    # Postgres pgvector and MySQL
+    # pgvector / MySQL
     add_column :items, :embedding, :vector, limit: 3 # dimensions
 
-    # Postgres cube
+    # cube
     add_column :items, :embedding, :cube
 
     # MariaDB
@@ -88,12 +88,12 @@ nearest_item.neighbor_distance
 
 See the additional docs for:
 
-- [Postgres: pgvector](#postgres-pgvector)
-- [Postgres: cube](#postgres-cube)
+- [pgvector](#postgres-pgvector)
+- [cube](#postgres-cube)
 
 Or check out some [examples](#examples)
 
-## Postgres: pgvector
+## pgvector
 
 ### Distance
 
@@ -217,7 +217,7 @@ embedding = Neighbor::SparseVector.new({0 => 0.9, 1 => 1.3, 2 => 1.1}, 3)
 Item.nearest_neighbors(:embedding, embedding, distance: "euclidean").first(5)
 ```
 
-## Postgres: cube
+## cube
 
 ### Distance
 
