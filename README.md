@@ -666,6 +666,16 @@ To get started with development:
 git clone https://github.com/ankane/neighbor.git
 cd neighbor
 bundle install
+
+# Postgres
 createdb neighbor_test
 bundle exec rake test
+
+# MySQL
+docker run -e MYSQL_ALLOW_EMPTY_PASSWORD=1 -e MYSQL_DATABASE=neighbor_test -p 3306:3306 mysql:9
+bundle exec rake test:mysql
+
+# MariaDB
+docker run -e MARIADB_ALLOW_EMPTY_ROOT_PASSWORD=1 -e MARIADB_DATABASE=neighbor_test -p 3307:3306 quay.io/mariadb-foundation/mariadb-devel:11.6-vector-preview
+bundle exec rake test:mariadb
 ```
