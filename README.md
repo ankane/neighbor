@@ -705,7 +705,7 @@ movie = Movie.find_by(name: "Star Wars (1977)")
 movie.nearest_neighbors(:factors, distance: "cosine").first(5).map(&:name)
 ```
 
-See the complete code for [cube](examples/disco/item_recs_cube.rb) and [pgvector](examples/disco/item_recs_vector.rb)
+See the complete code for [pgvector](examples/disco/item_recs_vector.rb) and [cube](examples/disco/item_recs_cube.rb)
 
 ## History
 
