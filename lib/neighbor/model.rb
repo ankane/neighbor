@@ -120,7 +120,8 @@ module Neighbor
           raise ArgumentError, "Invalid distance: #{distance}" unless operator
 
           # ensure normalize set (can be true or false)
-          if distance == "cosine" && column_type == :cube && normalize.nil?
+          normalized_cosine_type = column_type == :cube || column_type == :binary
+          if distance == "cosine" && normalized_cosine_type && normalize.nil?
             raise Neighbor::Error, "Set normalize for cosine distance with cube"
           end
 
@@ -158,7 +159,7 @@ module Neighbor
           # cosine distance = 1 - cosine similarity
           # this transformation doesn't change the order, so only needed for select
           neighbor_distance =
-            if column_type == :cube && distance == "cosine"
+            if normalized_cosine_type && distance == "cosine"
               "POWER(#{order}, 2) / 2.0"
             elsif [:vector, :halfvec, :sparsevec].include?(column_type) && distance == "inner_product"
               "(#{order}) * -1"

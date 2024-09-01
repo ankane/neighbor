@@ -16,3 +16,11 @@ class MariadbItem < MariadbRecord
   # TODO move to has_neighbors
   attribute :embedding, Neighbor::Type::MariadbVector.new
 end
+
+class MariadbCosineItem < MariadbRecord
+  has_neighbors :embedding, normalize: true
+  self.table_name = "mariadb_items"
+
+  # TODO move to has_neighbors
+  attribute :embedding, Neighbor::Type::MariadbVector.new
+end
