@@ -29,6 +29,8 @@ class MariadbTest < Minitest::Test
   end
 
   def test_index_scan
+    skip "Occasionally freezes server"
+
     assert_index_scan MariadbItem.nearest_neighbors(:embedding, [0, 0, 0], distance: "euclidean")
   end
 
