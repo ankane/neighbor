@@ -1,6 +1,10 @@
-ActiveRecord::Base.establish_connection adapter: "postgresql", database: "neighbor_test"
+class PostgresRecord < ActiveRecord::Base
+  self.abstract_class = true
 
-ActiveRecord::Schema.define do
+  establish_connection adapter: "postgresql", database: "neighbor_test"
+end
+
+PostgresRecord.connection.instance_eval do
   enable_extension "cube"
   enable_extension "vector"
 
@@ -30,35 +34,35 @@ ActiveRecord::Schema.define do
   end
 end
 
-class Item < ActiveRecord::Base
+class Item < PostgresRecord
   has_neighbors :embedding, :cube_embedding, :half_embedding, :binary_embedding, :sparse_embedding
 end
 
-class CosineItem < ActiveRecord::Base
+class CosineItem < PostgresRecord
   has_neighbors :embedding
   has_neighbors :cube_embedding, normalize: true
   self.table_name = "items"
 end
 
-class DimensionsItem < ActiveRecord::Base
+class DimensionsItem < PostgresRecord
   has_neighbors :embedding, dimensions: 3
   has_neighbors :cube_embedding, dimensions: 3
   self.table_name = "items"
 end
 
-class LargeDimensionsItem < ActiveRecord::Base
+class LargeDimensionsItem < PostgresRecord
   has_neighbors :embedding, dimensions: 16001
   has_neighbors :cube_embedding, dimensions: 101
   self.table_name = "items"
 end
 
-class DefaultScopeItem < ActiveRecord::Base
+class DefaultScopeItem < PostgresRecord
   default_scope { order(:id) }
   has_neighbors :embedding
   self.table_name = "items"
 end
 
-class Product < ActiveRecord::Base
+class Product < PostgresRecord
   has_neighbors :embedding
 end
 
