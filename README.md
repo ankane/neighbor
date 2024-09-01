@@ -1,6 +1,12 @@
 # Neighbor
 
-Nearest neighbor search for Rails and Postgres
+Nearest neighbor search for Rails
+
+Supports:
+
+- PostgreSQL (pgvector and cube)
+- MariaDB 10.6+ (unreleased)
+- MySQL 9+ (unreleased)
 
 [![Build Status](https://github.com/ankane/neighbor/actions/workflows/build.yml/badge.svg)](https://github.com/ankane/neighbor/actions)
 
