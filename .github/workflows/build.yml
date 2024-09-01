@@ -50,7 +50,4 @@ jobs:
           cd pgvector
           make
           sudo make install
-      - run: bundle exec rake test:postgres
-      - run: bundle exec rake test:mysql
-      - run: bundle exec rake test:mariadb
-      - run: bundle exec rake test:sqlite
+      - run: bundle exec rake test
