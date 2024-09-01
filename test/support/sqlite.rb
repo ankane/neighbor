@@ -9,7 +9,11 @@ end
 Neighbor::SQLite.initialize!
 
 SqliteRecord.connection.instance_eval do
-  execute "CREATE VIRTUAL TABLE items USING vec0(id integer PRIMARY KEY AUTOINCREMENT NOT NULL, embedding float[3])"
+  if ActiveRecord::VERSION::MAJOR >= 8
+    create_virtual_table :items, :vec0, ["id integer PRIMARY KEY AUTOINCREMENT NOT NULL", "embedding float[3]"]
+  else
+    execute "CREATE VIRTUAL TABLE items USING vec0(id integer PRIMARY KEY AUTOINCREMENT NOT NULL, embedding float[3])"
+  end
 end
 
 class SqliteItem < SqliteRecord

@@ -1,8 +1,21 @@
 require_relative "test_helper"
 
-class MariadbTest < Minitest::Test
+class SqliteTest < Minitest::Test
   def setup
     SqliteItem.delete_all
+  end
+
+  def test_schema
+    file = Tempfile.new
+    connection = ActiveRecord::VERSION::STRING.to_f >= 7.2 ? SqliteItem.connection_pool : SqliteItem.connection
+    ActiveRecord::SchemaDumper.dump(connection, file)
+    file.rewind
+    contents = file.read
+    if ActiveRecord::VERSION::MAJOR >= 8
+      assert_match %{create_virtual_table "items", "vec0"}, contents
+    else
+      assert_match %{Could not dump table "items"}, contents
+    end
   end
 
   def test_cosine
