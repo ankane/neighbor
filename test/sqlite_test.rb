@@ -20,6 +20,21 @@ class SqliteTest < Minitest::Test
     assert_elements_in_delta [1, Math.sqrt(3)], result.map(&:neighbor_distance)
   end
 
+  def test_index_scan
+    # TODO
+    # assert_index_scan SqliteItem.nearest_neighbors(:embedding, [0, 0, 0], distance: "euclidean")
+    assert_index_scan SqliteItem.where("embedding MATCH ?", "[0, 0, 0]").order(:distance)
+  end
+
+  def test_no_limit
+    error = assert_raises(ActiveRecord::StatementInvalid) do
+      # TODO
+      # SqliteItem.nearest_neighbors(:embedding, [0, 0, 0], distance: "euclidean").load
+      SqliteItem.where("embedding MATCH ?", "[0, 0, 0]").order(:distance).load
+    end
+    assert_match "A LIMIT or 'k = ?' constraint is required on vec0 knn queries.", error.message
+  end
+
   def test_create
     item = SqliteItem.create!(embedding: [1, 2, 3])
     assert_equal [1, 2, 3], item.embedding
@@ -63,5 +78,9 @@ class SqliteTest < Minitest::Test
       SqliteItem.create!(embedding: [Float::NAN, 0, 0])
     end
     assert_equal "Validation failed: Embedding must have finite values", error.message
+  end
+
+  def assert_index_scan(relation)
+    assert_match "SCAN items VIRTUAL TABLE INDEX", relation.limit(5).explain.inspect
   end
 end
