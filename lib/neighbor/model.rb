@@ -149,11 +149,12 @@ module Neighbor
                 # when "inner_product"
                 #   "DOT"
                 end
-              when :binary
-                case distance
-                when "hamming"
-                  "BIT_COUNT"
-                end
+              # TODO support
+              # when :binary
+              #   case distance
+              #   when "hamming"
+              #     "BIT_COUNT"
+              #   end
               else
                 raise ArgumentError, "Unsupported type: #{column_type}"
               end

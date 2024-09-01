@@ -290,7 +290,6 @@ Supported values are:
 
 - `euclidean`
 - `cosine`
-- `hamming`
 
 ## SQLite
 
