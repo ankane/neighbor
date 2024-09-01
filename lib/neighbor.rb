@@ -52,7 +52,8 @@ ActiveSupport.on_load(:active_record) do
 
   extend Neighbor::Model
 
-  require "active_record/connection_adapters/abstract_mysql_adapter"
+  # TODO uncomment in 0.5.0
+  # require "active_record/connection_adapters/abstract_mysql_adapter"
   require "active_record/connection_adapters/postgresql_adapter"
 
   # ensure schema can be dumped
