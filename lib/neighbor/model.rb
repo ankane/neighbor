@@ -139,7 +139,7 @@ module Neighbor
               end
             when :mysql
               case column_type
-              when :vector, nil # TODO remove nil in 0.5.0
+              when :vector
                 case distance
                 when "cosine"
                   "COSINE"

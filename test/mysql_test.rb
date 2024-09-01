@@ -57,15 +57,11 @@ class MysqlTest < Minitest::Test
     ActiveRecord::SchemaDumper.dump(connection, file)
     file.rewind
     contents = file.read
-    # TODO update in 0.5.0
-    assert_match %{Could not dump table "mysql_items"}, contents
-    # refute_match "Could not dump table", contents
-    # assert_match %{t.vector "embedding", limit: 3}, contents
+    refute_match "Could not dump table", contents
+    assert_match %{t.vector "embedding", limit: 3}, contents
   end
 
   def test_invalid_dimensions
-    skip # TODO remove in 0.5.0
-
     error = assert_raises(ActiveRecord::RecordInvalid) do
       MysqlItem.create!(embedding: [1, 1])
     end

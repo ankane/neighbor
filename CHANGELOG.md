@@ -1,3 +1,9 @@
+## 0.5.0 (unreleased)
+
+- Added experimental support for MariaDB 10.6 Vector
+- Added experimental support for MySQL 9
+- Added experimental support for SQLite (sqlite-vec)
+
 ## 0.4.3 (unreleased)
 
 - Added `rrf` method

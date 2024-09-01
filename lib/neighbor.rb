@@ -75,23 +75,22 @@ ActiveSupport.on_load(:active_record) do
     end
   end
 
-  # TODO uncomment in 0.5.0
-  # require "active_record/connection_adapters/abstract_mysql_adapter"
+  require "active_record/connection_adapters/abstract_mysql_adapter"
 
-  # if defined?(ActiveRecord::ConnectionAdapters::AbstractMysqlAdapter)
-  #   # ensure schema can be dumped
-  #   ActiveRecord::ConnectionAdapters::AbstractMysqlAdapter::NATIVE_DATABASE_TYPES[:vector] = {name: "vector"}
+  # ensure schema can be dumped
+  ActiveRecord::ConnectionAdapters::AbstractMysqlAdapter::NATIVE_DATABASE_TYPES[:vector] = {name: "vector"}
 
-  #   # ensure schema can be loaded
-  #   ActiveRecord::ConnectionAdapters::TableDefinition.send(:define_column_methods, :vector)
+  # ensure schema can be loaded
+  unless ActiveRecord::ConnectionAdapters::TableDefinition.method_defined?(:vector)
+    ActiveRecord::ConnectionAdapters::TableDefinition.send(:define_column_methods, :vector)
+  end
 
-  #   # prevent unknown OID warning
-  #   if ActiveRecord::VERSION::MAJOR >= 7
-  #     ActiveRecord::ConnectionAdapters::AbstractMysqlAdapter.singleton_class.prepend(Neighbor::MysqlRegisterTypes)
-  #   else
-  #     ActiveRecord::ConnectionAdapters::AbstractMysqlAdapter.prepend(Neighbor::MysqlRegisterTypes)
-  #   end
-  # end
+  # prevent unknown OID warning
+  if ActiveRecord::VERSION::MAJOR >= 7
+    ActiveRecord::ConnectionAdapters::AbstractMysqlAdapter.singleton_class.prepend(Neighbor::MysqlRegisterTypes)
+  else
+    ActiveRecord::ConnectionAdapters::AbstractMysqlAdapter.prepend(Neighbor::MysqlRegisterTypes)
+  end
 end
 
 require_relative "neighbor/railtie" if defined?(Rails::Railtie)
