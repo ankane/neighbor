@@ -52,31 +52,46 @@ ActiveSupport.on_load(:active_record) do
 
   extend Neighbor::Model
 
+  begin
+    require "active_record/connection_adapters/postgresql_adapter"
+  rescue Gem::LoadError
+  end
+
+  if defined?(ActiveRecord::ConnectionAdapters::PostgreSQLAdapter)
+    # ensure schema can be dumped
+    ActiveRecord::ConnectionAdapters::PostgreSQLAdapter::NATIVE_DATABASE_TYPES[:cube] = {name: "cube"}
+    ActiveRecord::ConnectionAdapters::PostgreSQLAdapter::NATIVE_DATABASE_TYPES[:halfvec] = {name: "halfvec"}
+    ActiveRecord::ConnectionAdapters::PostgreSQLAdapter::NATIVE_DATABASE_TYPES[:sparsevec] = {name: "sparsevec"}
+    ActiveRecord::ConnectionAdapters::PostgreSQLAdapter::NATIVE_DATABASE_TYPES[:vector] = {name: "vector"}
+
+    # ensure schema can be loaded
+    ActiveRecord::ConnectionAdapters::TableDefinition.send(:define_column_methods, :cube, :halfvec, :sparsevec, :vector)
+
+    # prevent unknown OID warning
+    if ActiveRecord::VERSION::MAJOR >= 7
+      ActiveRecord::ConnectionAdapters::PostgreSQLAdapter.singleton_class.prepend(Neighbor::RegisterTypes)
+    else
+      ActiveRecord::ConnectionAdapters::PostgreSQLAdapter.prepend(Neighbor::RegisterTypes)
+    end
+  end
+
   # TODO uncomment in 0.5.0
   # require "active_record/connection_adapters/abstract_mysql_adapter"
-  require "active_record/connection_adapters/postgresql_adapter"
 
-  # ensure schema can be dumped
-  # TODO uncomment in 0.5.0
-  # ActiveRecord::ConnectionAdapters::AbstractMysqlAdapter::NATIVE_DATABASE_TYPES[:vector] = {name: "vector"}
-  ActiveRecord::ConnectionAdapters::PostgreSQLAdapter::NATIVE_DATABASE_TYPES[:cube] = {name: "cube"}
-  ActiveRecord::ConnectionAdapters::PostgreSQLAdapter::NATIVE_DATABASE_TYPES[:halfvec] = {name: "halfvec"}
-  ActiveRecord::ConnectionAdapters::PostgreSQLAdapter::NATIVE_DATABASE_TYPES[:sparsevec] = {name: "sparsevec"}
-  ActiveRecord::ConnectionAdapters::PostgreSQLAdapter::NATIVE_DATABASE_TYPES[:vector] = {name: "vector"}
+  # if defined?(ActiveRecord::ConnectionAdapters::AbstractMysqlAdapter)
+  #   # ensure schema can be dumped
+  #   ActiveRecord::ConnectionAdapters::AbstractMysqlAdapter::NATIVE_DATABASE_TYPES[:vector] = {name: "vector"}
 
-  # ensure schema can be loaded
-  ActiveRecord::ConnectionAdapters::TableDefinition.send(:define_column_methods, :cube, :halfvec, :sparsevec, :vector)
+  #   # ensure schema can be loaded
+  #   ActiveRecord::ConnectionAdapters::TableDefinition.send(:define_column_methods, :vector)
 
-  # prevent unknown OID warning
-  if ActiveRecord::VERSION::MAJOR >= 7
-    # TODO uncomment in 0.5.0
-    # ActiveRecord::ConnectionAdapters::AbstractMysqlAdapter.singleton_class.prepend(Neighbor::MysqlRegisterTypes)
-    ActiveRecord::ConnectionAdapters::PostgreSQLAdapter.singleton_class.prepend(Neighbor::RegisterTypes)
-  else
-    # TODO uncomment in 0.5.0
-    # ActiveRecord::ConnectionAdapters::AbstractMysqlAdapter.prepend(Neighbor::MysqlRegisterTypes)
-    ActiveRecord::ConnectionAdapters::PostgreSQLAdapter.prepend(Neighbor::RegisterTypes)
-  end
+  #   # prevent unknown OID warning
+  #   if ActiveRecord::VERSION::MAJOR >= 7
+  #     ActiveRecord::ConnectionAdapters::AbstractMysqlAdapter.singleton_class.prepend(Neighbor::MysqlRegisterTypes)
+  #   else
+  #     ActiveRecord::ConnectionAdapters::AbstractMysqlAdapter.prepend(Neighbor::MysqlRegisterTypes)
+  #   end
+  # end
 end
 
 require_relative "neighbor/railtie" if defined?(Rails::Railtie)
