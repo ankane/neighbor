@@ -18,21 +18,17 @@ Add this line to your application’s Gemfile:
 gem "neighbor"
 ```
 
-## Choose An Extension
-
-Neighbor supports two extensions: [cube](https://www.postgresql.org/docs/current/cube.html) and [pgvector](https://github.com/pgvector/pgvector). cube ships with Postgres, while pgvector supports more dimensions and approximate nearest neighbor search.
-
-For cube, run:
-
-```sh
-rails generate neighbor:cube
-rails db:migrate
-```
-
-For pgvector, [install the extension](https://github.com/pgvector/pgvector#installation) and run:
+For PostgreSQL with pgvector, [install the extension](https://github.com/pgvector/pgvector#installation) and run:
 
 ```sh
 rails generate neighbor:vector
+rails db:migrate
+```
+
+For PostgreSQL with cube, run:
+
+```sh
+rails generate neighbor:cube
 rails db:migrate
 ```
 
@@ -43,9 +39,14 @@ Create a migration
 ```ruby
 class AddEmbeddingToItems < ActiveRecord::Migration[7.2]
   def change
-    add_column :items, :embedding, :cube
-    # or
+    # PostgreSQL pgvector and MySQL
     add_column :items, :embedding, :vector, limit: 3 # dimensions
+
+    # PostgreSQL cube
+    add_column :items, :embedding, :cube
+
+    # MariaDB
+    add_column :items, :embedding, :binary
   end
 end
 ```

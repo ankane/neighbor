@@ -6,7 +6,7 @@ end
 
 MariadbRecord.connection.instance_eval do
   create_table :mariadb_items, force: true do |t|
-    t.blob :embedding, null: false
+    t.binary :embedding, null: false
   end
 
   # TODO fix
