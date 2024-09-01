@@ -27,9 +27,14 @@ module Neighbor
           @neighbor_attributes[attribute_name] = {dimensions: dimensions, normalize: normalize}
         end
 
-        if connection_db_config.adapter =~ /sqlite/i
+        case connection_db_config.adapter
+        when /sqlite/i
           attribute_names.each do |attribute_name|
             attribute attribute_name, Neighbor::Type::SqliteVector.new
+          end
+        when /mysql|trilogy/i
+          attribute_names.each do |attribute_name|
+            attribute attribute_name, Neighbor::Type::MysqlVector.new
           end
         end
 

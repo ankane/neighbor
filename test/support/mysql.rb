@@ -13,7 +13,4 @@ end
 
 class MysqlItem < MysqlRecord
   has_neighbors :embedding, :binary_embedding
-
-  # TODO remove in 0.5.0
-  attribute :embedding, Neighbor::Type::MysqlVector.new
 end
