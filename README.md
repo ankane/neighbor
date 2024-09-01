@@ -110,6 +110,9 @@ See the additional docs for:
 
 - [pgvector](#postgres-pgvector)
 - [cube](#postgres-cube)
+- [MariaDB](#mariadb)
+- [MySQL](#mysql)
+- [SQLite](#sqlite)
 
 Or check out some [examples](#examples)
 
@@ -269,6 +272,34 @@ class Item < ApplicationRecord
   has_neighbors :embedding, dimensions: 3
 end
 ```
+
+## MariaDB
+
+### Distance
+
+Supported values are:
+
+- `euclidean`
+- `cosine`
+
+## MySQL
+
+### Distance
+
+Supported values are:
+
+- `euclidean`
+- `cosine`
+- `hamming`
+
+## SQLite
+
+### Distance
+
+Supported values are:
+
+- `euclidean`
+- `cosine`
 
 ## Examples
 
