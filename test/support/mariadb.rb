@@ -19,3 +19,6 @@ class MariadbCosineItem < MariadbRecord
   has_neighbors :embedding, normalize: true
   self.table_name = "mariadb_items"
 end
+
+# ensure has_neighbors does not cause model schema to load
+raise "has_neighbors loading model schema early" if MariadbItem.send(:schema_loaded?)

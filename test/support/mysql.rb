@@ -14,3 +14,6 @@ end
 class MysqlItem < MysqlRecord
   has_neighbors :embedding, :binary_embedding
 end
+
+# ensure has_neighbors does not cause model schema to load
+raise "has_neighbors loading model schema early" if MysqlItem.send(:schema_loaded?)
