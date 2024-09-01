@@ -13,10 +13,8 @@ if ActiveRecord::VERSION::MAJOR >= 7
 end
 
 require_relative "support/postgresql"
-
-if ENV["TEST_MYSQL"]
-  require_relative "support/mysql"
-end
+require_relative "support/mariadb" if ENV["TEST_MARIADB"]
+require_relative "support/mysql" if ENV["TEST_MYSQL"]
 
 class Minitest::Test
   def setup

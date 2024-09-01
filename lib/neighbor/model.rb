@@ -35,7 +35,8 @@ module Neighbor
             next if value.nil?
 
             column_info = self.class.columns_hash[k.to_s]
-            dimensions = v[:dimensions] || column_info&.limit
+            dimensions = v[:dimensions]
+            dimensions ||= column_info&.limit unless column_info&.type == :binary
 
             if !Neighbor::Utils.validate_dimensions(value, column_info&.type, dimensions).nil?
               errors.add(k, "must have #{dimensions} dimensions")
