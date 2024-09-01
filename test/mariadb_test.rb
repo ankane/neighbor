@@ -13,7 +13,12 @@ class MariadbTest < Minitest::Test
   end
 
   def test_vec_totext
-    create_items(MariadbItem, :embedding)
-    assert_equal ["[1.000000,1.000000,1.000000]", "[2.000000,2.000000,2.000000]", "[1.000000,1.000000,2.000000]"], MariadbItem.order(:id).pluck("VEC_ToText(embedding)")
+    MariadbItem.create!(embedding: [1, 2, 3])
+    assert_equal "[1.000000,2.000000,3.000000]", MariadbItem.pluck("VEC_ToText(embedding)").last
+  end
+
+  def test_vec_fromtext
+    MariadbItem.connection.execute("INSERT INTO mariadb_items (embedding) VALUES (Vec_FromText('[1,2,3]'))")
+    assert_equal [1, 2, 3], MariadbItem.last.embedding
   end
 end

@@ -24,7 +24,12 @@ class MysqlTest < Minitest::Test
   end
 
   def test_vector_to_string
-    create_items(MysqlItem, :embedding)
-    assert_equal ["[1.00000e+00,1.00000e+00,1.00000e+00]", "[2.00000e+00,2.00000e+00,2.00000e+00]", "[1.00000e+00,1.00000e+00,2.00000e+00]"], MysqlItem.order(:id).pluck("VECTOR_TO_STRING(embedding)")
+    MysqlItem.create!(embedding: [1, 2, 3])
+    assert_equal "[1.00000e+00,2.00000e+00,3.00000e+00]", MysqlItem.pluck("VECTOR_TO_STRING(embedding)").last
+  end
+
+  def test_string_to_vector
+    MysqlItem.connection.execute("INSERT INTO mysql_items (embedding) VALUES (STRING_TO_VECTOR('[1,2,3]'))")
+    assert_equal [1, 2, 3], MysqlItem.last.embedding
   end
 end
