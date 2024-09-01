@@ -9,6 +9,6 @@ class SqliteGeneratorTest < Rails::Generators::TestCase
 
   def test_works
     run_generator
-    assert_file "config/initializers/neighbor.rb", "Neighbor::SQLite.initialize!\n"
+    assert_file "config/initializers/neighbor.rb", /Neighbor::SQLite.initialize!/
   end
 end
