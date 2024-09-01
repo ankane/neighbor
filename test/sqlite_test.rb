@@ -26,6 +26,12 @@ class SqliteTest < Minitest::Test
     assert_index_scan SqliteItem.where("embedding MATCH ?", "[0, 0, 0]").order(:distance)
   end
 
+  def test_index_scan_distance
+    create_items(SqliteItem, :embedding)
+    result = SqliteItem.where("embedding MATCH ?", "[1, 1, 1]").order(:distance).limit(3)
+    assert_elements_in_delta [0, 1, Math.sqrt(3)], result.pluck(:distance)
+  end
+
   def test_no_limit
     error = assert_raises(ActiveRecord::StatementInvalid) do
       # TODO
