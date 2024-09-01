@@ -6,7 +6,7 @@ Supports:
 
 - PostgreSQL (pgvector and cube)
 - MariaDB 10.6+ (unreleased)
-- MySQL 9+ (unreleased)
+- MySQL 9+ (requires HeatWave, unreleased)
 
 [![Build Status](https://github.com/ankane/neighbor/actions/workflows/build.yml/badge.svg)](https://github.com/ankane/neighbor/actions)
 
