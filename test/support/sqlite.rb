@@ -1,5 +1,3 @@
-require "sqlite_vec"
-
 class SqliteRecord < ActiveRecord::Base
   self.abstract_class = true
 
