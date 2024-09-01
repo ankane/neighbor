@@ -7,10 +7,8 @@ end
 MariadbRecord.connection.instance_eval do
   create_table :mariadb_items, force: true do |t|
     t.binary :embedding, null: false
+    t.index :embedding, type: :vector
   end
-
-  # TODO fix
-  # add_index :mariadb_items, :embedding, type: :vector
 end
 
 class MariadbItem < MariadbRecord
