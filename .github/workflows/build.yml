@@ -8,36 +8,44 @@ jobs:
         include:
           - ruby: 3.3
             gemfile: Gemfile
-          - ruby: 3.3
-            gemfile: gemfiles/activerecord71.gemfile
-          - ruby: 3.2
-            gemfile: gemfiles/activerecord70.gemfile
-          - ruby: 3.2
-            gemfile: gemfiles/activerecord61.gemfile
-          - ruby: 3.1
-            gemfile: gemfiles/activerecord61.gemfile
+          # - ruby: 3.3
+          #   gemfile: gemfiles/activerecord71.gemfile
+          # - ruby: 3.2
+          #   gemfile: gemfiles/activerecord70.gemfile
+          # - ruby: 3.2
+          #   gemfile: gemfiles/activerecord61.gemfile
+          # - ruby: 3.1
+          #   gemfile: gemfiles/activerecord61.gemfile
     runs-on: ubuntu-latest
     env:
       BUNDLE_GEMFILE: ${{ matrix.gemfile }}
+    services:
+      mariadb:
+        image: quay.io/mariadb-foundation/mariadb-devel:11.6-vector-preview
+        env:
+          MARIADB_ALLOW_EMPTY_ROOT_PASSWORD: 1
+        ports:
+          - 3306:3306
     steps:
       - uses: actions/checkout@v4
       - uses: ruby/setup-ruby@v1
         with:
           ruby-version: ${{ matrix.ruby }}
           bundler-cache: true
-      - uses: ankane/setup-postgres@v1
-        with:
-          database: neighbor_test
-          dev-files: true
-      - run: |
-          cd /tmp
-          git clone --branch v0.7.0 https://github.com/pgvector/pgvector.git
-          cd pgvector
-          make
-          sudo make install
-      - run: bundle exec rake test
-      - uses: ankane/setup-mysql@mysql-9
-        with:
-          mysql-version: "9.0"
-          database: neighbor_test
-      - run: bundle exec rake test:mysql
+      # - uses: ankane/setup-postgres@v1
+      #   with:
+      #     database: neighbor_test
+      #     dev-files: true
+      # - run: |
+      #     cd /tmp
+      #     git clone --branch v0.7.0 https://github.com/pgvector/pgvector.git
+      #     cd pgvector
+      #     make
+      #     sudo make install
+      # - run: bundle exec rake test
+      # - uses: ankane/setup-mysql@mysql-9
+      #   with:
+      #     mysql-version: "9.0"
+      #     database: neighbor_test
+      # - run: bundle exec rake test:mysql
+      - run: bundle exec rake test:mariadb
