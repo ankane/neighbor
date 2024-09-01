@@ -138,6 +138,11 @@ module Neighbor
                 # when "inner_product"
                 #   "DOT"
                 end
+              when :binary
+                case distance
+                when "hamming"
+                  "BIT_COUNT"
+                end
               else
                 raise ArgumentError, "Unsupported type: #{column_type}"
               end
@@ -211,7 +216,11 @@ module Neighbor
                 "#{quoted_attribute} #{operator} #{query}"
               end
             when :mysql
-              "DISTANCE(#{quoted_attribute}, #{query}, #{connection.quote(operator)})"
+              if operator == "BIT_COUNT"
+                "BIT_COUNT(#{quoted_attribute} ^ #{query})"
+              else
+                "DISTANCE(#{quoted_attribute}, #{query}, #{connection.quote(operator)})"
+              end
             when :mariadb
               "VEC_DISTANCE(#{quoted_attribute}, #{query})"
             else # :sqlite

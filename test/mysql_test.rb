@@ -32,6 +32,15 @@ class MysqlTest < Minitest::Test
     assert_elements_in_delta [1, Math.sqrt(3)], result.map(&:neighbor_distance)
   end
 
+  def test_hamming
+    MysqlItem.create!(id: 1, binary_embedding: ["000"].pack("B*"))
+    MysqlItem.create!(id: 2, binary_embedding: ["101"].pack("B*"))
+    MysqlItem.create!(id: 3, binary_embedding: ["111"].pack("B*"))
+    result = MysqlItem.find(1).nearest_neighbors(:binary_embedding, distance: "hamming").first(3)
+    assert_equal [2, 3], result.map(&:id)
+    assert_elements_in_delta [2, 3], result.map(&:neighbor_distance)
+  end
+
   def test_vector_to_string
     MysqlItem.create!(embedding: [1, 2, 3])
     assert_equal "[1.00000e+00,2.00000e+00,3.00000e+00]", MysqlItem.pluck("VECTOR_TO_STRING(embedding)").last
