@@ -53,3 +53,4 @@ jobs:
       - run: bundle exec rake test
       - run: bundle exec rake test:mysql
       - run: bundle exec rake test:mariadb
+      - run: bundle exec rake test:sqlite

@@ -81,8 +81,11 @@ module Neighbor
           column_type = column_info&.type
 
           adapter =
-            if connection.adapter_name =~ /mysql|trilogy/i
+            case connection.adapter_name
+            when /mysql|trilogy/i
               connection.try(:mariadb?) ? :mariadb : :mysql
+            when /sqlite/i
+              :sqlite
             else
               :postgresql
             end
@@ -138,12 +141,24 @@ module Neighbor
               else
                 raise ArgumentError, "Unsupported type: #{column_type}"
               end
-            else # :mariadb
+            when :mariadb
               case column_type
               when :binary
                 case distance
                 when "euclidean", "cosine"
                   "VEC_DISTANCE"
+                end
+              else
+                raise ArgumentError, "Unsupported type: #{column_type}"
+              end
+            else # :sqlite
+              case column_type
+              when nil
+                case distance
+                when "euclidean"
+                  "vec_distance_L2"
+                when "cosine"
+                  "vec_distance_cosine"
                 end
               else
                 raise ArgumentError, "Unsupported type: #{column_type}"
@@ -197,8 +212,10 @@ module Neighbor
               end
             when :mysql
               "DISTANCE(#{quoted_attribute}, #{query}, #{connection.quote(operator)})"
-            else # :mariadb
+            when :mariadb
               "VEC_DISTANCE(#{quoted_attribute}, #{query})"
+            else # :sqlite
+              "#{operator}(#{quoted_attribute}, #{query})"
             end
 
           # https://stats.stackexchange.com/questions/146221/is-cosine-similarity-identical-to-l2-normalized-euclidean-distance

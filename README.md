@@ -7,6 +7,7 @@ Supports:
 - Postgres (pgvector and cube)
 - MariaDB 11.6+ Vector (unreleased)
 - MySQL 9+ (unreleased, searching requires HeatWave)
+- SQLite (unreleased, sqlite-vec)
 
 [![Build Status](https://github.com/ankane/neighbor/actions/workflows/build.yml/badge.svg)](https://github.com/ankane/neighbor/actions)
 
@@ -687,4 +688,7 @@ bundle exec rake test:mysql
 # MariaDB
 docker run -e MARIADB_ALLOW_EMPTY_ROOT_PASSWORD=1 -e MARIADB_DATABASE=neighbor_test -p 3307:3306 quay.io/mariadb-foundation/mariadb-devel:11.6-vector-preview
 bundle exec rake test:mariadb
+
+# SQLite
+bundle exec rake test:sqlite
 ```

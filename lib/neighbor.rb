@@ -47,6 +47,7 @@ ActiveSupport.on_load(:active_record) do
   require_relative "neighbor/type/mariadb_vector"
   require_relative "neighbor/type/mysql_vector"
   require_relative "neighbor/type/sparsevec"
+  require_relative "neighbor/type/sqlite_vector"
   require_relative "neighbor/type/vector"
 
   extend Neighbor::Model

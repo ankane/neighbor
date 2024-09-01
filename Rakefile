@@ -5,6 +5,7 @@ namespace :test do
   task("env:mariadb") { ENV["TEST_MARIADB"] = "1" }
   task("env:mysql") { ENV["TEST_MYSQL"] = "1" }
   task("env:postgresql") { ENV["TEST_POSTGRESQL"] = "1" }
+  task("env:sqlite") { ENV["TEST_SQLITE"] = "1" }
 
   Rake::TestTask.new(mysql: "env:mysql") do |t|
     t.description = "Run tests for MySQL"
@@ -17,11 +18,17 @@ namespace :test do
     t.libs << "test"
     t.test_files = FileList["test/**/mariadb_test.rb"]
   end
+
+  Rake::TestTask.new(sqlite: "env:sqlite") do |t|
+    t.description = "Run tests for SQLite"
+    t.libs << "test"
+    t.test_files = FileList["test/**/sqlite_test.rb"]
+  end
 end
 
 Rake::TestTask.new(test: "test:env:postgresql") do |t|
   t.libs << "test"
-  t.test_files = FileList["test/**/*_test.rb"].exclude("test/{mariadb,mysql}_test.rb")
+  t.test_files = FileList["test/**/*_test.rb"].exclude("test/{mariadb,mysql,sqlite}_test.rb")
 end
 
 task default: :test
