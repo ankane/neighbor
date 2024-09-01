@@ -19,7 +19,9 @@ Add this line to your application’s Gemfile:
 gem "neighbor"
 ```
 
-For Postgres, choose an extension: [pgvector](https://github.com/pgvector/pgvector) or [cube](https://www.postgresql.org/docs/current/cube.html). cube ships with Postgres, while pgvector supports more dimensions and approximate nearest neighbor search.
+### For Postgres
+
+Choose an extension: [pgvector](https://github.com/pgvector/pgvector) or [cube](https://www.postgresql.org/docs/current/cube.html). cube ships with Postgres, while pgvector supports more dimensions and approximate nearest neighbor search.
 
 For pgvector, [install the extension](https://github.com/pgvector/pgvector#installation) and run:
 
@@ -33,6 +35,25 @@ For cube, run:
 ```sh
 rails generate neighbor:cube
 rails db:migrate
+```
+
+### For SQLite
+
+Add this line to your application’s Gemfile:
+
+```ruby
+gem "sqlite-vec"
+```
+
+And create `config/initializers/neighbor.rb` with:
+
+```ruby
+require "sqlite_vec"
+
+db = ActiveRecord::Base.connection.raw_connection
+db.enable_load_extension(1)
+SqliteVec.load(db)
+db.enable_load_extension(0)
 ```
 
 ## Getting Started
@@ -50,6 +71,9 @@ class AddEmbeddingToItems < ActiveRecord::Migration[7.2]
 
     # MariaDB
     add_column :items, :embedding, :binary
+
+    # SQLite
+    execute "CREATE VIRTUAL TABLE items USING vec0(id integer PRIMARY KEY AUTOINCREMENT NOT NULL, embedding float[3])"
   end
 end
 ```
