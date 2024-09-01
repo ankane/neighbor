@@ -36,3 +36,8 @@ jobs:
           make
           sudo make install
       - run: bundle exec rake test
+      - uses: ankane/setup-mysql@mysql-9
+        with:
+          mysql-version: "9.0"
+          database: neighbor_test
+      - run: bundle exec rake test:mysql

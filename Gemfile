@@ -5,5 +5,6 @@ gemspec
 gem "rake"
 gem "minitest", ">= 5"
 gem "activerecord", "~> 7.2.0"
+gem "mysql2"
 gem "pg"
 gem "railties", require: false
