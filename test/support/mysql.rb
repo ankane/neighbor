@@ -11,6 +11,8 @@ MysqlRecord.connection.instance_eval do
 end
 
 class MysqlItem < MysqlRecord
+  has_neighbors :embedding
+
   # TODO remove in 0.5.0
   attribute :embedding, Neighbor::Type::MysqlVector.new
 end

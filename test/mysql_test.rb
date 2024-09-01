@@ -23,6 +23,15 @@ class MysqlTest < Minitest::Test
     assert_equal [[1, 1, 1], [2, 2, 2], [1, 1, 2]], MysqlItem.order(:id).pluck(:embedding)
   end
 
+  def test_euclidean
+    skip "Requires HeatWave"
+
+    create_items(MysqlItem, :embedding)
+    result = MysqlItem.find(1).nearest_neighbors(:embedding, distance: "euclidean").first(3)
+    assert_equal [3, 2], result.map(&:id)
+    assert_elements_in_delta [1, Math.sqrt(3)], result.map(&:neighbor_distance)
+  end
+
   def test_vector_to_string
     MysqlItem.create!(embedding: [1, 2, 3])
     assert_equal "[1.00000e+00,2.00000e+00,3.00000e+00]", MysqlItem.pluck("VECTOR_TO_STRING(embedding)").last

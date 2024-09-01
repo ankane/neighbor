@@ -80,47 +80,88 @@ module Neighbor
           column_info = columns_hash[attribute_name.to_s]
           column_type = column_info&.type
 
-          operator =
-            case column_type
-            when :bit
-              case distance
-              when "hamming"
-                "<~>"
-              when "jaccard"
-                "<%>"
-              when "hamming2"
-                "bit_count"
-              end
-            when :vector, :halfvec, :sparsevec
-              case distance
-              when "inner_product"
-                "<#>"
-              when "cosine"
-                "<=>"
-              when "euclidean"
-                "<->"
-              when "taxicab"
-                "<+>"
-              end
-            when :cube
-              case distance
-              when "taxicab"
-                "<#>"
-              when "chebyshev"
-                "<=>"
-              when "euclidean", "cosine"
-                "<->"
-              end
-            when :binary
-              "VEC_DISTANCE"
+          adapter =
+            if connection.adapter_name =~ /mysql|trilogy/i
+              connection.try(:mariadb?) ? :mariadb : :mysql
             else
-              raise ArgumentError, "Unsupported type: #{column_type}"
+              :postgresql
+            end
+
+          operator =
+            case adapter
+            when :postgresql
+              case column_type
+              when :bit
+                case distance
+                when "hamming"
+                  "<~>"
+                when "jaccard"
+                  "<%>"
+                when "hamming2"
+                  "bit_count"
+                end
+              when :vector, :halfvec, :sparsevec
+                case distance
+                when "inner_product"
+                  "<#>"
+                when "cosine"
+                  "<=>"
+                when "euclidean"
+                  "<->"
+                when "taxicab"
+                  "<+>"
+                end
+              when :cube
+                case distance
+                when "taxicab"
+                  "<#>"
+                when "chebyshev"
+                  "<=>"
+                when "euclidean", "cosine"
+                  "<->"
+                end
+              else
+                raise ArgumentError, "Unsupported type: #{column_type}"
+              end
+            when :mysql
+              case column_type
+              when :vector, nil # TODO remove nil in 0.5.0
+                case distance
+                when "cosine"
+                  "COSINE"
+                when "inner_product"
+                  "DOT"
+                when "euclidean"
+                  "EUCLIDEAN"
+                end
+              else
+                raise ArgumentError, "Unsupported type: #{column_type}"
+              end
+            else # :mariadb
+              case column_type
+              when :binary
+                case distance
+                when "euclidean", "cosine"
+                  "VEC_DISTANCE"
+                end
+              else
+                raise ArgumentError, "Unsupported type: #{column_type}"
+              end
             end
 
           raise ArgumentError, "Invalid distance: #{distance}" unless operator
 
           # ensure normalize set (can be true or false)
-          normalize_required = column_type == :cube || column_type == :binary
+          normalize_required =
+            case adapter
+            when :postgresql
+              column_type == :cube
+            when :mariadb
+              true
+            else
+              false
+            end
+
           if distance == "cosine" && normalize_required && normalize.nil?
             raise Neighbor::Error, "Set normalize for cosine distance with cube"
           end
@@ -133,6 +174,8 @@ module Neighbor
           query = connection.quote(column_attribute.serialize(vector))
 
           if !precision.nil?
+            raise ArgumentError, "Precision not supported for this adapter" if adapter != :postgresql
+
             case precision.to_s
             when "half"
               cast_dimensions = dimensions || column_info&.limit
@@ -144,13 +187,17 @@ module Neighbor
           end
 
           order =
-            case operator
-            when "VEC_DISTANCE"
+            case adapter
+            when :postgresql
+              if operator == "bit_count"
+                "bit_count(#{quoted_attribute} # #{query})"
+              else
+                "#{quoted_attribute} #{operator} #{query}"
+              end
+            when :mysql
+              "DISTANCE(#{quoted_attribute}, #{query}, #{connection.quote(operator)})"
+            else # :mariadb
               "VEC_DISTANCE(#{quoted_attribute}, #{query})"
-            when "bit_count"
-              "bit_count(#{quoted_attribute} # #{query})"
-            else
-              "#{quoted_attribute} #{operator} #{query}"
             end
 
           # https://stats.stackexchange.com/questions/146221/is-cosine-similarity-identical-to-l2-normalized-euclidean-distance
