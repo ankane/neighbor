@@ -10,9 +10,10 @@ module Neighbor
     module InstanceMethods
       def configure_connection
         super
-        @raw_connection.enable_load_extension(1)
-        SqliteVec.load(@raw_connection)
-        @raw_connection.enable_load_extension(0)
+        db = ActiveRecord::VERSION::STRING.to_f >= 7.1 ? @raw_connection : @connection
+        db.enable_load_extension(1)
+        SqliteVec.load(db)
+        db.enable_load_extension(0)
       end
     end
   end
