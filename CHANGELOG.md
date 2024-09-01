@@ -3,6 +3,7 @@
 - Added experimental support for MariaDB 10.6 Vector
 - Added experimental support for MySQL 9
 - Added experimental support for SQLite (sqlite-vec)
+- Dropped support for Active Record < 7
 
 ## 0.4.3 (unreleased)
 

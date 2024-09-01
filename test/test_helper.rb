@@ -7,10 +7,7 @@ require "active_record"
 logger = ActiveSupport::Logger.new(ENV["VERBOSE"] ? STDOUT : nil)
 ActiveRecord::Schema.verbose = false unless ENV["VERBOSE"]
 ActiveRecord::Base.logger = logger
-
-if ActiveRecord::VERSION::MAJOR >= 7
-  ActiveRecord::Base.partial_inserts = false
-end
+ActiveRecord::Base.partial_inserts = false
 
 class Minitest::Test
   def assert_elements_in_delta(expected, actual)
