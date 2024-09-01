@@ -6,10 +6,7 @@ class SqliteRecord < ActiveRecord::Base
   establish_connection adapter: "sqlite3", database: ":memory:"
 end
 
-db = SqliteRecord.connection.raw_connection
-db.enable_load_extension(1)
-SqliteVec.load(db)
-db.enable_load_extension(0)
+Neighbor::SQLite.initialize!
 
 SqliteRecord.connection.instance_eval do
   execute "CREATE VIRTUAL TABLE items USING vec0(id integer PRIMARY KEY AUTOINCREMENT NOT NULL, embedding float[3])"

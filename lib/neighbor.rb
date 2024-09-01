@@ -4,6 +4,7 @@ require "active_support"
 # modules
 require_relative "neighbor/reranking"
 require_relative "neighbor/sparse_vector"
+require_relative "neighbor/sqlite"
 require_relative "neighbor/utils"
 require_relative "neighbor/version"
 

@@ -45,15 +45,10 @@ Add this line to your application’s Gemfile:
 gem "sqlite-vec"
 ```
 
-And create `config/initializers/neighbor.rb` with:
+And run:
 
-```ruby
-require "sqlite_vec"
-
-db = ActiveRecord::Base.connection.raw_connection
-db.enable_load_extension(1)
-SqliteVec.load(db)
-db.enable_load_extension(0)
+```sh
+rails generate neighbor:sqlite
 ```
 
 ## Getting Started

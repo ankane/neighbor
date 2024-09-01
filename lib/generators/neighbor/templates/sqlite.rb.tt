@@ -1,0 +1,1 @@
+Neighbor::SQLite.initialize!
