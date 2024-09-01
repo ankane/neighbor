@@ -33,7 +33,11 @@ module Neighbor
   module MysqlRegisterTypes
     def initialize_type_map(m)
       super
-      m.register_type %r(vector)i do |sql_type|
+      register_vector_type(m)
+    end
+
+    def register_vector_type(m)
+      m.register_type %r(^vector)i do |sql_type|
         limit = extract_limit(sql_type)
         Type::MysqlVector.new(limit: limit)
       end
@@ -83,6 +87,9 @@ ActiveSupport.on_load(:active_record) do
 
   # prevent unknown OID warning
   ActiveRecord::ConnectionAdapters::AbstractMysqlAdapter.singleton_class.prepend(Neighbor::MysqlRegisterTypes)
+  if ActiveRecord::VERSION::STRING.to_f < 7.1
+    ActiveRecord::ConnectionAdapters::AbstractMysqlAdapter.register_vector_type(ActiveRecord::ConnectionAdapters::AbstractMysqlAdapter::TYPE_MAP)
+  end
 end
 
 require_relative "neighbor/railtie" if defined?(Rails::Railtie)
