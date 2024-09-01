@@ -89,7 +89,7 @@ module Neighbor
               when "jaccard"
                 "<%>"
               when "hamming2"
-                "#"
+                "bit_count"
               end
             when :vector, :halfvec, :sparsevec
               case distance
@@ -146,7 +146,7 @@ module Neighbor
             case operator
             when "VEC_DISTANCE"
               "VEC_DISTANCE(#{quoted_attribute}, #{query})"
-            when "#"
+            when "bit_count"
               "bit_count(#{quoted_attribute} # #{query})"
             else
               "#{quoted_attribute} #{operator} #{query}"
