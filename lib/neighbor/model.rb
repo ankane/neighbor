@@ -27,6 +27,12 @@ module Neighbor
           @neighbor_attributes[attribute_name] = {dimensions: dimensions, normalize: normalize}
         end
 
+        if connection_db_config.adapter =~ /sqlite/i
+          attribute_names.each do |attribute_name|
+            attribute attribute_name, Neighbor::Type::SqliteVector.new
+          end
+        end
+
         return if @neighbor_attributes.size != attribute_names.size
 
         validate do

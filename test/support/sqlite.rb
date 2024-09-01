@@ -19,7 +19,7 @@ end
 class SqliteItem < SqliteRecord
   has_neighbors :embedding
   self.table_name = "items"
-
-  # TODO move to has_neighbors
-  attribute :embedding, Neighbor::Type::SqliteVector.new
 end
+
+# ensure has_neighbors does not cause model schema to load
+raise "has_neighbors loading model schema early" if SqliteItem.send(:schema_loaded?)
