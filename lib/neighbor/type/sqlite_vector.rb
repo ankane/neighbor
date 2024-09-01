@@ -8,6 +8,11 @@ module Neighbor
         super(value)
       end
 
+      def deserialize(value)
+        value = super
+        cast_value(value) unless value.nil?
+      end
+
       private
 
       def cast_value(value)

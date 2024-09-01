@@ -36,6 +36,11 @@ class MysqlTest < Minitest::Test
     assert_elements_in_delta [2, 3], result.map(&:neighbor_distance)
   end
 
+  def test_create
+    item = MysqlItem.create!(embedding: [1, 2, 3])
+    assert_equal [1, 2, 3], item.embedding
+  end
+
   def test_vector_to_string
     MysqlItem.create!(embedding: [1, 2, 3])
     assert_equal "[1.00000e+00,2.00000e+00,3.00000e+00]", MysqlItem.pluck("VECTOR_TO_STRING(embedding)").last

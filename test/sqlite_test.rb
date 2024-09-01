@@ -20,6 +20,11 @@ class SqliteTest < Minitest::Test
     assert_elements_in_delta [1, Math.sqrt(3)], result.map(&:neighbor_distance)
   end
 
+  def test_create
+    item = SqliteItem.create!(embedding: [1, 2, 3])
+    assert_equal [1, 2, 3], item.embedding
+  end
+
   def test_vec_to_json
     SqliteItem.create!(embedding: [1, 2, 3])
     assert_equal "[1.000000,2.000000,3.000000]", SqliteItem.pluck("vec_to_json(embedding)").last

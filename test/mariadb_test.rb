@@ -28,6 +28,11 @@ class MariadbTest < Minitest::Test
     assert_elements_in_delta [1, Math.sqrt(3)], result.map(&:neighbor_distance)
   end
 
+  def test_create
+    item = MariadbItem.create!(embedding: [1, 2, 3])
+    assert_equal [1, 2, 3], item.embedding
+  end
+
   def test_vec_totext
     MariadbItem.create!(embedding: [1, 2, 3])
     assert_equal "[1.000000,2.000000,3.000000]", MariadbItem.pluck("VEC_ToText(embedding)").last
