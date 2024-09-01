@@ -1,6 +1,10 @@
 require_relative "test_helper"
 
 class MysqlTest < Minitest::Test
+  def setup
+    MysqlItem.delete_all
+  end
+
   def test_schema
     file = Tempfile.new
     connection = ActiveRecord::VERSION::STRING.to_f >= 7.2 ? MysqlRecord.connection_pool : MysqlRecord.connection

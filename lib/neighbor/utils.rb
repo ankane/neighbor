@@ -19,7 +19,8 @@ module Neighbor
     end
 
     def self.validate(value, dimensions:, column_info:)
-      if (message = validate_dimensions(value, column_info&.type, dimensions || column_info&.limit))
+      dimensions ||=  column_info&.limit unless column_info&.type == :binary
+      if (message = validate_dimensions(value, column_info&.type, dimensions))
         raise Error, message
       end
 

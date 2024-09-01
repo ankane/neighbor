@@ -111,6 +111,8 @@ module Neighbor
               when "euclidean", "cosine"
                 "<->"
               end
+            when :binary
+              "VEC_DISTANCE"
             else
               raise ArgumentError, "Unsupported type: #{column_type}"
             end
@@ -140,10 +142,15 @@ module Neighbor
             end
           end
 
-          order = "#{quoted_attribute} #{operator} #{query}"
-          if operator == "#"
-            order = "bit_count(#{order})"
-          end
+          order =
+            case operator
+            when "VEC_DISTANCE"
+              "VEC_DISTANCE(#{quoted_attribute}, #{query})"
+            when "#"
+              "bit_count(#{quoted_attribute} # #{query})"
+            else
+              "#{quoted_attribute} #{operator} #{query}"
+            end
 
           # https://stats.stackexchange.com/questions/146221/is-cosine-similarity-identical-to-l2-normalized-euclidean-distance
           # with normalized vectors:
