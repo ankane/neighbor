@@ -12,7 +12,7 @@ if ActiveRecord::VERSION::MAJOR >= 7
   ActiveRecord::Base.partial_inserts = false
 end
 
-require_relative "support/postgresql"
+require_relative "support/postgresql" if ENV["TEST_POSTGRESQL"]
 require_relative "support/mariadb" if ENV["TEST_MARIADB"]
 require_relative "support/mysql" if ENV["TEST_MYSQL"]
 
