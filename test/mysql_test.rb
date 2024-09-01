@@ -5,18 +5,6 @@ class MysqlTest < Minitest::Test
     MysqlItem.delete_all
   end
 
-  def test_schema
-    file = Tempfile.new
-    connection = ActiveRecord::VERSION::STRING.to_f >= 7.2 ? MysqlRecord.connection_pool : MysqlRecord.connection
-    ActiveRecord::SchemaDumper.dump(connection, file)
-    file.rewind
-    contents = file.read
-    # TODO update in 0.5.0
-    assert_match %{Could not dump table "mysql_items"}, contents
-    # refute_match "Could not dump table", contents
-    # assert_match %{t.vector "embedding", limit: 3}, contents
-  end
-
   def test_cosine
     skip "Requires HeatWave"
 
@@ -52,5 +40,17 @@ class MysqlTest < Minitest::Test
   def test_string_to_vector
     MysqlItem.connection.execute("INSERT INTO mysql_items (embedding) VALUES (STRING_TO_VECTOR('[1,2,3]'))")
     assert_equal [1, 2, 3], MysqlItem.last.embedding
+  end
+
+  def test_schema
+    file = Tempfile.new
+    connection = ActiveRecord::VERSION::STRING.to_f >= 7.2 ? MysqlRecord.connection_pool : MysqlRecord.connection
+    ActiveRecord::SchemaDumper.dump(connection, file)
+    file.rewind
+    contents = file.read
+    # TODO update in 0.5.0
+    assert_match %{Could not dump table "mysql_items"}, contents
+    # refute_match "Could not dump table", contents
+    # assert_match %{t.vector "embedding", limit: 3}, contents
   end
 end
