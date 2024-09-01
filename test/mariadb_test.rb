@@ -28,6 +28,10 @@ class MariadbTest < Minitest::Test
     assert_elements_in_delta [1, Math.sqrt(3)], result.map(&:neighbor_distance)
   end
 
+  def test_index_scan
+    assert_index_scan MariadbItem.nearest_neighbors(:embedding, [0, 0, 0], distance: "euclidean")
+  end
+
   def test_create
     item = MariadbItem.create!(embedding: [1, 2, 3])
     assert_equal [1, 2, 3], item.embedding
@@ -62,5 +66,9 @@ class MariadbTest < Minitest::Test
       MariadbItem.create!(embedding: [Float::NAN, 0, 0])
     end
     assert_equal "Validation failed: Embedding must have finite values", error.message
+  end
+
+  def assert_index_scan(relation)
+    assert_match "index_mariadb_items_on_embedding", relation.limit(5).explain.inspect
   end
 end

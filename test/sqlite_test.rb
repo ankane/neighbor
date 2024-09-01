@@ -44,7 +44,7 @@ class SqliteTest < Minitest::Test
   end
 
   def test_invalid_dimensions
-    # TODO improve
+    # TODO use validation / ActiveRecord::RecordInvalid instead
     error = assert_raises(ActiveRecord::StatementInvalid) do
       SqliteItem.create!(embedding: [1, 1])
     end
