@@ -1,7 +1,7 @@
 class MariadbRecord < ActiveRecord::Base
   self.abstract_class = true
 
-  establish_connection adapter: "mysql2", database: "mysql", host: "127.0.0.1", username: "root"
+  establish_connection adapter: "mysql2", database: "neighbor_test", host: "127.0.0.1", port: 3307, username: "root"
 end
 
 MariadbRecord.connection.instance_eval do

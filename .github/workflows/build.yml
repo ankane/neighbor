@@ -20,12 +20,20 @@ jobs:
     env:
       BUNDLE_GEMFILE: ${{ matrix.gemfile }}
     services:
+      mysql:
+        image: mysql:9
+        env:
+          MYSQL_ALLOW_EMPTY_PASSWORD: 1
+          MYSQL_DATABASE: neighbor_test
+        ports:
+          - 3306:3306
       mariadb:
         image: quay.io/mariadb-foundation/mariadb-devel:11.6-vector-preview
         env:
           MARIADB_ALLOW_EMPTY_ROOT_PASSWORD: 1
+          MARIADB_DATABASE: neighbor_test
         ports:
-          - 3306:3306
+          - 3307:3306
     steps:
       - uses: actions/checkout@v4
       - uses: ruby/setup-ruby@v1
@@ -43,9 +51,5 @@ jobs:
       #     make
       #     sudo make install
       # - run: bundle exec rake test
-      # - uses: ankane/setup-mysql@mysql-9
-      #   with:
-      #     mysql-version: "9.0"
-      #     database: neighbor_test
-      # - run: bundle exec rake test:mysql
+      - run: bundle exec rake test:mysql
       - run: bundle exec rake test:mariadb

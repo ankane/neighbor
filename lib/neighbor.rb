@@ -32,10 +32,11 @@ module Neighbor
   module MysqlRegisterTypes
     def initialize_type_map(m)
       super
-      m.register_type %r(vector)i do |sql_type|
-        limit = extract_limit(sql_type)
-        Type::MysqlVector.new(limit: limit)
-      end
+      # TODO uncomment in 0.5.0
+      # m.register_type %r(vector)i do |sql_type|
+      #   limit = extract_limit(sql_type)
+      #   Type::MysqlVector.new(limit: limit)
+      # end
     end
   end
 end

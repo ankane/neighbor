@@ -6,6 +6,9 @@ class MysqlTest < Minitest::Test
   end
 
   def test_schema
+    # TODO remove in 0.5.0
+    skip
+
     file = Tempfile.new
     connection = ActiveRecord::VERSION::STRING.to_f >= 7.2 ? MysqlRecord.connection_pool : MysqlRecord.connection
     ActiveRecord::SchemaDumper.dump(connection, file)

@@ -1,7 +1,3 @@
-## 0.5.0 (unreleased)
-
-- Added experimental support for MySQL 9
-
 ## 0.4.3 (unreleased)
 
 - Added `rrf` method
