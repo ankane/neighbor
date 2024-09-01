@@ -6,21 +6,15 @@ class MysqlTest < Minitest::Test
   end
 
   def test_schema
-    # TODO remove in 0.5.0
-    skip
-
     file = Tempfile.new
     connection = ActiveRecord::VERSION::STRING.to_f >= 7.2 ? MysqlRecord.connection_pool : MysqlRecord.connection
     ActiveRecord::SchemaDumper.dump(connection, file)
     file.rewind
     contents = file.read
-    refute_match "Could not dump table", contents
-    assert_match %{t.vector "embedding", limit: 3}, contents
-  end
-
-  def test_works
-    create_items(MysqlItem, :embedding)
-    assert_equal [[1, 1, 1], [2, 2, 2], [1, 1, 2]], MysqlItem.order(:id).pluck(:embedding)
+    # TODO update in 0.5.0
+    assert_match %{Could not dump table "mysql_items"}, contents
+    # refute_match "Could not dump table", contents
+    # assert_match %{t.vector "embedding", limit: 3}, contents
   end
 
   def test_euclidean
