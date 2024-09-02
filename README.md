@@ -667,7 +667,7 @@ You can use Neighbor for online item-based recommendations with [Disco](https://
 Generate a model
 
 ```sh
-rails generate model Movie name:string factors:cube
+rails generate model Movie name:string factors:vector{20}
 rails db:migrate
 ```
 
@@ -675,7 +675,7 @@ And add `has_neighbors`
 
 ```ruby
 class Movie < ApplicationRecord
-  has_neighbors :factors, dimensions: 20, normalize: true
+  has_neighbors :factors
 end
 ```
 
