@@ -85,11 +85,19 @@ class MariadbTest < Minitest::Test
 
   def test_insert
     MariadbCosineItem.insert!({embedding: [0, 3, 4]})
-    assert_elements_in_delta [0, 0.6, 0.8], MariadbItem.last.embedding
+    if supports_normalizes?
+      assert_elements_in_delta [0, 0.6, 0.8], MariadbItem.last.embedding
+    else
+      assert_elements_in_delta [0, 3, 4], MariadbItem.last.embedding
+    end
   end
 
   def test_insert_all
     MariadbCosineItem.insert_all!([{embedding: [0, 3, 4]}])
-    assert_elements_in_delta [0, 0.6, 0.8], MariadbItem.last.embedding
+    if supports_normalizes?
+      assert_elements_in_delta [0, 0.6, 0.8], MariadbItem.last.embedding
+    else
+      assert_elements_in_delta [0, 3, 4], MariadbItem.last.embedding
+    end
   end
 end

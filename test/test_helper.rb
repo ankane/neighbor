@@ -34,4 +34,8 @@ class Minitest::Test
       assert_match "Index Scan", relation.limit(5).explain.inspect
     end
   end
+
+  def supports_normalizes?
+    ActiveRecord::VERSION::STRING.to_f >= 7.1
+  end
 end

@@ -48,6 +48,7 @@ end
 ActiveSupport.on_load(:active_record) do
   require_relative "neighbor/attribute"
   require_relative "neighbor/model"
+  require_relative "neighbor/normalized_attribute"
   require_relative "neighbor/type/cube"
   require_relative "neighbor/type/halfvec"
   require_relative "neighbor/type/mysql_vector"

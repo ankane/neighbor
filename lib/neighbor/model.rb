@@ -47,7 +47,7 @@ module Neighbor
           else
             attribute_names.each do |attribute_name|
               attribute attribute_name do |cast_type|
-                raise "todo"
+                Neighbor::NormalizedAttribute.new(cast_type: cast_type, model: self, attribute_name: attribute_name)
               end
             end
           end

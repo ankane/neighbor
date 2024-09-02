@@ -113,11 +113,19 @@ class CubeTest < Minitest::Test
 
   def test_insert
     CosineItem.insert!({cube_embedding: [0, 3, 4]})
-    assert_elements_in_delta [0, 0.6, 0.8], Item.last.cube_embedding
+    if supports_normalizes?
+      assert_elements_in_delta [0, 0.6, 0.8], Item.last.cube_embedding
+    else
+      assert_elements_in_delta [0, 3, 4], Item.last.cube_embedding
+    end
   end
 
   def test_insert_all
     CosineItem.insert_all!([{cube_embedding: [0, 3, 4]}])
-    assert_elements_in_delta [0, 0.6, 0.8], Item.last.cube_embedding
+    if supports_normalizes?
+      assert_elements_in_delta [0, 0.6, 0.8], Item.last.cube_embedding
+    else
+      assert_elements_in_delta [0, 3, 4], Item.last.cube_embedding
+    end
   end
 end
