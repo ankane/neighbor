@@ -47,6 +47,4 @@ jobs:
           make
           sudo make install
       - run: bundle exec rake test
-      - run: bundle exec rake test
-        env:
-          TEST_TRILOGY: 1
+      - run: TEST_TRILOGY=1 bundle exec rake test
