@@ -508,18 +508,18 @@ semantic_results =
   Document.nearest_neighbors(:embedding, query_embedding, distance: "cosine").limit(20).load_async
 ```
 
-To combine the results, use a reranking model
+To combine the results, use Reciprocal Rank Fusion (RRF) [unreleased]
+
+```ruby
+Neighbor::Reranking.rrf(keyword_results, semantic_results)
+```
+
+Or a reranking model
 
 ```ruby
 rerank = Informers.pipeline("reranking", "mixedbread-ai/mxbai-rerank-xsmall-v1")
 results = (keyword_results + semantic_results).uniq
 rerank.(query, results.map(&:content), top_k: 5).map { |v| results[v[:doc_id]] }
-```
-
-Or Reciprocal Rank Fusion (RRF) [unreleased]
-
-```ruby
-Neighbor::Reranking.rrf(keyword_results, semantic_results)
 ```
 
 See the [complete code](examples/hybrid/example.rb)
