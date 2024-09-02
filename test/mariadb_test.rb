@@ -73,4 +73,23 @@ class MariadbTest < Minitest::Test
   def assert_index_scan(relation)
     assert_match "index_mariadb_items_on_embedding", relation.limit(5).explain.inspect
   end
+
+  def test_normalize
+    item = MariadbCosineItem.new
+    item.embedding = [0, 3, 4]
+    assert_elements_in_delta [0, 0.6, 0.8], item.embedding
+    item.save!
+    assert_elements_in_delta [0, 0.6, 0.8], item.embedding
+    assert_elements_in_delta [0, 0.6, 0.8], MariadbItem.last.embedding
+  end
+
+  def test_insert
+    MariadbCosineItem.insert!({embedding: [0, 3, 4]})
+    assert_elements_in_delta [0, 0.6, 0.8], MariadbItem.last.embedding
+  end
+
+  def test_insert_all
+    MariadbCosineItem.insert_all!([{embedding: [0, 3, 4]}])
+    assert_elements_in_delta [0, 0.6, 0.8], MariadbItem.last.embedding
+  end
 end
