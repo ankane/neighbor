@@ -1,6 +1,6 @@
 module Neighbor
   class Attribute < ActiveRecord::Type::Value
-    delegate :type, :serialize, :deserialize, to: :@cast_type
+    delegate :type, :serialize, :deserialize, :cast, to: :@cast_type
 
     def initialize(cast_type:, model:)
       @cast_type =
