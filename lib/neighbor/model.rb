@@ -29,12 +29,12 @@ module Neighbor
 
         if ActiveRecord::VERSION::STRING.to_f >= 7.2
           decorate_attributes(attribute_names) do |_name, cast_type|
-            Neighbor::Attribute.new(cast_type: cast_type, normalize: normalize, model: self)
+            Neighbor::Attribute.new(cast_type: cast_type, model: self)
           end
         else
           attribute_names.each do |attribute_name|
             attribute attribute_name do |cast_type|
-              Neighbor::Attribute.new(cast_type: cast_type, normalize: normalize, model: self)
+              Neighbor::Attribute.new(cast_type: cast_type, model: self)
             end
           end
         end

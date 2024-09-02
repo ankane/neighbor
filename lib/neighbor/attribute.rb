@@ -2,7 +2,7 @@ module Neighbor
   class Attribute < ActiveRecord::Type::Value
     delegate :type, :serialize, :deserialize, to: :@cast_type
 
-    def initialize(cast_type:, normalize:, model:)
+    def initialize(cast_type:, model:)
       @cast_type =
         if cast_type.is_a?(ActiveModel::Type::Value)
           case model.connection_db_config.adapter
@@ -16,8 +16,6 @@ module Neighbor
         else
           cast_type
         end
-
-      @normalize = normalize
     end
 
     private
