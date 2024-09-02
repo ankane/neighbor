@@ -1,10 +1,7 @@
 require_relative "test_helper"
+require_relative "support/postgresql"
 
-class RerankingTest < Minitest::Test
-  def setup
-    Item.delete_all
-  end
-
+class RerankingTest < PostgresTest
   def test_rrf
     create_items(Item, :embedding)
     items = Item.order(:id).to_a
