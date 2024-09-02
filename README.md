@@ -635,7 +635,7 @@ movies = []
 recommender.item_ids.each do |item_id|
   movies << {name: item_id, factors: recommender.item_factors(item_id)}
 end
-Movie.insert_all!(movies)
+Movie.create!(movies)
 ```
 
 And get similar movies
