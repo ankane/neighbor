@@ -205,7 +205,7 @@ module Neighbor
           query = connection.quote(column_attribute.serialize(vector))
 
           if !precision.nil?
-            raise ArgumentError, "Precision not supported for this adapter" if adapter != :postgresql
+            raise ArgumentError, "Precision not supported for this type" if adapter != :postgresql || column_type != :vector
 
             case precision.to_s
             when "half"
