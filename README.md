@@ -21,7 +21,7 @@ gem "neighbor"
 
 ### For Postgres
 
-Choose an extension: [pgvector](https://github.com/pgvector/pgvector) or [cube](https://www.postgresql.org/docs/current/cube.html). cube ships with Postgres, while pgvector supports more dimensions and approximate nearest neighbor search.
+Neighbor supports two extensions: [pgvector](https://github.com/pgvector/pgvector) and [cube](https://www.postgresql.org/docs/current/cube.html). cube ships with Postgres, while pgvector supports more dimensions and approximate nearest neighbor search.
 
 For pgvector, [install the extension](https://github.com/pgvector/pgvector#installation) and run:
 
