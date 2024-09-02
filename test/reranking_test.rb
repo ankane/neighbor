@@ -1,7 +1,6 @@
 require_relative "test_helper"
-require_relative "support/postgresql"
 
-class RerankingTest < PostgresTest
+class RerankingTest < Minitest::Test
   def test_rrf
     keyword_results =  ["C"]
     semantic_results = ["C", "A", "B"]
