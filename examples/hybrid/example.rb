@@ -11,7 +11,7 @@ ActiveRecord::Schema.define do
 
   create_table :documents, force: true do |t|
     t.text :content
-    t.vector :embedding, limit: 1024
+    t.vector :embedding, limit: 768
   end
 end
 
@@ -31,8 +31,9 @@ texts = [
 ]
 documents = Document.create!(texts.map { |v| {content: v} })
 
-embed = Informers.pipeline("embedding", "mixedbread-ai/mxbai-embed-large-v1")
-embeddings = embed.(documents.map(&:content))
+embed = Informers.pipeline("embedding", "Snowflake/snowflake-arctic-embed-m-v1.5")
+embed_options = {model_output: "sentence_embedding", pooling: "none"} # specific to embedding model
+embeddings = embed.(documents.map(&:content), **embed_options)
 
 documents.zip(embeddings) do |document, embedding|
   document.update!(embedding: embedding)
@@ -41,9 +42,9 @@ end
 query = "growling bear"
 keyword_results = Document.search(query).limit(20).load_async
 
-# the query prefix is specific to the embedding model (https://huggingface.co/mixedbread-ai/mxbai-embed-large-v1)
+# the query prefix is specific to the embedding model (https://huggingface.co/Snowflake/snowflake-arctic-embed-m-v1.5)
 query_prefix = "Represent this sentence for searching relevant passages: "
-query_embedding = embed.(query_prefix + query)
+query_embedding = embed.(query_prefix + query, **embed_options)
 semantic_results = Document.nearest_neighbors(:embedding, query_embedding, distance: "cosine").limit(20).load_async
 
 # to combine the results, use a reranking model
