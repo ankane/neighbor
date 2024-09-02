@@ -1,7 +1,12 @@
+if ActiveRecord::VERSION::STRING.to_f < 7.1
+  require "trilogy_adapter/connection"
+  ActiveRecord::Base.public_send :extend, TrilogyAdapter::Connection
+end
+
 class MysqlRecord < ActiveRecord::Base
   self.abstract_class = true
 
-  establish_connection adapter: "mysql2", database: "neighbor_test", host: "127.0.0.1", username: "root"
+  establish_connection adapter: (ENV["TEST_TRILOGY"] ? "trilogy" : "mysql2"), database: "neighbor_test", host: "127.0.0.1", username: "root"
 end
 
 MysqlRecord.connection.instance_eval do
