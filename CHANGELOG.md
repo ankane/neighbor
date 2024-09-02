@@ -1,4 +1,4 @@
-## 0.4.3 (unreleased)
+## 0.4.3 (2024-09-02)
 
 - Added `rrf` method
 

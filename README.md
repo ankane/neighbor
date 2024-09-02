@@ -508,7 +508,7 @@ semantic_results =
   Document.nearest_neighbors(:embedding, query_embedding, distance: "cosine").limit(20).load_async
 ```
 
-To combine the results, use Reciprocal Rank Fusion (RRF) [unreleased]
+To combine the results, use Reciprocal Rank Fusion (RRF)
 
 ```ruby
 Neighbor::Reranking.rrf(keyword_results, semantic_results)
