@@ -115,4 +115,9 @@ class CubeTest < Minitest::Test
     CosineItem.insert!({cube_embedding: [0, 3, 4]})
     assert_elements_in_delta [0, 3, 4], Item.last.cube_embedding
   end
+
+  def test_insert_all
+    CosineItem.insert_all!([{cube_embedding: [0, 3, 4]}])
+    assert_elements_in_delta [0, 3, 4], Item.last.cube_embedding
+  end
 end
