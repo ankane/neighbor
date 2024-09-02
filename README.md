@@ -510,7 +510,7 @@ semantic_results =
 To combine the results, use a reranking model
 
 ```ruby
-rerank = Informers.pipeline("reranking", "mixedbread-ai/mxbai-rerank-base-v1")
+rerank = Informers.pipeline("reranking", "mixedbread-ai/mxbai-rerank-xsmall-v1")
 results = (keyword_results + semantic_results).uniq
 rerank.(query, results.map(&:content), top_k: 5).map { |v| results[v[:doc_id]] }
 ```

@@ -47,7 +47,7 @@ query_embedding = embed.(query_prefix + query)
 semantic_results = Document.nearest_neighbors(:embedding, query_embedding, distance: "cosine").limit(20).load_async
 
 # to combine the results, use a reranking model
-rerank = Informers.pipeline("reranking", "mixedbread-ai/mxbai-rerank-base-v1")
+rerank = Informers.pipeline("reranking", "mixedbread-ai/mxbai-rerank-xsmall-v1")
 results = (keyword_results + semantic_results).uniq
 p rerank.(query, results.map(&:content), top_k: 5).map { |v| results[v[:doc_id]] }.map(&:content)
 
