@@ -8,8 +8,8 @@ module Neighbor
       @attribute_name = attribute_name.to_s
     end
 
-    def cast(value)
-      Neighbor::Utils.normalize(@cast_type.cast(value), column_info: @model.columns_hash[@attribute_name])
+    def cast(...)
+      Neighbor::Utils.normalize(@cast_type.cast(...), column_info: @model.columns_hash[@attribute_name])
     end
 
     private
