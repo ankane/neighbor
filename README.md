@@ -511,7 +511,7 @@ You can use Neighbor for hybrid search with [Informers](https://github.com/ankan
 Generate a model
 
 ```sh
-rails generate model Document content:text embedding:vector{1024}
+rails generate model Document content:text embedding:vector{768}
 rails db:migrate
 ```
 
@@ -542,8 +542,9 @@ documents = Document.create!(texts.map { |v| {content: v} })
 Generate an embedding for each document
 
 ```ruby
-embed = Informers.pipeline("embedding", "mixedbread-ai/mxbai-embed-large-v1")
-embeddings = embed.(documents.map(&:content))
+embed = Informers.pipeline("embedding", "Snowflake/snowflake-arctic-embed-m-v1.5")
+embed_options = {model_output: "sentence_embedding", pooling: "none"} # specific to embedding model
+embeddings = embed.(documents.map(&:content), **embed_options)
 
 documents.zip(embeddings) do |document, embedding|
   document.update!(embedding: embedding)
@@ -557,27 +558,27 @@ query = "growling bear"
 keyword_results = Document.search(query).limit(20).load_async
 ```
 
-And semantic search in parallel (the query prefix is specific to the [embedding model](https://huggingface.co/mixedbread-ai/mxbai-embed-large-v1#mxbai-embed-large-v1))
+And semantic search in parallel (the query prefix is specific to the [embedding model](https://huggingface.co/Snowflake/snowflake-arctic-embed-m-v1.5))
 
 ```ruby
 query_prefix = "Represent this sentence for searching relevant passages: "
-query_embedding = embed.(query_prefix + query)
+query_embedding = embed.(query_prefix + query, **embed_options)
 semantic_results =
   Document.nearest_neighbors(:embedding, query_embedding, distance: "cosine").limit(20).load_async
 ```
 
-To combine the results, use a reranking model
-
-```ruby
-rerank = Informers.pipeline("reranking", "mixedbread-ai/mxbai-rerank-base-v1")
-results = (keyword_results + semantic_results).uniq
-rerank.(query, results.map(&:content), top_k: 5).map { |v| results[v[:doc_id]] }
-```
-
-Or Reciprocal Rank Fusion (RRF) [unreleased]
+To combine the results, use Reciprocal Rank Fusion (RRF)
 
 ```ruby
 Neighbor::Reranking.rrf(keyword_results, semantic_results)
+```
+
+Or a reranking model
+
+```ruby
+rerank = Informers.pipeline("reranking", "mixedbread-ai/mxbai-rerank-xsmall-v1")
+results = (keyword_results + semantic_results).uniq
+rerank.(query, results.map(&:content), top_k: 5).map { |v| results[v[:doc_id]] }
 ```
 
 See the [complete code](examples/hybrid/example.rb)
@@ -694,7 +695,7 @@ movies = []
 recommender.item_ids.each do |item_id|
   movies << {name: item_id, factors: recommender.item_factors(item_id)}
 end
-Movie.insert_all!(movies)
+Movie.create!(movies)
 ```
 
 And get similar movies
