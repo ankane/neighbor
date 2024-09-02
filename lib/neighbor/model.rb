@@ -27,14 +27,15 @@ module Neighbor
           @neighbor_attributes[attribute_name] = {dimensions: dimensions, normalize: normalize}
         end
 
-        case connection_db_config.adapter
-        when /sqlite/i
-          attribute_names.each do |attribute_name|
-            attribute attribute_name, Neighbor::Type::SqliteVector.new
+        if ActiveRecord::VERSION::STRING.to_f >= 7.2
+          decorate_attributes(attribute_names) do |_name, cast_type|
+            Neighbor::Attribute.new(cast_type: cast_type, normalize: normalize, model: self)
           end
-        when /mysql|trilogy/i
+        else
           attribute_names.each do |attribute_name|
-            attribute attribute_name, Neighbor::Type::MysqlVector.new
+            attribute attribute_name do |cast_type|
+              Neighbor::Attribute.new(cast_type: cast_type, normalize: normalize, model: self)
+            end
           end
         end
 
