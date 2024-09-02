@@ -105,7 +105,7 @@ class CubeTest < Minitest::Test
   def test_normalize
     item = CosineItem.new
     item.cube_embedding = [0, 3, 4]
-    assert_elements_in_delta [0, 3, 4], item.cube_embedding
+    assert_elements_in_delta [0, 0.6, 0.8], item.cube_embedding
     item.save!
     assert_elements_in_delta [0, 0.6, 0.8], item.cube_embedding
     assert_elements_in_delta [0, 0.6, 0.8], Item.last.cube_embedding
@@ -113,11 +113,11 @@ class CubeTest < Minitest::Test
 
   def test_insert
     CosineItem.insert!({cube_embedding: [0, 3, 4]})
-    assert_elements_in_delta [0, 3, 4], Item.last.cube_embedding
+    assert_elements_in_delta [0, 0.6, 0.8], Item.last.cube_embedding
   end
 
   def test_insert_all
     CosineItem.insert_all!([{cube_embedding: [0, 3, 4]}])
-    assert_elements_in_delta [0, 3, 4], Item.last.cube_embedding
+    assert_elements_in_delta [0, 0.6, 0.8], Item.last.cube_embedding
   end
 end
