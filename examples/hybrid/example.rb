@@ -15,7 +15,7 @@ ActiveRecord::Schema.define do
   end
 
   # optional: add indexes
-  add_index :documents, "to_tsvector('english', content)", using: :gin
+  add_index :documents, "to_tsvector('english', coalesce(content, ''))", using: :gin
   add_index :documents, :embedding, using: :hnsw, opclass: :vector_cosine_ops
 end
 
@@ -23,9 +23,12 @@ class Document < ActiveRecord::Base
   has_neighbors :embedding
 
   scope :search, ->(query, language: "english") {
+    attributes = [:content]
+    expression = attributes.map { |v| "coalesce(#{connection.quote_column_name(v)}, '')" }.join(" || ' ' || ")
+
     # language required to use GIN index
-    where("to_tsvector(?, content) @@ plainto_tsquery(?, ?)", language, language, query)
-      .order(Arel.sql("ts_rank_cd(to_tsvector(?, content), plainto_tsquery(?, ?)) DESC", language, language, query))
+    where("to_tsvector(?, #{expression}) @@ plainto_tsquery(?, ?)", language, language, query)
+      .order(Arel.sql("ts_rank_cd(to_tsvector(?, #{expression}), plainto_tsquery(?, ?)) DESC", language, language, query))
   }
 end
 
