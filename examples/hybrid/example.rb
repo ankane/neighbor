@@ -22,11 +22,10 @@ end
 class Document < ActiveRecord::Base
   has_neighbors :embedding
 
+  # language needed to use GIN index
   scope :search, ->(query, language: "english") {
     columns = [:content]
     expression = columns.map { |v| "coalesce(#{connection.quote_column_name(v)}, '')" }.join(" || ' ' || ")
-
-    # language required to use GIN index
     where("to_tsvector(?, #{expression}) @@ plainto_tsquery(?, ?)", language, language, query)
       .order(Arel.sql("ts_rank_cd(to_tsvector(?, #{expression}), plainto_tsquery(?, ?)) DESC", language, language, query))
   }
