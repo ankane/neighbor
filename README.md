@@ -472,12 +472,9 @@ end
 Create some documents
 
 ```ruby
-texts = [
-  "The dog is barking",
-  "The cat is purring",
-  "The bear is growling"
-]
-documents = Document.create!(texts.map { |v| {content: v} })
+Document.create!(content: "The dog is barking")
+Document.create!(content: "The cat is purring")
+Document.create!(content: "The bear is growling")
 ```
 
 Generate an embedding for each document
