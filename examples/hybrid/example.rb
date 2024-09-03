@@ -29,19 +29,22 @@ class Document < ActiveRecord::Base
   }
 end
 
-texts = [
-  "The dog is barking",
-  "The cat is purring",
-  "The bear is growling"
-]
-documents = Document.create!(texts.map { |v| {content: v} })
+Document.create!(content: "The dog is barking")
+Document.create!(content: "The cat is purring")
+Document.create!(content: "The bear is growling")
 
 embed = Informers.pipeline("embedding", "Snowflake/snowflake-arctic-embed-m-v1.5")
 embed_options = {model_output: "sentence_embedding", pooling: "none"} # specific to embedding model
-embeddings = embed.(documents.map(&:content), **embed_options)
 
-documents.zip(embeddings) do |document, embedding|
-  document.update!(embedding: embedding)
+# generate embeddings in batches
+Document.where(embedding: nil).find_in_batches(batch_size: 16) do |documents|
+  embeddings = embed.(documents.map(&:content), **embed_options)
+
+  Document.transaction do
+    documents.zip(embeddings) do |document, embedding|
+      document.update!(embedding: embedding)
+    end
+  end
 end
 
 query = "growling bear"
