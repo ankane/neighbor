@@ -13,14 +13,19 @@ ActiveRecord::Schema.define do
     t.text :content
     t.vector :embedding, limit: 768
   end
+
+  # optional: add indexes
+  add_index :documents, "to_tsvector('english', content)", using: :gin
+  add_index :documents, :embedding, using: :hnsw, opclass: :vector_cosine_ops
 end
 
 class Document < ActiveRecord::Base
   has_neighbors :embedding
 
-  scope :search, ->(query) {
-    where("to_tsvector(content) @@ plainto_tsquery(?)", query)
-      .order(Arel.sql("ts_rank_cd(to_tsvector(content), plainto_tsquery(?)) DESC", query))
+  scope :search, ->(query, language: "english") {
+    # language required to use GIN index
+    where("to_tsvector(?, content) @@ plainto_tsquery(?, ?)", language, language, query)
+      .order(Arel.sql("ts_rank_cd(to_tsvector(?, content), plainto_tsquery(?, ?)) DESC", language, language, query))
   }
 end
 
