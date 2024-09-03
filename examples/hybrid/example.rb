@@ -23,8 +23,8 @@ class Document < ActiveRecord::Base
   has_neighbors :embedding
 
   scope :search, ->(query, language: "english") {
-    attributes = [:content]
-    expression = attributes.map { |v| "coalesce(#{connection.quote_column_name(v)}, '')" }.join(" || ' ' || ")
+    columns = [:content]
+    expression = columns.map { |v| "coalesce(#{connection.quote_column_name(v)}, '')" }.join(" || ' ' || ")
 
     # language required to use GIN index
     where("to_tsvector(?, #{expression}) @@ plainto_tsquery(?, ?)", language, language, query)
