@@ -36,15 +36,9 @@ Document.create!(content: "The bear is growling")
 embed = Informers.pipeline("embedding", "Snowflake/snowflake-arctic-embed-m-v1.5")
 embed_options = {model_output: "sentence_embedding", pooling: "none"} # specific to embedding model
 
-# generate embeddings in batches
-Document.where(embedding: nil).find_in_batches(batch_size: 16) do |documents|
-  embeddings = embed.(documents.map(&:content), **embed_options)
-
-  Document.transaction do
-    documents.zip(embeddings) do |document, embedding|
-      document.update!(embedding: embedding)
-    end
-  end
+Document.find_each do |document|
+  embedding = embed.(document.content, **embed_options)
+  document.update!(embedding: embedding)
 end
 
 query = "growling bear"
