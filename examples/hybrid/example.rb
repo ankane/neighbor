@@ -53,9 +53,9 @@ query_embedding = embed.(query_prefix + query, **embed_options)
 semantic_results = Document.nearest_neighbors(:embedding, query_embedding, distance: "cosine").limit(20).load_async
 
 # to combine the results, use Reciprocal Rank Fusion (RRF)
-p Neighbor::Reranking.rrf(keyword_results, semantic_results).map { |v| v[:result].content }
+p Neighbor::Reranking.rrf(keyword_results, semantic_results).first(5).map { |v| v[:result].content }
 
 # or a reranking model
 rerank = Informers.pipeline("reranking", "mixedbread-ai/mxbai-rerank-xsmall-v1")
 results = (keyword_results + semantic_results).uniq
-p rerank.(query, results.map(&:content), top_k: 5).map { |v| results[v[:doc_id]] }.map(&:content)
+p rerank.(query, results.map(&:content)).first(5).map { |v| results[v[:doc_id]] }.map(&:content)

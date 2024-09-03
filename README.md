@@ -511,7 +511,7 @@ semantic_results =
 To combine the results, use Reciprocal Rank Fusion (RRF)
 
 ```ruby
-Neighbor::Reranking.rrf(keyword_results, semantic_results)
+Neighbor::Reranking.rrf(keyword_results, semantic_results).first(5)
 ```
 
 Or a reranking model
@@ -519,7 +519,7 @@ Or a reranking model
 ```ruby
 rerank = Informers.pipeline("reranking", "mixedbread-ai/mxbai-rerank-xsmall-v1")
 results = (keyword_results + semantic_results).uniq
-rerank.(query, results.map(&:content), top_k: 5).map { |v| results[v[:doc_id]] }
+rerank.(query, results.map(&:content)).first(5).map { |v| results[v[:doc_id]] }
 ```
 
 See the [complete code](examples/hybrid/example.rb)
