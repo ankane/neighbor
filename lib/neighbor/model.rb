@@ -73,7 +73,7 @@ module Neighbor
           end
         end
 
-        scope :nearest_neighbors, ->(attribute_name, vector, distance: nil, precision: nil) {
+        scope :nearest_neighbors, ->(attribute_name, vector, distance:, precision: nil) {
           attribute_name = attribute_name.to_sym
           options = neighbor_attributes[attribute_name]
           raise ArgumentError, "Invalid attribute" unless options

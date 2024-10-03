@@ -531,12 +531,9 @@ end
 Create some documents
 
 ```ruby
-texts = [
-  "The dog is barking",
-  "The cat is purring",
-  "The bear is growling"
-]
-documents = Document.create!(texts.map { |v| {content: v} })
+Document.create!(content: "The dog is barking")
+Document.create!(content: "The cat is purring")
+Document.create!(content: "The bear is growling")
 ```
 
 Generate an embedding for each document
@@ -544,9 +541,9 @@ Generate an embedding for each document
 ```ruby
 embed = Informers.pipeline("embedding", "Snowflake/snowflake-arctic-embed-m-v1.5")
 embed_options = {model_output: "sentence_embedding", pooling: "none"} # specific to embedding model
-embeddings = embed.(documents.map(&:content), **embed_options)
 
-documents.zip(embeddings) do |document, embedding|
+Document.find_each do |document|
+  embedding = embed.(document.content, **embed_options)
   document.update!(embedding: embedding)
 end
 ```
@@ -570,7 +567,7 @@ semantic_results =
 To combine the results, use Reciprocal Rank Fusion (RRF)
 
 ```ruby
-Neighbor::Reranking.rrf(keyword_results, semantic_results)
+Neighbor::Reranking.rrf(keyword_results, semantic_results).first(5)
 ```
 
 Or a reranking model
@@ -578,7 +575,7 @@ Or a reranking model
 ```ruby
 rerank = Informers.pipeline("reranking", "mixedbread-ai/mxbai-rerank-xsmall-v1")
 results = (keyword_results + semantic_results).uniq
-rerank.(query, results.map(&:content), top_k: 5).map { |v| results[v[:doc_id]] }
+rerank.(query, results.map(&:content)).first(5).map { |v| results[v[:doc_id]] }
 ```
 
 See the [complete code](examples/hybrid/example.rb)
