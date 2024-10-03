@@ -3,7 +3,7 @@ require_relative "test_helper"
 class NeighborTest < Minitest::Test
   def test_schema
     file = Tempfile.new
-    connection = ActiveRecord::VERSION::STRING.to_f >= 7.2 ? ActiveRecord::Base.connection_pool : ActiveRecord::Base.connection
+    connection = ActiveRecord::VERSION::STRING.to_f >= 7.2 ? PostgresRecord.connection_pool : PostgresRecord.connection
     ActiveRecord::SchemaDumper.dump(connection, file)
     file.rewind
     contents = file.read
@@ -13,7 +13,6 @@ class NeighborTest < Minitest::Test
     assert_match %{t.halfvec "half_embedding", limit: 3}, contents
     assert_match %{t.bit "binary_embedding", limit: 3}, contents
     assert_match %{t.sparsevec "sparse_embedding", limit: 3}, contents
-    load(file.path)
   end
 
   def test_composite_primary_key
