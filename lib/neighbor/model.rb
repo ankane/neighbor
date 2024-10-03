@@ -56,14 +56,7 @@ module Neighbor
           end
         end
 
-        # cannot use keyword arguments with scope with Ruby 3.2 and Active Record 6.1
-        # https://github.com/rails/rails/issues/46934
-        scope :nearest_neighbors, ->(attribute_name, vector, options = nil) {
-          raise ArgumentError, "missing keyword: :distance" unless options.is_a?(Hash) && options.key?(:distance)
-          distance = options.delete(:distance)
-          precision = options.delete(:precision)
-          raise ArgumentError, "unknown keywords: #{options.keys.map(&:inspect).join(", ")}" if options.any?
-
+        scope :nearest_neighbors, ->(attribute_name, vector, distance:, precision: nil) {
           attribute_name = attribute_name.to_sym
           options = neighbor_attributes[attribute_name]
           raise ArgumentError, "Invalid attribute" unless options

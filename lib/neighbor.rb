@@ -51,11 +51,7 @@ ActiveSupport.on_load(:active_record) do
   ActiveRecord::ConnectionAdapters::TableDefinition.send(:define_column_methods, :cube, :halfvec, :sparsevec, :vector)
 
   # prevent unknown OID warning
-  if ActiveRecord::VERSION::MAJOR >= 7
-    ActiveRecord::ConnectionAdapters::PostgreSQLAdapter.singleton_class.prepend(Neighbor::RegisterTypes)
-  else
-    ActiveRecord::ConnectionAdapters::PostgreSQLAdapter.prepend(Neighbor::RegisterTypes)
-  end
+  ActiveRecord::ConnectionAdapters::PostgreSQLAdapter.singleton_class.prepend(Neighbor::RegisterTypes)
 end
 
 require_relative "neighbor/railtie" if defined?(Rails::Railtie)

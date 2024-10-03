@@ -1,3 +1,7 @@
+## 0.5.0 (unreleased)
+
+- Dropped support for Active Record < 7
+
 ## 0.4.3 (2024-09-02)
 
 - Added `rrf` method
