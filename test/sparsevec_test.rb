@@ -33,6 +33,14 @@ class SparsevecTest < Minitest::Test
     assert_index_scan Item.nearest_neighbors(:sparse_embedding, [0, 0, 0], distance: "cosine")
   end
 
+  def test_half_precision
+    create_items(Item, :sparse_embedding)
+    error = assert_raises(ArgumentError) do
+      Item.nearest_neighbors(:sparse_embedding, [0, 0, 0], distance: "euclidean", precision: "half")
+    end
+    assert_equal "Precision not supported for this type", error.message
+  end
+
   def test_type
     Item.create!(sparse_factors: "{1:1,3:2,5:3}/5")
     factors = Item.last.sparse_factors

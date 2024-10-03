@@ -122,6 +122,10 @@ module Neighbor
           query = connection.quote(column_attribute.serialize(vector))
 
           if !precision.nil?
+            if column_type != :vector
+              raise ArgumentError, "Precision not supported for this type"
+            end
+
             case precision.to_s
             when "half"
               cast_dimensions = dimensions || column_info&.limit
