@@ -61,6 +61,7 @@ ActiveSupport.on_load(:active_record) do
   begin
     require "active_record/connection_adapters/postgresql_adapter"
   rescue Gem::LoadError
+    # tries to load pg gem, which may not be available
   end
 
   if defined?(ActiveRecord::ConnectionAdapters::PostgreSQLAdapter)
