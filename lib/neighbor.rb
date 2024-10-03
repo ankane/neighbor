@@ -40,19 +40,25 @@ ActiveSupport.on_load(:active_record) do
 
   extend Neighbor::Model
 
-  require "active_record/connection_adapters/postgresql_adapter"
+  begin
+    require "active_record/connection_adapters/postgresql_adapter"
+  rescue Gem::LoadError
+    # tries to load pg gem, which may not be available
+  end
 
-  # ensure schema can be dumped
-  ActiveRecord::ConnectionAdapters::PostgreSQLAdapter::NATIVE_DATABASE_TYPES[:cube] = {name: "cube"}
-  ActiveRecord::ConnectionAdapters::PostgreSQLAdapter::NATIVE_DATABASE_TYPES[:halfvec] = {name: "halfvec"}
-  ActiveRecord::ConnectionAdapters::PostgreSQLAdapter::NATIVE_DATABASE_TYPES[:sparsevec] = {name: "sparsevec"}
-  ActiveRecord::ConnectionAdapters::PostgreSQLAdapter::NATIVE_DATABASE_TYPES[:vector] = {name: "vector"}
+  if defined?(ActiveRecord::ConnectionAdapters::PostgreSQLAdapter)
+    # ensure schema can be dumped
+    ActiveRecord::ConnectionAdapters::PostgreSQLAdapter::NATIVE_DATABASE_TYPES[:cube] = {name: "cube"}
+    ActiveRecord::ConnectionAdapters::PostgreSQLAdapter::NATIVE_DATABASE_TYPES[:halfvec] = {name: "halfvec"}
+    ActiveRecord::ConnectionAdapters::PostgreSQLAdapter::NATIVE_DATABASE_TYPES[:sparsevec] = {name: "sparsevec"}
+    ActiveRecord::ConnectionAdapters::PostgreSQLAdapter::NATIVE_DATABASE_TYPES[:vector] = {name: "vector"}
 
-  # ensure schema can be loaded
-  ActiveRecord::ConnectionAdapters::TableDefinition.send(:define_column_methods, :cube, :halfvec, :sparsevec, :vector)
+    # ensure schema can be loaded
+    ActiveRecord::ConnectionAdapters::TableDefinition.send(:define_column_methods, :cube, :halfvec, :sparsevec, :vector)
 
-  # prevent unknown OID warning
-  ActiveRecord::ConnectionAdapters::PostgreSQLAdapter.singleton_class.prepend(Neighbor::RegisterTypes)
+    # prevent unknown OID warning
+    ActiveRecord::ConnectionAdapters::PostgreSQLAdapter.singleton_class.prepend(Neighbor::RegisterTypes)
+  end
 end
 
 require_relative "neighbor/railtie" if defined?(Rails::Railtie)
