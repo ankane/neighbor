@@ -27,6 +27,20 @@ module Neighbor
           @neighbor_attributes[attribute_name] = {dimensions: dimensions, normalize: normalize}
         end
 
+        if normalize
+          if ActiveRecord::VERSION::STRING.to_f >= 7.1
+            attribute_names.each do |attribute_name|
+              normalizes attribute_name, with: ->(v) { Neighbor::Utils.normalize(v, column_info: columns_hash[attribute_name.to_s]) }
+            end
+          else
+            attribute_names.each do |attribute_name|
+              attribute attribute_name do |cast_type|
+                Neighbor::NormalizedAttribute.new(cast_type: cast_type, model: self, attribute_name: attribute_name)
+              end
+            end
+          end
+        end
+
         return if @neighbor_attributes.size != attribute_names.size
 
         validate do
@@ -43,16 +57,6 @@ module Neighbor
             if !Neighbor::Utils.validate_finite(value, column_info&.type)
               errors.add(k, "must have finite values")
             end
-          end
-        end
-
-        # TODO move to normalizes when Active Record < 7.1 no longer supported
-        before_save do
-          self.class.neighbor_attributes.each do |k, v|
-            next unless v[:normalize] && attribute_changed?(k)
-            value = read_attribute(k)
-            next if value.nil?
-            self[k] = Neighbor::Utils.normalize(value, column_info: self.class.columns_hash[k.to_s])
           end
         end
 
