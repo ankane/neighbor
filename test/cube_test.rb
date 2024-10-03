@@ -96,4 +96,28 @@ class CubeTest < Minitest::Test
     end
     assert_equal "Validation failed: Cube embedding must have finite values", error.message
   end
+
+  def test_normalize
+    item = CosineItem.new
+    item.cube_embedding = [0, 3, 4]
+    # TODO use normalizes for Active Record 7.1+
+    assert_elements_in_delta [0, 3, 4], item.cube_embedding
+    item.save!
+    assert_elements_in_delta [0, 0.6, 0.8], item.cube_embedding
+    assert_elements_in_delta [0, 0.6, 0.8], Item.last.cube_embedding
+  end
+
+  def test_insert
+    CosineItem.insert!({cube_embedding: [0, 3, 4]})
+    # TODO use normalizes for Active Record 7.1+
+    expected = [0, 3, 4]
+    assert_elements_in_delta expected, Item.last.cube_embedding
+  end
+
+  def test_insert_all
+    CosineItem.insert_all!([{cube_embedding: [0, 3, 4]}])
+    # TODO use normalizes for Active Record 7.1+
+    expected = [0, 3, 4]
+    assert_elements_in_delta expected, Item.last.cube_embedding
+  end
 end
