@@ -2,6 +2,7 @@ module Neighbor
   module SQLite
     def self.initialize!
       require_relative "type/sqlite_vector"
+
       require "sqlite_vec"
       require "active_record/connection_adapters/sqlite3_adapter"
 
