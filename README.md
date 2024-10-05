@@ -279,6 +279,7 @@ Supported values are:
 - `euclidean`
 - `cosine`
 - `taxicab`
+- `hamming`
 
 ### Dimensions
 
