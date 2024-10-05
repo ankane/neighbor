@@ -10,6 +10,7 @@ SqliteRecord.connection.instance_eval do
   create_table :items, force: true do |t|
     t.binary :embedding
     t.binary :int8_embedding
+    t.binary :binary_embedding
   end
 
   if ActiveRecord::VERSION::MAJOR >= 8
@@ -44,6 +45,7 @@ end
 class SqliteItem < SqliteRecord
   has_neighbors :embedding, dimensions: 3
   has_neighbors :int8_embedding, dimensions: 3, type: :int8
+  has_neighbors :binary_embedding, type: :bit
   self.table_name = "items"
 end
 

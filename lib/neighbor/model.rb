@@ -24,7 +24,7 @@ module Neighbor
 
         attribute_names.each do |attribute_name|
           raise Error, "has_neighbors already called for #{attribute_name.inspect}" if neighbor_attributes[attribute_name]
-          @neighbor_attributes[attribute_name] = {dimensions: dimensions, normalize: normalize, type: type}
+          @neighbor_attributes[attribute_name] = {dimensions: dimensions, normalize: normalize, type: type&.to_sym}
         end
 
         if ActiveRecord::VERSION::STRING.to_f >= 7.2
@@ -63,11 +63,12 @@ module Neighbor
             column_info = self.class.columns_hash[k.to_s]
             dimensions = v[:dimensions]
             dimensions ||= column_info&.limit unless column_info&.type == :binary
+            type = v[:type] || column_info&.type
 
-            if !Neighbor::Utils.validate_dimensions(value, column_info&.type, dimensions).nil?
+            if !Neighbor::Utils.validate_dimensions(value, type, dimensions).nil?
               errors.add(k, "must have #{dimensions} dimensions")
             end
-            if !Neighbor::Utils.validate_finite(value, column_info&.type)
+            if !Neighbor::Utils.validate_finite(value, type)
               errors.add(k, "must have finite values")
             end
           end
@@ -106,7 +107,8 @@ module Neighbor
 
           column_attribute = klass.type_for_attribute(attribute_name)
           vector = column_attribute.cast(vector)
-          Neighbor::Utils.validate(vector, dimensions: dimensions, column_info: column_info)
+          dimensions ||= column_info&.limit unless column_info&.type == :binary
+          Neighbor::Utils.validate(vector, dimensions: dimensions, type: type || column_info&.type)
           vector = Neighbor::Utils.normalize(vector, column_info: column_info) if normalize
 
           query = connection.quote(column_attribute.serialize(vector))
@@ -129,8 +131,11 @@ module Neighbor
           order =
             case adapter
             when :sqlite
-              if type.to_s == "int8"
+              case type
+              when :int8
                 "#{operator}(vec_int8(#{quoted_attribute}), vec_int8(#{query}))"
+              when :bit
+                "#{operator}(vec_bit(#{quoted_attribute}), vec_bit(#{query}))"
               else
                 "#{operator}(#{quoted_attribute}, #{query})"
               end

@@ -18,13 +18,12 @@ module Neighbor
       end
     end
 
-    def self.validate(value, dimensions:, column_info:)
-      dimensions ||= column_info&.limit unless column_info&.type == :binary
-      if (message = validate_dimensions(value, column_info&.type, dimensions))
+    def self.validate(value, dimensions:, type:)
+      if (message = validate_dimensions(value, type, dimensions))
         raise Error, message
       end
 
-      if !validate_finite(value, column_info&.type)
+      if !validate_finite(value, type)
         raise Error, "Values must be finite"
       end
     end
@@ -65,6 +64,8 @@ module Neighbor
           "vec_distance_cosine"
         when "taxicab"
           "vec_distance_L1"
+        when "hamming"
+          "vec_distance_hamming"
         end
       when :mariadb
         case column_type

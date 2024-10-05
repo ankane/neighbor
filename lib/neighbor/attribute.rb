@@ -19,10 +19,12 @@ module Neighbor
         if @cast_type.is_a?(ActiveModel::Type::Value)
           case Utils.adapter(@model)
           when :sqlite
-            case @type.to_s
-            when "int8"
+            case @type
+            when :int8
               Type::SqliteInt8Vector.new
-            when "float32", ""
+            when :bit
+              @cast_type
+            when :float32, nil
               Type::SqliteFloat32Vector.new
             else
               raise ArgumentError, "Unsupported type"
