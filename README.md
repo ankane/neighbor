@@ -331,6 +331,14 @@ Supported values are:
 - `euclidean`
 - `cosine`
 
+For cosine distance with MariaDB, vectors must be normalized before being stored.
+
+```ruby
+class Item < ApplicationRecord
+  has_neighbors :embedding, normalize: true
+end
+```
+
 ## MySQL
 
 ### Distance
@@ -339,6 +347,8 @@ Supported values are:
 
 - `euclidean`
 - `cosine`
+
+Note: The `DISTANCE()` function is [only available on HeatWave](https://dev.mysql.com/doc/refman/9.0/en/vector-functions.html)
 
 ## Examples
 
