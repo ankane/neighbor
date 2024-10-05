@@ -60,7 +60,7 @@ class SqliteTest < Minitest::Test
     contents = file.read
     if ActiveRecord::VERSION::MAJOR >= 8
       assert_match %{t.binary "embedding"}, contents
-      assert_match %{create_virtual_table "items", "vec0"}, contents
+      assert_match %{create_virtual_table "vec_items", "vec0"}, contents
     else
       assert_match %{Could not dump table "vec_items"}, contents
     end
