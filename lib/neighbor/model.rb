@@ -107,6 +107,8 @@ module Neighbor
                 "vec_distance_L2"
               when "cosine"
                 "vec_distance_cosine"
+              when "taxicab"
+                "vec_distance_L1"
               end
             when :mariadb
               case column_type
