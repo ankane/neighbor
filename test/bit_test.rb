@@ -1,4 +1,5 @@
 require_relative "test_helper"
+require_relative "support/postgresql"
 
 class BitTest < PostgresTest
   def test_hamming
