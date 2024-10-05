@@ -107,6 +107,7 @@ See the additional docs for:
 - [cube](#cube)
 - [pgvector](#pgvector)
 - [sqlite-vec](#sqlite-vec)
+- [MySQL](#mysql)
 
 Or check out some [examples](#examples)
 
@@ -285,6 +286,15 @@ class Item < ApplicationRecord
   has_neighbors :embedding, dimensions: 3
 end
 ```
+
+## MySQL
+
+### Distance
+
+Supported values are:
+
+- `euclidean`
+- `cosine`
 
 ## Examples
 
