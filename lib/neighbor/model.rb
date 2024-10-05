@@ -99,75 +99,7 @@ module Neighbor
               :postgresql
             end
 
-          operator =
-            case adapter
-            when :sqlite
-              case distance
-              when "euclidean"
-                "vec_distance_L2"
-              when "cosine"
-                "vec_distance_cosine"
-              when "taxicab"
-                "vec_distance_L1"
-              end
-            when :mariadb
-              case column_type
-              when :binary
-                case distance
-                when "euclidean", "cosine"
-                  "VEC_DISTANCE"
-                end
-              else
-                raise ArgumentError, "Unsupported type: #{column_type}"
-              end
-            when :mysql
-              case column_type
-              when :vector
-                case distance
-                when "cosine"
-                  "COSINE"
-                when "euclidean"
-                  "EUCLIDEAN"
-                end
-              else
-                raise ArgumentError, "Unsupported type: #{column_type}"
-              end
-            else
-              case column_type
-              when :bit
-                case distance
-                when "hamming"
-                  "<~>"
-                when "jaccard"
-                  "<%>"
-                when "hamming2"
-                  "#"
-                end
-              when :vector, :halfvec, :sparsevec
-                case distance
-                when "inner_product"
-                  "<#>"
-                when "cosine"
-                  "<=>"
-                when "euclidean"
-                  "<->"
-                when "taxicab"
-                  "<+>"
-                end
-              when :cube
-                case distance
-                when "taxicab"
-                  "<#>"
-                when "chebyshev"
-                  "<=>"
-                when "euclidean", "cosine"
-                  "<->"
-                end
-              else
-                raise ArgumentError, "Unsupported type: #{column_type}"
-              end
-            end
-
+          operator = Neighbor::Utils.operator(adapter, column_type, distance)
           raise ArgumentError, "Invalid distance: #{distance}" unless operator
 
           # ensure normalize set (can be true or false)
