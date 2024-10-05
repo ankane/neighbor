@@ -19,6 +19,9 @@ module Neighbor
           case @model.connection_db_config.adapter
           when /sqlite/i
             Type::SqliteVector.new
+          when /mysql|trilogy/i
+            # for MariaDB
+            Type::MysqlVector.new
           else
             @cast_type
           end

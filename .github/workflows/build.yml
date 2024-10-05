@@ -18,6 +18,13 @@ jobs:
     env:
       BUNDLE_GEMFILE: ${{ matrix.gemfile }}
     services:
+      mariadb:
+        image: quay.io/mariadb-foundation/mariadb-devel:11.6-vector-preview
+        env:
+          MARIADB_ALLOW_EMPTY_ROOT_PASSWORD: 1
+          MARIADB_DATABASE: neighbor_test
+        ports:
+          - 3307:3306
       mysql:
         image: mysql:9
         env:

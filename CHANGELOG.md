@@ -1,6 +1,7 @@
 ## 0.5.0 (unreleased)
 
 - Added experimental support for SQLite (sqlite-vec)
+- Added experimental support for MariaDB 10.6 Vector
 - Added experimental support for MySQL 9
 - Changed `normalize` option to use Active Record normalization
 - Dropped support for Active Record < 7

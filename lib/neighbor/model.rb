@@ -61,7 +61,8 @@ module Neighbor
             next if value.nil?
 
             column_info = self.class.columns_hash[k.to_s]
-            dimensions = v[:dimensions] || column_info&.limit
+            dimensions = v[:dimensions]
+            dimensions ||= column_info&.limit unless column_info&.type == :binary
 
             if !Neighbor::Utils.validate_dimensions(value, column_info&.type, dimensions).nil?
               errors.add(k, "must have #{dimensions} dimensions")
@@ -106,6 +107,16 @@ module Neighbor
                 "vec_distance_L2"
               when "cosine"
                 "vec_distance_cosine"
+              end
+            when :mariadb
+              case column_type
+              when :binary
+                case distance
+                when "euclidean", "cosine"
+                  "VEC_DISTANCE"
+                end
+              else
+                raise ArgumentError, "Unsupported type: #{column_type}"
               end
             when :mysql
               case column_type
@@ -158,7 +169,17 @@ module Neighbor
           raise ArgumentError, "Invalid distance: #{distance}" unless operator
 
           # ensure normalize set (can be true or false)
-          if distance == "cosine" && column_type == :cube && normalize.nil?
+          normalize_required =
+            case adapter
+            when :postgresql
+              column_type == :cube
+            when :mariadb
+              true
+            else
+              false
+            end
+
+          if distance == "cosine" && normalize_required && normalize.nil?
             raise Neighbor::Error, "Set normalize for cosine distance with cube"
           end
 
@@ -188,6 +209,8 @@ module Neighbor
             case adapter
             when :sqlite
               "#{operator}(#{quoted_attribute}, #{query})"
+            when :mariadb
+              "VEC_DISTANCE(#{quoted_attribute}, #{query})"
             when :mysql
               "DISTANCE(#{quoted_attribute}, #{query}, #{connection.quote(operator)})"
             else
@@ -204,7 +227,7 @@ module Neighbor
           # cosine distance = 1 - cosine similarity
           # this transformation doesn't change the order, so only needed for select
           neighbor_distance =
-            if column_type == :cube && distance == "cosine"
+            if distance == "cosine" && normalize_required
               "POWER(#{order}, 2) / 2.0"
             elsif [:vector, :halfvec, :sparsevec].include?(column_type) && distance == "inner_product"
               "(#{order}) * -1"

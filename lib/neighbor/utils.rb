@@ -19,7 +19,8 @@ module Neighbor
     end
 
     def self.validate(value, dimensions:, column_info:)
-      if (message = validate_dimensions(value, column_info&.type, dimensions || column_info&.limit))
+      dimensions ||= column_info&.limit unless column_info&.type == :binary
+      if (message = validate_dimensions(value, column_info&.type, dimensions))
         raise Error, message
       end
 
@@ -29,7 +30,7 @@ module Neighbor
     end
 
     def self.normalize(value, column_info:)
-      raise Error, "Normalize not supported for type" unless [:cube, :vector, :halfvec].include?(column_info&.type)
+      raise Error, "Normalize not supported for type" unless [:cube, :vector, :halfvec, :binary].include?(column_info&.type)
 
       norm = Math.sqrt(value.sum { |v| v * v })
 
