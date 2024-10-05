@@ -89,30 +89,13 @@ module Neighbor
           column_info = columns_hash[attribute_name.to_s]
           column_type = column_info&.type
 
-          adapter =
-            case connection.adapter_name
-            when /sqlite/i
-              :sqlite
-            when /mysql|trilogy/i
-              connection.try(:mariadb?) ? :mariadb : :mysql
-            else
-              :postgresql
-            end
+          adapter = Neighbor::Utils.adapter(connection)
 
           operator = Neighbor::Utils.operator(adapter, column_type, distance)
           raise ArgumentError, "Invalid distance: #{distance}" unless operator
 
           # ensure normalize set (can be true or false)
-          normalize_required =
-            case adapter
-            when :postgresql
-              column_type == :cube
-            when :mariadb
-              true
-            else
-              false
-            end
-
+          normalize_required = Utils.normalize_required?(adapter, column_type)
           if distance == "cosine" && normalize_required && normalize.nil?
             raise Neighbor::Error, "Set normalize for cosine distance with cube"
           end

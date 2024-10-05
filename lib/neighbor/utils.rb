@@ -44,6 +44,17 @@ module Neighbor
       !value.nil? && value.respond_to?(:to_a)
     end
 
+    def self.adapter(connection)
+      case connection.adapter_name
+      when /sqlite/i
+        :sqlite
+      when /mysql|trilogy/i
+        connection.try(:mariadb?) ? :mariadb : :mysql
+      else
+        :postgresql
+      end
+    end
+
     def self.operator(adapter, column_type, distance)
       case adapter
       when :sqlite
@@ -111,6 +122,17 @@ module Neighbor
         else
           raise ArgumentError, "Unsupported type: #{column_type}"
         end
+      end
+    end
+
+    def self.normalize_required?(adapter, column_type)
+      case adapter
+      when :postgresql
+        column_type == :cube
+      when :mariadb
+        true
+      else
+        false
       end
     end
   end
