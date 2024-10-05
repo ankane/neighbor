@@ -708,6 +708,11 @@ To get started with development:
 git clone https://github.com/ankane/neighbor.git
 cd neighbor
 bundle install
+
+# Postgres
 createdb neighbor_test
-bundle exec rake test
+bundle exec rake test:postgresql
+
+# SQLite
+bundle exec rake test:sqlite
 ```
