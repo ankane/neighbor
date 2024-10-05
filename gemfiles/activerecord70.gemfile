@@ -9,5 +9,5 @@ gem "pg"
 gem "sqlite3", "< 2"
 gem "sqlite-vec"
 gem "mysql2"
-gem "trilogy"
+gem "activerecord-trilogy-adapter"
 gem "railties", require: false
