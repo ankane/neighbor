@@ -37,6 +37,8 @@ class SqliteVirtualTest < Minitest::Test
   end
 
   def test_where_limit
+    skip if SQLite3::VERSION.to_i < 2
+
     error = assert_raises(ActiveRecord::StatementInvalid) do
       SqliteVecItem.where.not(embedding: nil).where("embedding MATCH ?", "[0, 0, 0]").order(:distance).limit(3).load
     end
