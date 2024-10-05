@@ -30,14 +30,29 @@ class SqliteTest < Minitest::Test
     assert_equal "[1.000000,2.000000,3.000000]", SqliteItem.pluck("vec_to_json(embedding)").last
   end
 
+  def test_virtual_table
+    create_items(SqliteVecItem, :embedding)
+
+    relation = SqliteVecItem.where("embedding MATCH ?", "[1, 1, 1]").order(:distance).limit(3)
+    assert_elements_in_delta [0, 1, Math.sqrt(3)], relation.pluck(:distance)
+    assert_match "SCAN vec_items VIRTUAL TABLE INDEX", relation.explain.inspect
+
+    relation = SqliteVecItem.where("embedding MATCH ? AND k = ?", "[1, 1, 1]", 3).order(:distance)
+    assert_elements_in_delta [0, 1, Math.sqrt(3)], relation.pluck(:distance)
+  end
+
   def test_schema
     file = Tempfile.new
     connection = ActiveRecord::VERSION::STRING.to_f >= 7.2 ? SqliteItem.connection_pool : SqliteItem.connection
     ActiveRecord::SchemaDumper.dump(connection, file)
     file.rewind
     contents = file.read
-    refute_match "Could not dump table", contents
-    assert_match %{t.binary "embedding"}, contents
+    if ActiveRecord::VERSION::MAJOR >= 8
+      assert_match %{t.binary "embedding"}, contents
+      assert_match %{create_virtual_table "items", "vec0"}, contents
+    else
+      assert_match %{Could not dump table "vec_items"}, contents
+    end
   end
 
   def test_invalid_dimensions

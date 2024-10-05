@@ -10,11 +10,22 @@ SqliteRecord.connection.instance_eval do
   create_table :items, force: true do |t|
     t.binary :embedding
   end
+
+  if ActiveRecord::VERSION::MAJOR >= 8
+    create_virtual_table :vec_items, :vec0, ["id integer PRIMARY KEY AUTOINCREMENT NOT NULL", "embedding float[3]"]
+  else
+    execute "CREATE VIRTUAL TABLE vec_items USING vec0(id integer PRIMARY KEY AUTOINCREMENT NOT NULL, embedding float[3])"
+  end
 end
 
 class SqliteItem < SqliteRecord
   has_neighbors :embedding, dimensions: 3
   self.table_name = "items"
+end
+
+class SqliteVecItem < SqliteRecord
+  has_neighbors :embedding, dimensions: 3
+  self.table_name = "vec_items"
 end
 
 # ensure has_neighbors does not cause model schema to load
