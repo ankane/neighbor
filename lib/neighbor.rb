@@ -2,6 +2,7 @@
 require "active_support"
 
 # modules
+require_relative "neighbor/postgresql"
 require_relative "neighbor/reranking"
 require_relative "neighbor/sparse_vector"
 require_relative "neighbor/sqlite"
@@ -10,25 +11,6 @@ require_relative "neighbor/version"
 
 module Neighbor
   class Error < StandardError; end
-
-  module RegisterTypes
-    def initialize_type_map(m = type_map)
-      super
-      m.register_type "cube", Type::Cube.new
-      m.register_type "halfvec" do |_, _, sql_type|
-        limit = extract_limit(sql_type)
-        Type::Halfvec.new(limit: limit)
-      end
-      m.register_type "sparsevec" do |_, _, sql_type|
-        limit = extract_limit(sql_type)
-        Type::Sparsevec.new(limit: limit)
-      end
-      m.register_type "vector" do |_, _, sql_type|
-        limit = extract_limit(sql_type)
-        Type::Vector.new(limit: limit)
-      end
-    end
-  end
 
   module MysqlRegisterTypes
     def initialize_type_map(m)
@@ -49,33 +31,15 @@ ActiveSupport.on_load(:active_record) do
   require_relative "neighbor/attribute"
   require_relative "neighbor/model"
   require_relative "neighbor/normalized_attribute"
-  require_relative "neighbor/type/cube"
-  require_relative "neighbor/type/halfvec"
   require_relative "neighbor/type/mysql_vector"
-  require_relative "neighbor/type/sparsevec"
   require_relative "neighbor/type/sqlite_vector"
-  require_relative "neighbor/type/vector"
 
   extend Neighbor::Model
 
   begin
-    require "active_record/connection_adapters/postgresql_adapter"
+    Neighbor::PostgreSQL.initialize!
   rescue Gem::LoadError
     # tries to load pg gem, which may not be available
-  end
-
-  if defined?(ActiveRecord::ConnectionAdapters::PostgreSQLAdapter)
-    # ensure schema can be dumped
-    ActiveRecord::ConnectionAdapters::PostgreSQLAdapter::NATIVE_DATABASE_TYPES[:cube] = {name: "cube"}
-    ActiveRecord::ConnectionAdapters::PostgreSQLAdapter::NATIVE_DATABASE_TYPES[:halfvec] = {name: "halfvec"}
-    ActiveRecord::ConnectionAdapters::PostgreSQLAdapter::NATIVE_DATABASE_TYPES[:sparsevec] = {name: "sparsevec"}
-    ActiveRecord::ConnectionAdapters::PostgreSQLAdapter::NATIVE_DATABASE_TYPES[:vector] = {name: "vector"}
-
-    # ensure schema can be loaded
-    ActiveRecord::ConnectionAdapters::TableDefinition.send(:define_column_methods, :cube, :halfvec, :sparsevec, :vector)
-
-    # prevent unknown OID warning
-    ActiveRecord::ConnectionAdapters::PostgreSQLAdapter.singleton_class.prepend(Neighbor::RegisterTypes)
   end
 
   require "active_record/connection_adapters/abstract_mysql_adapter"
