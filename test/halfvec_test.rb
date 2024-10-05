@@ -1,6 +1,6 @@
 require_relative "test_helper"
 
-class HalfvecTest < Minitest::Test
+class HalfvecTest < PostgresTest
   def test_cosine
     create_items(Item, :half_embedding)
     result = Item.find(1).nearest_neighbors(:half_embedding, distance: "cosine").first(3)

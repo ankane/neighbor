@@ -1,6 +1,6 @@
 require_relative "test_helper"
 
-class SparsevecTest < Minitest::Test
+class SparsevecTest < PostgresTest
   def test_cosine
     create_items(Item, :sparse_embedding)
     result = Item.find(1).nearest_neighbors(:sparse_embedding, distance: "cosine").first(3)

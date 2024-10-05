@@ -69,7 +69,7 @@ end
 # ensure has_neighbors does not cause model schema to load
 raise "has_neighbors loading model schema early" if Item.send(:schema_loaded?)
 
-class Minitest::Test
+class PostgresTest < Minitest::Test
   def setup
     Item.delete_all
   end
