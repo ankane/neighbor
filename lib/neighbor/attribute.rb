@@ -16,15 +16,11 @@ module Neighbor
     def new_cast_type
       @new_cast_type ||= begin
         if @cast_type.is_a?(ActiveModel::Type::Value)
-          case @model.connection_db_config.adapter
-          when /sqlite/i
+          case Utils.adapter(@model)
+          when :sqlite
             Type::SqliteVector.new
-          when /mysql|trilogy/i
-            if @model.connection.try(:mariadb?)
-              Type::MysqlVector.new
-            else
-              @cast_type
-            end
+          when :mariadb
+            Type::MysqlVector.new
           else
             @cast_type
           end

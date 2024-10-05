@@ -89,7 +89,7 @@ module Neighbor
           column_info = columns_hash[attribute_name.to_s]
           column_type = column_info&.type
 
-          adapter = Neighbor::Utils.adapter(connection)
+          adapter = Neighbor::Utils.adapter(klass)
 
           operator = Neighbor::Utils.operator(adapter, column_type, distance)
           raise ArgumentError, "Invalid distance: #{distance}" unless operator

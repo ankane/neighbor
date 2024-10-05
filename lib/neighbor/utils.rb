@@ -44,12 +44,12 @@ module Neighbor
       !value.nil? && value.respond_to?(:to_a)
     end
 
-    def self.adapter(connection)
-      case connection.adapter_name
+    def self.adapter(model)
+      case model.connection_db_config.adapter
       when /sqlite/i
         :sqlite
       when /mysql|trilogy/i
-        connection.try(:mariadb?) ? :mariadb : :mysql
+        model.connection.try(:mariadb?) ? :mariadb : :mysql
       else
         :postgresql
       end
