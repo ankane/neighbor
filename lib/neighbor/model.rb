@@ -27,6 +27,18 @@ module Neighbor
           @neighbor_attributes[attribute_name] = {dimensions: dimensions, normalize: normalize}
         end
 
+        if ActiveRecord::VERSION::STRING.to_f >= 7.2
+          decorate_attributes(attribute_names) do |_name, cast_type|
+            Neighbor::Attribute.new(cast_type: cast_type, model: self)
+          end
+        else
+          attribute_names.each do |attribute_name|
+            attribute attribute_name do |cast_type|
+              Neighbor::Attribute.new(cast_type: cast_type, model: self)
+            end
+          end
+        end
+
         if normalize
           if ActiveRecord::VERSION::STRING.to_f >= 7.1
             attribute_names.each do |attribute_name|
@@ -76,39 +88,57 @@ module Neighbor
           column_info = columns_hash[attribute_name.to_s]
           column_type = column_info&.type
 
+          adapter =
+            case connection.adapter_name
+            when /sqlite/i
+              :sqlite
+            else
+              :postgresql
+            end
+
           operator =
-            case column_type
-            when :bit
+            case adapter
+            when :sqlite
               case distance
-              when "hamming"
-                "<~>"
-              when "jaccard"
-                "<%>"
-              when "hamming2"
-                "#"
-              end
-            when :vector, :halfvec, :sparsevec
-              case distance
-              when "inner_product"
-                "<#>"
-              when "cosine"
-                "<=>"
               when "euclidean"
-                "<->"
-              when "taxicab"
-                "<+>"
-              end
-            when :cube
-              case distance
-              when "taxicab"
-                "<#>"
-              when "chebyshev"
-                "<=>"
-              when "euclidean", "cosine"
-                "<->"
+                "vec_distance_L2"
+              when "cosine"
+                "vec_distance_cosine"
               end
             else
-              raise ArgumentError, "Unsupported type: #{column_type}"
+              case column_type
+              when :bit
+                case distance
+                when "hamming"
+                  "<~>"
+                when "jaccard"
+                  "<%>"
+                when "hamming2"
+                  "#"
+                end
+              when :vector, :halfvec, :sparsevec
+                case distance
+                when "inner_product"
+                  "<#>"
+                when "cosine"
+                  "<=>"
+                when "euclidean"
+                  "<->"
+                when "taxicab"
+                  "<+>"
+                end
+              when :cube
+                case distance
+                when "taxicab"
+                  "<#>"
+                when "chebyshev"
+                  "<=>"
+                when "euclidean", "cosine"
+                  "<->"
+                end
+              else
+                raise ArgumentError, "Unsupported type: #{column_type}"
+              end
             end
 
           raise ArgumentError, "Invalid distance: #{distance}" unless operator
@@ -140,10 +170,17 @@ module Neighbor
             end
           end
 
-          order = "#{quoted_attribute} #{operator} #{query}"
-          if operator == "#"
-            order = "bit_count(#{order})"
-          end
+          order =
+            case adapter
+            when :sqlite
+              "#{operator}(#{quoted_attribute}, #{query})"
+            else
+              if operator == "#"
+                "bit_count(#{quoted_attribute} # #{query})"
+              else
+                "#{quoted_attribute} #{operator} #{query}"
+              end
+            end
 
           # https://stats.stackexchange.com/questions/146221/is-cosine-similarity-identical-to-l2-normalized-euclidean-distance
           # with normalized vectors:

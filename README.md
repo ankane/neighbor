@@ -1,6 +1,11 @@
 # Neighbor
 
-Nearest neighbor search for Rails and Postgres
+Nearest neighbor search for Rails
+
+Supports:
+
+- Postgres (cube and pgvector)
+- SQLite (sqlite-vec, experimental, unreleased)
 
 [![Build Status](https://github.com/ankane/neighbor/actions/workflows/build.yml/badge.svg)](https://github.com/ankane/neighbor/actions)
 
@@ -12,7 +17,7 @@ Add this line to your application’s Gemfile:
 gem "neighbor"
 ```
 
-## Choose An Extension
+### For Postgres
 
 Neighbor supports two extensions: [cube](https://www.postgresql.org/docs/current/cube.html) and [pgvector](https://github.com/pgvector/pgvector). cube ships with Postgres, while pgvector supports more dimensions and approximate nearest neighbor search.
 
@@ -30,6 +35,20 @@ rails generate neighbor:vector
 rails db:migrate
 ```
 
+### For SQLite
+
+Add this line to your application’s Gemfile:
+
+```ruby
+gem "sqlite-vec"
+```
+
+And run:
+
+```sh
+rails generate neighbor:sqlite
+```
+
 ## Getting Started
 
 Create a migration
@@ -37,9 +56,14 @@ Create a migration
 ```ruby
 class AddEmbeddingToItems < ActiveRecord::Migration[7.2]
   def change
+    # cube
     add_column :items, :embedding, :cube
-    # or
+
+    # pgvector
     add_column :items, :embedding, :vector, limit: 3 # dimensions
+
+    # sqlite-vec
+    add_column :items, :embedding, :blob
   end
 end
 ```
@@ -81,6 +105,7 @@ See the additional docs for:
 
 - [cube](#cube)
 - [pgvector](#pgvector)
+- [sqlite-vec](#sqlite-vec)
 
 Or check out some [examples](#examples)
 
@@ -239,6 +264,25 @@ Get the nearest neighbors
 ```ruby
 embedding = Neighbor::SparseVector.new({0 => 0.9, 1 => 1.3, 2 => 1.1}, 3)
 Item.nearest_neighbors(:embedding, embedding, distance: "euclidean").first(5)
+```
+
+## sqlite-vec
+
+### Distance
+
+Supported values are:
+
+- `euclidean`
+- `cosine`
+
+### Dimensions
+
+For sqlite-vec, it’s a good idea to specify the number of dimensions to ensure all records have the same number.
+
+```ruby
+class Item < ApplicationRecord
+  has_neighbors :embedding, dimensions: 3
+end
 ```
 
 ## Examples

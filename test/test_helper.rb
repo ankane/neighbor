@@ -10,6 +10,7 @@ ActiveRecord::Base.logger = logger
 ActiveRecord::Base.partial_inserts = false
 
 require_relative "support/postgresql"
+require_relative "support/sqlite"
 
 class Minitest::Test
   def assert_elements_in_delta(expected, actual)

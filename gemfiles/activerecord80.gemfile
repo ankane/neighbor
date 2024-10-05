@@ -6,4 +6,6 @@ gem "rake"
 gem "minitest", ">= 5"
 gem "activerecord", "~> 8.0.0.beta1"
 gem "pg"
+gem "sqlite3"
+gem "sqlite-vec"
 gem "railties", "~> 8.0.0.beta1", require: false

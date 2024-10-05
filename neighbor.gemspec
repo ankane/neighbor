@@ -3,7 +3,7 @@ require_relative "lib/neighbor/version"
 Gem::Specification.new do |spec|
   spec.name          = "neighbor"
   spec.version       = Neighbor::VERSION
-  spec.summary       = "Nearest neighbor search for Rails and Postgres"
+  spec.summary       = "Nearest neighbor search for Rails"
   spec.homepage      = "https://github.com/ankane/neighbor"
   spec.license       = "MIT"
 
