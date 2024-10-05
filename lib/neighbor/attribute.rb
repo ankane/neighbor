@@ -20,8 +20,11 @@ module Neighbor
           when /sqlite/i
             Type::SqliteVector.new
           when /mysql|trilogy/i
-            # for MariaDB
-            Type::MysqlVector.new
+            if @model.connection.try(:mariadb?)
+              Type::MysqlVector.new
+            else
+              @cast_type
+            end
           else
             @cast_type
           end
