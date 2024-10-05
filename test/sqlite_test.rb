@@ -52,6 +52,24 @@ class SqliteTest < Minitest::Test
     assert_elements_in_delta [0, 1, Math.sqrt(3)], relation.pluck(:distance)
   end
 
+  def test_virtual_table_no_limit
+    error = assert_raises(ActiveRecord::StatementInvalid) do
+      SqliteVecItem.where("embedding MATCH ?", "[0, 0, 0]").order(:distance).load
+    end
+    assert_match "A LIMIT or 'k = ?' constraint is required on vec0 knn queries.", error.message
+  end
+
+  def test_virtual_table_where_limit
+    error = assert_raises(ActiveRecord::StatementInvalid) do
+      SqliteVecItem.where.not(embedding: nil).where("embedding MATCH ?", "[0, 0, 0]").order(:distance).limit(3).load
+    end
+    assert_match "A LIMIT or 'k = ?' constraint is required on vec0 knn queries.", error.message
+  end
+
+  def test_virtual_table_where_k
+    assert SqliteVecItem.where.not(embedding: nil).where("embedding MATCH ? AND k = ?", "[0, 0, 0]", 3).order(:distance).load
+  end
+
   def test_schema
     file = Tempfile.new
     connection = ActiveRecord::VERSION::STRING.to_f >= 7.2 ? SqliteItem.connection_pool : SqliteItem.connection
