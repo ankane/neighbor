@@ -5,9 +5,9 @@ Nearest neighbor search for Rails
 Supports:
 
 - Postgres (cube and pgvector)
-- SQLite (sqlite-vec, experimental, unreleased)
-- MariaDB 11.6 Vector (experimental, unreleased)
-- MySQL 9 (experimental, unreleased, searching requires HeatWave)
+- SQLite (sqlite-vec) - unreleased
+- MariaDB 11.6 Vector - unreleased
+- MySQL 9 (searching requires HeatWave) - unreleased
 
 [![Build Status](https://github.com/ankane/neighbor/actions/workflows/build.yml/badge.svg)](https://github.com/ankane/neighbor/actions)
 
