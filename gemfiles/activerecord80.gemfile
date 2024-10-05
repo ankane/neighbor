@@ -8,4 +8,6 @@ gem "activerecord", "~> 8.0.0.beta1"
 gem "pg"
 gem "sqlite3"
 gem "sqlite-vec"
+gem "mysql2"
+gem "trilogy"
 gem "railties", "~> 8.0.0.beta1", require: false

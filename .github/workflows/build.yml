@@ -17,6 +17,14 @@ jobs:
     runs-on: ubuntu-latest
     env:
       BUNDLE_GEMFILE: ${{ matrix.gemfile }}
+    services:
+      mysql:
+        image: mysql:9
+        env:
+          MYSQL_ALLOW_EMPTY_PASSWORD: 1
+          MYSQL_DATABASE: neighbor_test
+        ports:
+          - 3306:3306
     steps:
       - uses: actions/checkout@v4
       - uses: ruby/setup-ruby@v1
@@ -34,3 +42,4 @@ jobs:
           make
           sudo make install
       - run: bundle exec rake test
+      - run: TEST_TRILOGY=1 bundle exec rake test

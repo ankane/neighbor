@@ -6,6 +6,7 @@ Supports:
 
 - Postgres (cube and pgvector)
 - SQLite (sqlite-vec, experimental, unreleased)
+- MySQL 9 (experimental, unreleased, searching requires HeatWave)
 
 [![Build Status](https://github.com/ankane/neighbor/actions/workflows/build.yml/badge.svg)](https://github.com/ankane/neighbor/actions)
 
@@ -59,7 +60,7 @@ class AddEmbeddingToItems < ActiveRecord::Migration[7.2]
     # cube
     add_column :items, :embedding, :cube
 
-    # pgvector
+    # pgvector and MySQL
     add_column :items, :embedding, :vector, limit: 3 # dimensions
 
     # sqlite-vec
@@ -715,4 +716,8 @@ bundle exec rake test:postgresql
 
 # SQLite
 bundle exec rake test:sqlite
+
+# MySQL
+docker run -e MYSQL_ALLOW_EMPTY_PASSWORD=1 -e MYSQL_DATABASE=neighbor_test -p 3306:3306 mysql:9
+bundle exec rake test:mysql
 ```

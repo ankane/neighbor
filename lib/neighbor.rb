@@ -29,6 +29,20 @@ module Neighbor
       end
     end
   end
+
+  module MysqlRegisterTypes
+    def initialize_type_map(m)
+      super
+      register_vector_type(m)
+    end
+
+    def register_vector_type(m)
+      m.register_type %r(^vector)i do |sql_type|
+        limit = extract_limit(sql_type)
+        Type::MysqlVector.new(limit: limit)
+      end
+    end
+  end
 end
 
 ActiveSupport.on_load(:active_record) do
@@ -37,6 +51,7 @@ ActiveSupport.on_load(:active_record) do
   require_relative "neighbor/normalized_attribute"
   require_relative "neighbor/type/cube"
   require_relative "neighbor/type/halfvec"
+  require_relative "neighbor/type/mysql_vector"
   require_relative "neighbor/type/sparsevec"
   require_relative "neighbor/type/sqlite_vector"
   require_relative "neighbor/type/vector"
@@ -61,6 +76,22 @@ ActiveSupport.on_load(:active_record) do
 
     # prevent unknown OID warning
     ActiveRecord::ConnectionAdapters::PostgreSQLAdapter.singleton_class.prepend(Neighbor::RegisterTypes)
+  end
+
+  require "active_record/connection_adapters/abstract_mysql_adapter"
+
+  # ensure schema can be dumped
+  ActiveRecord::ConnectionAdapters::AbstractMysqlAdapter::NATIVE_DATABASE_TYPES[:vector] = {name: "vector"}
+
+  # ensure schema can be loaded
+  unless ActiveRecord::ConnectionAdapters::TableDefinition.method_defined?(:vector)
+    ActiveRecord::ConnectionAdapters::TableDefinition.send(:define_column_methods, :vector)
+  end
+
+  # prevent unknown OID warning
+  ActiveRecord::ConnectionAdapters::AbstractMysqlAdapter.singleton_class.prepend(Neighbor::MysqlRegisterTypes)
+  if ActiveRecord::VERSION::STRING.to_f < 7.1
+    ActiveRecord::ConnectionAdapters::AbstractMysqlAdapter.register_vector_type(ActiveRecord::ConnectionAdapters::AbstractMysqlAdapter::TYPE_MAP)
   end
 end
 

@@ -92,6 +92,8 @@ module Neighbor
             case connection.adapter_name
             when /sqlite/i
               :sqlite
+            when /mysql|trilogy/i
+              connection.try(:mariadb?) ? :mariadb : :mysql
             else
               :postgresql
             end
@@ -104,6 +106,18 @@ module Neighbor
                 "vec_distance_L2"
               when "cosine"
                 "vec_distance_cosine"
+              end
+            when :mysql
+              case column_type
+              when :vector
+                case distance
+                when "cosine"
+                  "COSINE"
+                when "euclidean"
+                  "EUCLIDEAN"
+                end
+              else
+                raise ArgumentError, "Unsupported type: #{column_type}"
               end
             else
               case column_type
@@ -174,6 +188,8 @@ module Neighbor
             case adapter
             when :sqlite
               "#{operator}(#{quoted_attribute}, #{query})"
+            when :mysql
+              "DISTANCE(#{quoted_attribute}, #{query}, #{connection.quote(operator)})"
             else
               if operator == "#"
                 "bit_count(#{quoted_attribute} # #{query})"
