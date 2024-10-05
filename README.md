@@ -322,6 +322,16 @@ Get the nearest neighbors
 Item.where("embedding MATCH ?", "[1, 2, 3]").order(:distance).limit(5)
 ```
 
+### Int8 Vectors
+
+Use the `type` option for int8 vectors
+
+```ruby
+class Item < ApplicationRecord
+  has_neighbors :embedding, dimensions: 3, type: :int8
+end
+```
+
 ## MariaDB
 
 ### Distance

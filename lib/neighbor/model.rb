@@ -1,6 +1,6 @@
 module Neighbor
   module Model
-    def has_neighbors(*attribute_names, dimensions: nil, normalize: nil)
+    def has_neighbors(*attribute_names, dimensions: nil, normalize: nil, type: nil)
       if attribute_names.empty?
         raise ArgumentError, "has_neighbors requires an attribute name"
       end
@@ -24,17 +24,17 @@ module Neighbor
 
         attribute_names.each do |attribute_name|
           raise Error, "has_neighbors already called for #{attribute_name.inspect}" if neighbor_attributes[attribute_name]
-          @neighbor_attributes[attribute_name] = {dimensions: dimensions, normalize: normalize}
+          @neighbor_attributes[attribute_name] = {dimensions: dimensions, normalize: normalize, type: type}
         end
 
         if ActiveRecord::VERSION::STRING.to_f >= 7.2
           decorate_attributes(attribute_names) do |_name, cast_type|
-            Neighbor::Attribute.new(cast_type: cast_type, model: self)
+            Neighbor::Attribute.new(cast_type: cast_type, model: self, type: type)
           end
         else
           attribute_names.each do |attribute_name|
             attribute attribute_name do |cast_type|
-              Neighbor::Attribute.new(cast_type: cast_type, model: self)
+              Neighbor::Attribute.new(cast_type: cast_type, model: self, type: type)
             end
           end
         end
@@ -79,6 +79,7 @@ module Neighbor
           raise ArgumentError, "Invalid attribute" unless options
           normalize = options[:normalize]
           dimensions = options[:dimensions]
+          type = options[:type]
 
           return none if vector.nil?
 
@@ -90,6 +91,9 @@ module Neighbor
           column_type = column_info&.type
 
           adapter = Neighbor::Utils.adapter(klass)
+          if type && adapter != :sqlite
+            raise ArgumentError, "type only works with SQLite"
+          end
 
           operator = Neighbor::Utils.operator(adapter, column_type, distance)
           raise ArgumentError, "Invalid distance: #{distance}" unless operator
@@ -125,7 +129,11 @@ module Neighbor
           order =
             case adapter
             when :sqlite
-              "#{operator}(#{quoted_attribute}, #{query})"
+              if type.to_s == "int8"
+                "#{operator}(vec_int8(#{quoted_attribute}), vec_int8(#{query}))"
+              else
+                "#{operator}(#{quoted_attribute}, #{query})"
+              end
             when :mariadb
               "VEC_DISTANCE(#{quoted_attribute}, #{query})"
             when :mysql
