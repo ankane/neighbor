@@ -23,7 +23,7 @@ module Neighbor
             when "int8"
               Type::SqliteInt8Vector.new
             when "float32", ""
-              Type::SqliteVector.new
+              Type::SqliteFloat32Vector.new
             else
               raise ArgumentError, "Unsupported type"
             end
