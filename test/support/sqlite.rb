@@ -8,7 +8,7 @@ Neighbor::SQLite.initialize!
 
 SqliteRecord.connection.instance_eval do
   create_table :items, force: true do |t|
-    t.blob :embedding
+    t.binary :embedding
   end
 end
 

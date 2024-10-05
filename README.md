@@ -63,7 +63,7 @@ class AddEmbeddingToItems < ActiveRecord::Migration[7.2]
     add_column :items, :embedding, :vector, limit: 3 # dimensions
 
     # sqlite-vec
-    add_column :items, :embedding, :blob
+    add_column :items, :embedding, :binary
   end
 end
 ```
