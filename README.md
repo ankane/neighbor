@@ -300,20 +300,20 @@ class AddEmbeddingToItems < ActiveRecord::Migration[7.2]
     execute <<~SQL
       CREATE VIRTUAL TABLE items USING vec0(
         id integer PRIMARY KEY AUTOINCREMENT NOT NULL,
-        embedding float[3]
+        embedding float[3] distance_metric=L2
       )
     SQL
 
     # Rails 8+
     create_virtual_table :items, :vec0, [
       "id integer PRIMARY KEY AUTOINCREMENT NOT NULL",
-      "embedding float[3]"
+      "embedding float[3] distance_metric=L2"
     ]
   end
 end
 ```
 
-Use `embedding float[3] distance_metric=cosine` for cosine distance
+Use `distance_metric=cosine` for cosine distance
 
 Get the nearest neighbors
 
