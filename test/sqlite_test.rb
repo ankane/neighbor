@@ -30,7 +30,18 @@ class SqliteTest < Minitest::Test
     assert_equal "[1.000000,2.000000,3.000000]", SqliteItem.pluck("vec_to_json(embedding)").last
   end
 
-  def test_virtual_table
+  def test_virtual_table_cosine
+    create_items(SqliteCosineItem, :embedding)
+
+    relation = SqliteCosineItem.where("embedding MATCH ?", "[1, 1, 1]").order(:distance).limit(3)
+    assert_elements_in_delta [0, 0, 0.05719095841050148], relation.pluck(:distance)
+    assert_match "SCAN cosine_items VIRTUAL TABLE INDEX", relation.explain.inspect
+
+    relation = SqliteCosineItem.where("embedding MATCH ? AND k = ?", "[1, 1, 1]", 3).order(:distance)
+    assert_elements_in_delta [0, 0, 0.05719095841050148], relation.pluck(:distance)
+  end
+
+  def test_virtual_table_euclidean
     create_items(SqliteVecItem, :embedding)
 
     relation = SqliteVecItem.where("embedding MATCH ?", "[1, 1, 1]").order(:distance).limit(3)
