@@ -289,6 +289,38 @@ class Item < ApplicationRecord
 end
 ```
 
+### Virtual Tables
+
+You can also use [virtual tables](https://alexgarcia.xyz/sqlite-vec/features/knn.html)
+
+```ruby
+class AddEmbeddingToItems < ActiveRecord::Migration[7.2]
+  def change
+    # Rails < 8
+    execute <<~SQL
+      CREATE VIRTUAL TABLE items USING vec0(
+        id integer PRIMARY KEY AUTOINCREMENT NOT NULL,
+        embedding float[3]
+      )
+    SQL
+
+    # Rails 8+
+    create_virtual_table :items, :vec0, [
+      "id integer PRIMARY KEY AUTOINCREMENT NOT NULL",
+      "embedding float[3]"
+    ]
+  end
+end
+```
+
+Use `embedding float[3] distance_metric=cosine` for cosine distance
+
+Get the nearest neighbors
+
+```ruby
+Item.where("embedding MATCH ?", "[1, 2, 3]").order(:distance).limit(5)
+```
+
 ## MariaDB
 
 ### Distance

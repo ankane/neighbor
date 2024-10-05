@@ -12,15 +12,31 @@ SqliteRecord.connection.instance_eval do
   end
 
   if ActiveRecord::VERSION::MAJOR >= 8
-    create_virtual_table :vec_items, :vec0, ["id integer PRIMARY KEY AUTOINCREMENT NOT NULL", "embedding float[3]"]
+    create_virtual_table :vec_items, :vec0, [
+      "id integer PRIMARY KEY AUTOINCREMENT NOT NULL",
+      "embedding float[3]"
+    ]
   else
-    execute "CREATE VIRTUAL TABLE vec_items USING vec0(id integer PRIMARY KEY AUTOINCREMENT NOT NULL, embedding float[3])"
+    execute <<~SQL
+      CREATE VIRTUAL TABLE vec_items USING vec0(
+        id integer PRIMARY KEY AUTOINCREMENT NOT NULL,
+        embedding float[3]
+      )
+    SQL
   end
 
   if ActiveRecord::VERSION::MAJOR >= 8
-    create_virtual_table :cosine_items, :vec0, ["id integer PRIMARY KEY AUTOINCREMENT NOT NULL", "embedding float[3] distance_metric=cosine"]
+    create_virtual_table :cosine_items, :vec0, [
+      "id integer PRIMARY KEY AUTOINCREMENT NOT NULL",
+      "embedding float[3] distance_metric=cosine"
+    ]
   else
-    execute "CREATE VIRTUAL TABLE cosine_items USING vec0(id integer PRIMARY KEY AUTOINCREMENT NOT NULL, embedding float[3] distance_metric=cosine)"
+    execute <<~SQL
+      CREATE VIRTUAL TABLE cosine_items USING vec0(
+        id integer PRIMARY KEY AUTOINCREMENT NOT NULL,
+        embedding float[3] distance_metric=cosine
+      )
+    SQL
   end
 end
 
