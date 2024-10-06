@@ -394,6 +394,21 @@ class Item < ApplicationRecord
 end
 ```
 
+## Indexing
+
+Vector columns must use `null: false` to add a vector index
+
+```ruby
+class CreateItems < ActiveRecord::Migration[7.2]
+  def change
+    create_table :items do |t|
+      t.binary :embedding, null: false
+      t.index :embedding, type: :vector
+    end
+  end
+end
+```
+
 ## MySQL
 
 ### Distance
