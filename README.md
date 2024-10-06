@@ -326,7 +326,7 @@ Use `distance_metric=cosine` for cosine distance
 Get the nearest neighbors
 
 ```ruby
-Item.where("embedding MATCH ?", "[1, 2, 3]").order(:distance).limit(5)
+Item.where("embedding MATCH ? AND k = ?", "[1, 2, 3]", 5).order(:distance)
 ```
 
 ### Int8 Vectors
