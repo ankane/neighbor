@@ -65,8 +65,7 @@ module Neighbor
             column_info = self.class.columns_hash[k.to_s]
             dimensions = v[:dimensions]
             dimensions ||= column_info&.limit unless column_info&.type == :binary
-            type = v[:type] || column_info&.type
-            type = :bit if type == :binary && adapter == :mysql
+            type = v[:type] || Utils.type(adapter, column_info&.type)
 
             if !Neighbor::Utils.validate_dimensions(value, type, dimensions, adapter).nil?
               errors.add(k, "must have #{dimensions} dimensions")
@@ -111,7 +110,7 @@ module Neighbor
           column_attribute = klass.type_for_attribute(attribute_name)
           vector = column_attribute.cast(vector)
           dimensions ||= column_info&.limit unless column_info&.type == :binary
-          Neighbor::Utils.validate(vector, dimensions: dimensions, type: type || column_info&.type, adapter: adapter)
+          Neighbor::Utils.validate(vector, dimensions: dimensions, type: type || Utils.type(adapter, column_info&.type), adapter: adapter)
           vector = Neighbor::Utils.normalize(vector, column_info: column_info) if normalize
 
           query = connection.quote(column_attribute.serialize(vector))

@@ -20,8 +20,6 @@ module Neighbor
     end
 
     def self.validate(value, dimensions:, type:, adapter:)
-      type = :bit if type == :binary && adapter == :mysql
-
       if (message = validate_dimensions(value, type, dimensions, adapter))
         raise Error, message
       end
@@ -54,6 +52,21 @@ module Neighbor
         model.connection.try(:mariadb?) ? :mariadb : :mysql
       else
         :postgresql
+      end
+    end
+
+    def self.type(adapter, column_type)
+      case adapter
+      when :mysql
+        if column_type == :binary
+          :bit
+        else
+          column_type
+        end
+      when :mariadb
+        :vector
+      else
+        column_type
       end
     end
 
