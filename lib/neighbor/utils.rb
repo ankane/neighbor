@@ -3,6 +3,7 @@ module Neighbor
     def self.validate_dimensions(value, type, expected, adapter)
       dimensions = type == :sparsevec ? value.dimensions : value.size
       dimensions *= 8 if type == :bit && [:sqlite, :mysql].include?(adapter)
+
       if expected && dimensions != expected
         "Expected #{expected} dimensions, not #{dimensions}"
       end
@@ -10,7 +11,7 @@ module Neighbor
 
     def self.validate_finite(value, type)
       case type
-      when :bit
+      when :bit, :integer
         true
       when :sparsevec
         value.values.all?(&:finite?)
@@ -63,8 +64,6 @@ module Neighbor
         else
           column_type
         end
-      when :mariadb
-        :vector
       else
         column_type
       end
@@ -89,6 +88,11 @@ module Neighbor
           case distance
           when "euclidean", "cosine"
             "VEC_DISTANCE"
+          end
+        when :integer
+          case distance
+          when "hamming"
+            "BIT_COUNT"
           end
         else
           raise ArgumentError, "Unsupported type: #{column_type}"

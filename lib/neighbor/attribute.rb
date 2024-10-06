@@ -2,10 +2,11 @@ module Neighbor
   class Attribute < ActiveRecord::Type::Value
     delegate :type, :serialize, :deserialize, :cast, to: :new_cast_type
 
-    def initialize(cast_type:, model:, type:)
+    def initialize(cast_type:, model:, type:, attribute_name:)
       @cast_type = cast_type
       @model = model
       @type = type
+      @attribute_name = attribute_name
     end
 
     private
@@ -30,7 +31,11 @@ module Neighbor
               raise ArgumentError, "Unsupported type"
             end
           when :mariadb
-            Type::MysqlVector.new
+            if @model.columns_hash[@attribute_name.to_s]&.type == :integer
+              @cast_type
+            else
+              Type::MysqlVector.new
+            end
           else
             @cast_type
           end

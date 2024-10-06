@@ -385,6 +385,7 @@ Supported values are:
 
 - `euclidean`
 - `cosine`
+- `hamming`
 
 For cosine distance with MariaDB, vectors must be normalized before being stored.
 
@@ -407,6 +408,26 @@ class CreateItems < ActiveRecord::Migration[7.2]
     end
   end
 end
+```
+
+### Binary Vectors
+
+Use the `bigint` type to store binary vectors
+
+```ruby
+class AddEmbeddingToItems < ActiveRecord::Migration[7.2]
+  def change
+    add_column :items, :embedding, :bigint
+  end
+end
+```
+
+Note: Binary vectors can have up to 64 dimensions
+
+Get the nearest neighbors by Hamming distance
+
+```ruby
+Item.nearest_neighbors(:embedding, 5, distance: "hamming").first(5)
 ```
 
 ## MySQL
