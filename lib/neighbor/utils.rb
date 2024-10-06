@@ -2,7 +2,7 @@ module Neighbor
   module Utils
     def self.validate_dimensions(value, type, expected, adapter)
       dimensions = type == :sparsevec ? value.dimensions : value.size
-      dimensions *= 8 if type == :bit && adapter == :sqlite
+      dimensions *= 8 if type == :bit && [:sqlite, :mysql].include?(adapter)
       if expected && dimensions != expected
         "Expected #{expected} dimensions, not #{dimensions}"
       end
@@ -20,6 +20,8 @@ module Neighbor
     end
 
     def self.validate(value, dimensions:, type:, adapter:)
+      type = :bit if type == :binary && adapter == :mysql
+
       if (message = validate_dimensions(value, type, dimensions, adapter))
         raise Error, message
       end
@@ -86,6 +88,11 @@ module Neighbor
             "COSINE"
           when "euclidean"
             "EUCLIDEAN"
+          end
+        when :binary
+          case distance
+          when "hamming"
+            "BIT_COUNT"
           end
         else
           raise ArgumentError, "Unsupported type: #{column_type}"

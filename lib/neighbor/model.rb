@@ -66,6 +66,7 @@ module Neighbor
             dimensions = v[:dimensions]
             dimensions ||= column_info&.limit unless column_info&.type == :binary
             type = v[:type] || column_info&.type
+            type = :bit if type == :binary && adapter == :mysql
 
             if !Neighbor::Utils.validate_dimensions(value, type, dimensions, adapter).nil?
               errors.add(k, "must have #{dimensions} dimensions")
@@ -144,7 +145,11 @@ module Neighbor
             when :mariadb
               "VEC_DISTANCE(#{quoted_attribute}, #{query})"
             when :mysql
-              "DISTANCE(#{quoted_attribute}, #{query}, #{connection.quote(operator)})"
+              if operator == "BIT_COUNT"
+                "BIT_COUNT(#{quoted_attribute} ^ #{query})"
+              else
+                "DISTANCE(#{quoted_attribute}, #{query}, #{connection.quote(operator)})"
+              end
             else
               if operator == "#"
                 "bit_count(#{quoted_attribute} # #{query})"

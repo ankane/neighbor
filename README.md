@@ -417,8 +417,27 @@ Supported values are:
 
 - `euclidean`
 - `cosine`
+- `hamming`
 
 Note: The `DISTANCE()` function is [only available on HeatWave](https://dev.mysql.com/doc/refman/9.0/en/vector-functions.html)
+
+### Binary Vectors
+
+Use the `binary` type to store binary vectors
+
+```ruby
+class AddEmbeddingToItems < ActiveRecord::Migration[7.2]
+  def change
+    add_column :items, :embedding, :binary
+  end
+end
+```
+
+Get the nearest neighbors by Hamming distance
+
+```ruby
+Item.nearest_neighbors(:embedding, "\x05", distance: "hamming").first(5)
+```
 
 ## Examples
 
