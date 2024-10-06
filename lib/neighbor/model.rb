@@ -56,6 +56,8 @@ module Neighbor
         return if @neighbor_attributes.size != attribute_names.size
 
         validate do
+          adapter = Utils.adapter(self.class)
+
           self.class.neighbor_attributes.each do |k, v|
             value = read_attribute(k)
             next if value.nil?
@@ -65,7 +67,7 @@ module Neighbor
             dimensions ||= column_info&.limit unless column_info&.type == :binary
             type = v[:type] || column_info&.type
 
-            if !Neighbor::Utils.validate_dimensions(value, type, dimensions).nil?
+            if !Neighbor::Utils.validate_dimensions(value, type, dimensions, adapter).nil?
               errors.add(k, "must have #{dimensions} dimensions")
             end
             if !Neighbor::Utils.validate_finite(value, type)
@@ -108,7 +110,7 @@ module Neighbor
           column_attribute = klass.type_for_attribute(attribute_name)
           vector = column_attribute.cast(vector)
           dimensions ||= column_info&.limit unless column_info&.type == :binary
-          Neighbor::Utils.validate(vector, dimensions: dimensions, type: type || column_info&.type)
+          Neighbor::Utils.validate(vector, dimensions: dimensions, type: type || column_info&.type, adapter: adapter)
           vector = Neighbor::Utils.normalize(vector, column_info: column_info) if normalize
 
           query = connection.quote(column_attribute.serialize(vector))

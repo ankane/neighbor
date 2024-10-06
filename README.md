@@ -345,7 +345,7 @@ Use the `type` option for binary vectors
 
 ```ruby
 class Item < ApplicationRecord
-  has_neighbors :embedding, type: :bit
+  has_neighbors :embedding, dimensions: 8, type: :bit
 end
 ```
 

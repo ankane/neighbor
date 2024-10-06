@@ -20,6 +20,13 @@ class SqliteBitTest < Minitest::Test
     assert_elements_in_delta [0, 1, 2], result.map(&:neighbor_distance)
   end
 
+  def test_invalid_dimensions
+    error = assert_raises(ActiveRecord::RecordInvalid) do
+      SqliteItem.create!(binary_embedding: "\x00\x11")
+    end
+    assert_equal "Validation failed: Binary embedding must have 8 dimensions", error.message
+  end
+
   def create_bit_items
     SqliteItem.create!(id: 1, binary_embedding: "\x00")
     SqliteItem.create!(id: 2, binary_embedding: "\x05")

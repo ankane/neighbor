@@ -1,7 +1,8 @@
 module Neighbor
   module Utils
-    def self.validate_dimensions(value, type, expected)
+    def self.validate_dimensions(value, type, expected, adapter)
       dimensions = type == :sparsevec ? value.dimensions : value.size
+      dimensions *= 8 if type == :bit && adapter == :sqlite
       if expected && dimensions != expected
         "Expected #{expected} dimensions, not #{dimensions}"
       end
@@ -18,8 +19,8 @@ module Neighbor
       end
     end
 
-    def self.validate(value, dimensions:, type:)
-      if (message = validate_dimensions(value, type, dimensions))
+    def self.validate(value, dimensions:, type:, adapter:)
+      if (message = validate_dimensions(value, type, dimensions, adapter))
         raise Error, message
       end
 

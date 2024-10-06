@@ -45,7 +45,7 @@ end
 class SqliteItem < SqliteRecord
   has_neighbors :embedding, dimensions: 3
   has_neighbors :int8_embedding, dimensions: 3, type: :int8
-  has_neighbors :binary_embedding, type: :bit
+  has_neighbors :binary_embedding, dimensions: 8, type: :bit
   self.table_name = "items"
 end
 
