@@ -307,14 +307,12 @@ class AddEmbeddingToItems < ActiveRecord::Migration[7.2]
     # Rails < 8
     execute <<~SQL
       CREATE VIRTUAL TABLE items USING vec0(
-        id integer PRIMARY KEY AUTOINCREMENT NOT NULL,
         embedding float[3] distance_metric=L2
       )
     SQL
 
     # Rails 8+
     create_virtual_table :items, :vec0, [
-      "id integer PRIMARY KEY AUTOINCREMENT NOT NULL",
       "embedding float[3] distance_metric=L2"
     ]
   end
@@ -322,6 +320,16 @@ end
 ```
 
 Use `distance_metric=cosine` for cosine distance
+
+Create a model with `rowid` as the primary key
+
+```ruby
+class Item < ApplicationRecord
+  self.primary_key = "rowid"
+
+  has_neighbors :embedding, dimensions: 3
+end
+```
 
 Get the nearest neighbors
 

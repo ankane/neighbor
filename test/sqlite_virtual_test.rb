@@ -22,6 +22,8 @@ class SqliteVirtualTest < Minitest::Test
     create_items(SqliteVecItem, :embedding)
 
     relation = SqliteVecItem.where("embedding MATCH ?", [1, 1, 1].to_s).order(:distance).limit(3)
+    assert_equal [1, 3, 2], relation.all.map(&:id)
+    assert_equal [1, 3, 2], relation.pluck(:rowid)
     assert_elements_in_delta [0, 1, Math.sqrt(3)], relation.pluck(:distance)
     assert_match "SCAN vec_items VIRTUAL TABLE INDEX", relation.explain.inspect
 
