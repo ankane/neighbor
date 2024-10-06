@@ -40,14 +40,16 @@ class SqliteFloat32Test < Minitest::Test
   def test_schema
     file = Tempfile.new
     connection = ActiveRecord::VERSION::STRING.to_f >= 7.2 ? SqliteItem.connection_pool : SqliteItem.connection
-    ActiveRecord::SchemaDumper.dump(connection, file)
+
+    ignore_tables = ActiveRecord::VERSION::MAJOR >= 8 ? [/_vector_chunks00\z/] : [/\Avec_items/, /\Acosine_items/]
+    ActiveRecord::SchemaDumper.stub(:ignore_tables, ignore_tables) do
+      ActiveRecord::SchemaDumper.dump(connection, file)
+    end
     file.rewind
     contents = file.read
+    assert_match %{t.binary "embedding"}, contents
     if ActiveRecord::VERSION::MAJOR >= 8
-      assert_match %{t.binary "embedding"}, contents
       assert_match %{create_virtual_table "vec_items", "vec0"}, contents
-    else
-      assert_match %{Could not dump table "vec_items"}, contents
     end
   end
 

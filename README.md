@@ -321,6 +321,14 @@ end
 
 Use `distance_metric=cosine` for cosine distance
 
+You can optionally ignore shadow tables
+
+```ruby
+ActiveRecord::SchemaDumper.ignore_tables += [
+  "items_chunks", "items_rowids", "items_vector_chunks00"
+]
+```
+
 Create a model with `rowid` as the primary key
 
 ```ruby
