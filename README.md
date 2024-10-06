@@ -339,7 +339,7 @@ class Item < ApplicationRecord
 end
 ```
 
-Get the nearest neighbors
+Get the `k` nearest neighbors
 
 ```ruby
 Item.where("embedding MATCH ?", [1, 2, 3].to_s).where(k: 5).order(:distance)
