@@ -394,7 +394,7 @@ class Item < ApplicationRecord
 end
 ```
 
-## Indexing
+### Indexing
 
 Vector columns must use `null: false` to add a vector index
 
