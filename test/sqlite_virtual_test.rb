@@ -50,4 +50,11 @@ class SqliteVirtualTest < Minitest::Test
   def test_where_k
     assert SqliteVecItem.where.not(embedding: nil).where("embedding MATCH ? AND k = ?", "[0, 0, 0]", 3).order(:distance).load
   end
+
+  def test_where_rowid
+    create_items(SqliteVecItem, :embedding)
+
+    relation = SqliteVecItem.where(rowid: [2, 3]).where("embedding MATCH ?", [1, 1, 1].to_s).where(k: 5).order(:distance)
+    assert_equal [3, 2], relation.pluck(:rowid)
+  end
 end

@@ -342,7 +342,13 @@ end
 Get the nearest neighbors
 
 ```ruby
-Item.where("embedding MATCH ? AND k = ?", [1, 2, 3].to_s, 5).order(:distance)
+Item.where("embedding MATCH ?", [1, 2, 3].to_s).where(k: 5).order(:distance)
+```
+
+Filter by primary key
+
+```ruby
+Item.where(rowid: [2, 3]).where("embedding MATCH ?", [1, 2, 3].to_s).where(k: 5).order(:distance)
 ```
 
 ### Int8 Vectors
