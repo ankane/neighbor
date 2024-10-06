@@ -321,7 +321,7 @@ end
 
 Use `distance_metric=cosine` for cosine distance
 
-You can optionally ignore shadow tables
+You can optionally ignore any shadow tables that are created
 
 ```ruby
 ActiveRecord::SchemaDumper.ignore_tables += [
