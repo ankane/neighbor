@@ -21,11 +21,11 @@ class SqliteVirtualTest < Minitest::Test
   def test_euclidean
     create_items(SqliteVecItem, :embedding)
 
-    relation = SqliteVecItem.where("embedding MATCH ?", "[1, 1, 1]").order(:distance).limit(3)
+    relation = SqliteVecItem.where("embedding MATCH ?", [1, 1, 1].to_s).order(:distance).limit(3)
     assert_elements_in_delta [0, 1, Math.sqrt(3)], relation.pluck(:distance)
     assert_match "SCAN vec_items VIRTUAL TABLE INDEX", relation.explain.inspect
 
-    relation = SqliteVecItem.where("embedding MATCH ? AND k = ?", "[1, 1, 1]", 3).order(:distance)
+    relation = SqliteVecItem.where("embedding MATCH ? AND k = ?", [1, 1, 1].to_s, 3).order(:distance)
     assert_elements_in_delta [0, 1, Math.sqrt(3)], relation.pluck(:distance)
   end
 
