@@ -1,6 +1,6 @@
 module Neighbor
   module Type
-    class SqliteFloat32Vector < ActiveRecord::Type::Binary
+    class SqliteVector < ActiveRecord::Type::Binary
       def serialize(value)
         if Utils.array?(value)
           value = value.to_a.pack("f*")

@@ -1,7 +1,7 @@
 module Neighbor
   module SQLite
     def self.initialize!
-      require_relative "type/sqlite_float32_vector"
+      require_relative "type/sqlite_vector"
       require_relative "type/sqlite_int8_vector"
 
       require "sqlite_vec"

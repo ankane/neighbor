@@ -25,7 +25,7 @@ module Neighbor
             when :bit
               @cast_type
             when :float32, nil
-              Type::SqliteFloat32Vector.new
+              Type::SqliteVector.new
             else
               raise ArgumentError, "Unsupported type"
             end
