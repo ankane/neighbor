@@ -163,6 +163,12 @@ Supported values are:
 
 The `vector` type can have up to 16,000 dimensions, and vectors with up to 2,000 dimensions can be indexed.
 
+The `halfvec` type can have up to 16,000 dimensions, and half vectors with up to 4,000 dimensions can be indexed.
+
+The `bit` type can have up to 83 million dimensions, and bit vectors with up to 64,000 dimensions can be indexed.
+
+The `sparsevec` type can have up to 16,000 non-zero elements, and sparse vectors with up to 1,000 non-zero elements can be indexed.
+
 ### Indexing
 
 Add an approximate index to speed up queries. Create a migration with:
