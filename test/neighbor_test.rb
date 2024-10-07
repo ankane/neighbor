@@ -16,7 +16,7 @@ class NeighborTest < PostgresTest
     assert_match %{t.sparsevec "sparse_embedding", limit: 3}, contents
   end
 
-  def test_connection_pool
+  def test_connection_leasing
     PostgresRecord.connection_handler.clear_active_connections!
     assert_nil PostgresRecord.connection_pool.active_connection?
     PostgresRecord.connection_pool.with_connection do
