@@ -154,7 +154,7 @@ module Neighbor
               if operator == "BIT_COUNT"
                 "BIT_COUNT(#{quoted_attribute} ^ #{query})"
               else
-                "DISTANCE(#{quoted_attribute}, #{query}, #{connection.quote(operator)})"
+                "DISTANCE(#{quoted_attribute}, #{query}, #{connection_pool.with_connection { |c| c.quote(operator) }})"
               end
             else
               if operator == "#"

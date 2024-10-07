@@ -50,7 +50,7 @@ module Neighbor
       when /sqlite/i
         :sqlite
       when /mysql|trilogy/i
-        model.connection.try(:mariadb?) ? :mariadb : :mysql
+        model.connection_pool.with_connection { |c| c.try(:mariadb?) } ? :mariadb : :mysql
       else
         :postgresql
       end
