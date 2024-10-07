@@ -16,6 +16,15 @@ class NeighborTest < PostgresTest
     assert_match %{t.sparsevec "sparse_embedding", limit: 3}, contents
   end
 
+  def test_connection_pool
+    PostgresRecord.connection_handler.clear_active_connections!
+    assert_nil PostgresRecord.connection_pool.active_connection?
+    PostgresRecord.connection_pool.with_connection do
+      Item.nearest_neighbors(:embedding, [1, 1, 1], distance: "euclidean")
+    end
+    assert_nil PostgresRecord.connection_pool.active_connection?
+  end
+
   def test_composite_primary_key
     skip if ActiveRecord::VERSION::STRING.to_f < 7.1
 

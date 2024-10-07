@@ -88,7 +88,7 @@ module Neighbor
 
           distance = distance.to_s
 
-          quoted_attribute = "#{connection.quote_table_name(table_name)}.#{connection.quote_column_name(attribute_name)}"
+          quoted_attribute = with_connection { |c| "#{c.quote_table_name(table_name)}.#{c.quote_column_name(attribute_name)}" }
 
           column_info = columns_hash[attribute_name.to_s]
           column_type = column_info&.type
@@ -113,7 +113,7 @@ module Neighbor
           Neighbor::Utils.validate(vector, dimensions: dimensions, type: type || Utils.type(adapter, column_info&.type), adapter: adapter)
           vector = Neighbor::Utils.normalize(vector, column_info: column_info) if normalize
 
-          query = connection.quote(column_attribute.serialize(vector))
+          query = with_connection { |c| c.quote(column_attribute.serialize(vector)) }
 
           if !precision.nil?
             if adapter != :postgresql || column_type != :vector
@@ -124,7 +124,7 @@ module Neighbor
             when "half"
               cast_dimensions = dimensions || column_info&.limit
               raise ArgumentError, "Unknown dimensions" unless cast_dimensions
-              quoted_attribute += "::halfvec(#{connection.quote(cast_dimensions.to_i)})"
+              quoted_attribute += "::halfvec(#{with_connection { |c| c.quote(cast_dimensions.to_i) }})"
             else
               raise ArgumentError, "Invalid precision"
             end

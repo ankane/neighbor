@@ -4,6 +4,7 @@
 - Added experimental support for MariaDB 11.6 Vector
 - Added experimental support for MySQL 9
 - Changed `normalize` option to use Active Record normalization
+- Fixed connection leasing for Active Record 7.2
 - Dropped support for Active Record < 7
 
 ## 0.4.3 (2024-09-02)
