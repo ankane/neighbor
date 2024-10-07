@@ -31,6 +31,8 @@ module Neighbor
     end
 
     def self.normalize(value, column_info:)
+      return nil if value.nil?
+
       raise Error, "Normalize not supported for type" unless [:cube, :vector, :halfvec, :binary].include?(column_info&.type)
 
       norm = Math.sqrt(value.sum { |v| v * v })

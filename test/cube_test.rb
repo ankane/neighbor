@@ -102,9 +102,15 @@ class CubeTest < PostgresTest
     item = CosineItem.new
     item.cube_embedding = [0, 3, 4]
     assert_elements_in_delta [0, 0.6, 0.8], item.cube_embedding
+
     item.save!
     assert_elements_in_delta [0, 0.6, 0.8], item.cube_embedding
     assert_elements_in_delta [0, 0.6, 0.8], Item.last.cube_embedding
+
+    item.cube_embedding = nil
+    item.save!
+    assert_nil item.cube_embedding
+    assert_nil Item.last.cube_embedding
   end
 
   def test_insert
