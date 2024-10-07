@@ -88,8 +88,6 @@ module Neighbor
 
           distance = distance.to_s
 
-          quoted_attribute = connection_pool.with_connection { |c| "#{c.quote_table_name(table_name)}.#{c.quote_column_name(attribute_name)}" }
-
           column_info = columns_hash[attribute_name.to_s]
           column_type = column_info&.type
 
@@ -113,7 +111,12 @@ module Neighbor
           Neighbor::Utils.validate(vector, dimensions: dimensions, type: type || Utils.type(adapter, column_info&.type), adapter: adapter)
           vector = Neighbor::Utils.normalize(vector, column_info: column_info) if normalize
 
-          query = connection_pool.with_connection { |c| c.quote(column_attribute.serialize(vector)) }
+          quoted_attribute = nil
+          query = nil
+          connection_pool.with_connection do |c|
+            quoted_attribute = "#{c.quote_table_name(table_name)}.#{c.quote_column_name(attribute_name)}"
+            query = c.quote(column_attribute.serialize(vector))
+          end
 
           if !precision.nil?
             if adapter != :postgresql || column_type != :vector
