@@ -49,4 +49,5 @@ jobs:
           make
           sudo make install
       - run: bundle exec rake test
-      - run: TEST_TRILOGY=1 bundle exec rake test
+      - run: TEST_TRILOGY=1 bundle exec rake test:mariadb
+      - run: TEST_TRILOGY=1 bundle exec rake test:mysql

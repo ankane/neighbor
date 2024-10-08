@@ -27,9 +27,11 @@ namespace :test do
   end
 end
 
-Rake::TestTask.new(:test) do |t|
-  t.libs << "test"
-  t.test_files = FileList["test/**/*_test.rb"]
+task :test do
+  [:postgresql, :sqlite, :mariadb, :mysql].each do |adapter|
+    puts "Using #{adapter}"
+    Rake::Task["test:#{adapter}"].invoke
+  end
 end
 
 task default: :test
