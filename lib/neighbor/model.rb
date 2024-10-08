@@ -133,36 +133,7 @@ module Neighbor
             end
           end
 
-          order =
-            case adapter
-            when :sqlite
-              case type
-              when :int8
-                "#{operator}(vec_int8(#{quoted_attribute}), vec_int8(#{query}))"
-              when :bit
-                "#{operator}(vec_bit(#{quoted_attribute}), vec_bit(#{query}))"
-              else
-                "#{operator}(#{quoted_attribute}, #{query})"
-              end
-            when :mariadb
-              if operator == "BIT_COUNT"
-                "BIT_COUNT(#{quoted_attribute} ^ #{query})"
-              else
-                "VEC_DISTANCE(#{quoted_attribute}, #{query})"
-              end
-            when :mysql
-              if operator == "BIT_COUNT"
-                "BIT_COUNT(#{quoted_attribute} ^ #{query})"
-              else
-                "DISTANCE(#{quoted_attribute}, #{query}, #{connection_pool.with_connection { |c| c.quote(operator) }})"
-              end
-            else
-              if operator == "#"
-                "bit_count(#{quoted_attribute} # #{query})"
-              else
-                "#{quoted_attribute} #{operator} #{query}"
-              end
-            end
+          order = Utils.order(adapter, type, operator, quoted_attribute, query)
 
           # https://stats.stackexchange.com/questions/146221/is-cosine-similarity-identical-to-l2-normalized-euclidean-distance
           # with normalized vectors:

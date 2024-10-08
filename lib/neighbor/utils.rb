@@ -153,6 +153,40 @@ module Neighbor
       end
     end
 
+    def self.order(adapter, type, operator, quoted_attribute, query)
+      case adapter
+      when :sqlite
+        case type
+        when :int8
+          "#{operator}(vec_int8(#{quoted_attribute}), vec_int8(#{query}))"
+        when :bit
+          "#{operator}(vec_bit(#{quoted_attribute}), vec_bit(#{query}))"
+        else
+          "#{operator}(#{quoted_attribute}, #{query})"
+        end
+      when :mariadb
+        if operator == "BIT_COUNT"
+          "BIT_COUNT(#{quoted_attribute} ^ #{query})"
+        else
+          "VEC_DISTANCE(#{quoted_attribute}, #{query})"
+        end
+      when :mysql
+        if operator == "BIT_COUNT"
+          "BIT_COUNT(#{quoted_attribute} ^ #{query})"
+        elsif operator == "COSINE"
+          "DISTANCE(#{quoted_attribute}, #{query}, 'COSINE')"
+        else # EUCLIDEAN
+          "DISTANCE(#{quoted_attribute}, #{query}, 'EUCLIDEAN')"
+        end
+      else
+        if operator == "#"
+          "bit_count(#{quoted_attribute} # #{query})"
+        else
+          "#{quoted_attribute} #{operator} #{query}"
+        end
+      end
+    end
+
     def self.normalize_required?(adapter, column_type)
       case adapter
       when :postgresql
