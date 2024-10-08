@@ -1,4 +1,4 @@
-## 0.5.0 (unreleased)
+## 0.5.0 (2024-10-07)
 
 - Added experimental support for SQLite (sqlite-vec)
 - Added experimental support for MariaDB 11.6 Vector
