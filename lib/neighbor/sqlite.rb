@@ -1,5 +1,6 @@
 module Neighbor
   module SQLite
+    # note: this is a public API (unlike PostgreSQL and MySQL)
     def self.initialize!
       return if defined?(@initialized)
 
