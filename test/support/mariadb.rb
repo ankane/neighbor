@@ -4,6 +4,20 @@ class MariadbRecord < ActiveRecord::Base
   establish_connection adapter: "mysql2", database: "neighbor_test", host: "127.0.0.1", port: 3307, username: "root"
 end
 
+begin
+  MariadbRecord.connection.verify!
+rescue => e
+  abort <<~MSG
+    Database connection failed: #{e.message}
+
+    To use the Docker container, run:
+
+    docker run -e MARIADB_ALLOW_EMPTY_ROOT_PASSWORD=1 -e MARIADB_DATABASE=neighbor_test -p 3307:3306 quay.io/mariadb-foundation/mariadb-devel:11.6-vector-preview
+
+    (and wait for it to be ready)
+  MSG
+end
+
 MariadbRecord.connection.instance_eval do
   create_table :mariadb_items, force: true do |t|
     t.binary :embedding, null: false
