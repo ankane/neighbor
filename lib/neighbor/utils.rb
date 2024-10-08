@@ -175,7 +175,7 @@ module Neighbor
           "BIT_COUNT(#{quoted_attribute} ^ #{query})"
         elsif operator == "COSINE"
           "DISTANCE(#{quoted_attribute}, #{query}, 'COSINE')"
-        else # EUCLIDEAN
+        else
           "DISTANCE(#{quoted_attribute}, #{query}, 'EUCLIDEAN')"
         end
       else
