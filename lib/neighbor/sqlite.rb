@@ -1,6 +1,8 @@
 module Neighbor
   module SQLite
     def self.initialize!
+      return if defined?(@initialized)
+
       require_relative "type/sqlite_vector"
       require_relative "type/sqlite_int8_vector"
 
@@ -8,6 +10,8 @@ module Neighbor
       require "active_record/connection_adapters/sqlite3_adapter"
 
       ActiveRecord::ConnectionAdapters::SQLite3Adapter.prepend(InstanceMethods)
+
+      @initialized = true
     end
 
     module InstanceMethods
