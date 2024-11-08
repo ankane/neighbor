@@ -4,10 +4,10 @@ gemspec path: ".."
 
 gem "rake"
 gem "minitest", ">= 5"
-gem "activerecord", "~> 8.0.0.beta1"
+gem "activerecord", "~> 7.2.0"
 gem "pg"
 gem "sqlite3"
 gem "sqlite-vec"
 gem "mysql2"
 gem "trilogy"
-gem "railties", "~> 8.0.0.beta1", require: false
+gem "railties", require: false
