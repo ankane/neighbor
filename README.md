@@ -304,17 +304,17 @@ You can also use [virtual tables](https://alexgarcia.xyz/sqlite-vec/features/knn
 ```ruby
 class AddEmbeddingToItems < ActiveRecord::Migration[8.0]
   def change
+    # Rails 8+
+    create_virtual_table :items, :vec0, [
+      "embedding float[3] distance_metric=L2"
+    ]
+
     # Rails < 8
     execute <<~SQL
       CREATE VIRTUAL TABLE items USING vec0(
         embedding float[3] distance_metric=L2
       )
     SQL
-
-    # Rails 8+
-    create_virtual_table :items, :vec0, [
-      "embedding float[3] distance_metric=L2"
-    ]
   end
 end
 ```
