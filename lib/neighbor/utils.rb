@@ -33,7 +33,7 @@ module Neighbor
     def self.normalize(value, column_info:)
       return nil if value.nil?
 
-      raise Error, "Normalize not supported for type" unless [:cube, :vector, :halfvec, :binary].include?(column_info&.type)
+      raise Error, "Normalize not supported for type" unless [:cube, :vector, :halfvec].include?(column_info&.type)
 
       norm = Math.sqrt(value.sum { |v| v * v })
 
@@ -86,10 +86,12 @@ module Neighbor
         end
       when :mariadb
         case column_type
-        when :binary
+        when :vector
           case distance
-          when "euclidean", "cosine"
-            "VEC_DISTANCE"
+          when "euclidean"
+            "VEC_DISTANCE_EUCLIDEAN"
+          when "cosine"
+            "VEC_DISTANCE_COSINE"
           end
         when :integer
           case distance
@@ -168,7 +170,7 @@ module Neighbor
         if operator == "BIT_COUNT"
           "BIT_COUNT(#{quoted_attribute} ^ #{query})"
         else
-          "VEC_DISTANCE(#{quoted_attribute}, #{query})"
+          "#{operator}(#{quoted_attribute}, #{query})"
         end
       when :mysql
         if operator == "BIT_COUNT"
@@ -191,8 +193,6 @@ module Neighbor
       case adapter
       when :postgresql
         column_type == :cube
-      when :mariadb
-        true
       else
         false
       end

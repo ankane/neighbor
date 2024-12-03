@@ -19,7 +19,7 @@ jobs:
       BUNDLE_GEMFILE: ${{ matrix.gemfile }}
     services:
       mariadb:
-        image: quay.io/mariadb-foundation/mariadb-devel:11.6-vector-preview
+        image: mariadb:11.7-rc
         env:
           MARIADB_ALLOW_EMPTY_ROOT_PASSWORD: 1
           MARIADB_DATABASE: neighbor_test

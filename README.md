@@ -6,7 +6,7 @@ Supports:
 
 - Postgres (cube and pgvector)
 - SQLite (sqlite-vec) - experimental
-- MariaDB 11.6 Vector - experimental
+- MariaDB 11.7 - experimental
 - MySQL 9 (searching requires HeatWave) - experimental
 
 [![Build Status](https://github.com/ankane/neighbor/actions/workflows/build.yml/badge.svg)](https://github.com/ankane/neighbor/actions)
@@ -61,10 +61,10 @@ class AddEmbeddingToItems < ActiveRecord::Migration[8.0]
     # cube
     add_column :items, :embedding, :cube
 
-    # pgvector and MySQL
+    # pgvector, MariaDB, and MySQL
     add_column :items, :embedding, :vector, limit: 3 # dimensions
 
-    # sqlite-vec and MariaDB
+    # sqlite-vec
     add_column :items, :embedding, :binary
   end
 end
@@ -387,14 +387,6 @@ Supported values are:
 - `cosine`
 - `hamming`
 
-For cosine distance with MariaDB, vectors must be normalized before being stored.
-
-```ruby
-class Item < ApplicationRecord
-  has_neighbors :embedding, normalize: true
-end
-```
-
 ### Indexing
 
 Vector columns must use `null: false` to add a vector index
@@ -403,7 +395,7 @@ Vector columns must use `null: false` to add a vector index
 class CreateItems < ActiveRecord::Migration[8.0]
   def change
     create_table :items do |t|
-      t.binary :embedding, null: false
+      t.vector :embedding, limit: 3, null: false
       t.index :embedding, type: :vector
     end
   end
@@ -892,7 +884,7 @@ bundle exec rake test:postgresql
 bundle exec rake test:sqlite
 
 # MariaDB
-docker run -e MARIADB_ALLOW_EMPTY_ROOT_PASSWORD=1 -e MARIADB_DATABASE=neighbor_test -p 3307:3306 quay.io/mariadb-foundation/mariadb-devel:11.6-vector-preview
+docker run -e MARIADB_ALLOW_EMPTY_ROOT_PASSWORD=1 -e MARIADB_DATABASE=neighbor_test -p 3307:3306 mariadb:11.7-rc
 bundle exec rake test:mariadb
 
 # MySQL

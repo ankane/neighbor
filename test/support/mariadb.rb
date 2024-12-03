@@ -20,7 +20,7 @@ end
 
 MariadbRecord.connection.instance_eval do
   create_table :mariadb_items, force: true do |t|
-    t.binary :embedding, null: false
+    t.vector :embedding, limit: 3, null: false
     t.index :embedding, type: :vector
   end
 

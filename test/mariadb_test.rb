@@ -13,14 +13,6 @@ class MariadbTest < Minitest::Test
     assert_elements_in_delta [0, 0.05719095841050148], result.map(&:neighbor_distance)
   end
 
-  def test_cosine_no_normalize
-    create_items(MariadbItem, :embedding)
-    error = assert_raises(Neighbor::Error) do
-      MariadbItem.find(1).nearest_neighbors(:embedding, distance: "cosine").first(3)
-    end
-    assert_equal "Set normalize for cosine distance with cube", error.message
-  end
-
   def test_euclidean
     create_items(MariadbItem, :embedding)
     result = MariadbItem.find(1).nearest_neighbors(:embedding, distance: "euclidean").first(3)
@@ -41,7 +33,7 @@ class MariadbTest < Minitest::Test
 
   def test_vec_totext
     MariadbItem.create!(embedding: [1, 2, 3])
-    assert_equal "[1.000000,2.000000,3.000000]", MariadbItem.pluck("VEC_ToText(embedding)").last
+    assert_equal "[1,2,3]", MariadbItem.pluck("VEC_ToText(embedding)").last
   end
 
   def test_vec_fromtext
