@@ -1,4 +1,4 @@
-## 0.5.1 (unreleased)
+## 0.5.1 (2024-12-03)
 
 - Added experimental support for MariaDB 11.7
 - Dropped experimental support for MariaDB 11.6 Vector
