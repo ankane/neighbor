@@ -306,12 +306,14 @@ class AddEmbeddingToItems < ActiveRecord::Migration[8.0]
   def change
     # Rails 8+
     create_virtual_table :items, :vec0, [
+      "id integer PRIMARY KEY AUTOINCREMENT NOT NULL",
       "embedding float[3] distance_metric=L2"
     ]
 
     # Rails < 8
     execute <<~SQL
       CREATE VIRTUAL TABLE items USING vec0(
+        id integer PRIMARY KEY AUTOINCREMENT NOT NULL,
         embedding float[3] distance_metric=L2
       )
     SQL
@@ -329,16 +331,6 @@ ActiveRecord::SchemaDumper.ignore_tables += [
 ]
 ```
 
-Create a model with `rowid` as the primary key
-
-```ruby
-class Item < ApplicationRecord
-  self.primary_key = "rowid"
-
-  has_neighbors :embedding, dimensions: 3
-end
-```
-
 Get the `k` nearest neighbors
 
 ```ruby
@@ -348,7 +340,7 @@ Item.where("embedding MATCH ?", [1, 2, 3].to_s).where(k: 5).order(:distance)
 Filter by primary key
 
 ```ruby
-Item.where(rowid: [2, 3]).where("embedding MATCH ?", [1, 2, 3].to_s).where(k: 5).order(:distance)
+Item.where(id: [2, 3]).where("embedding MATCH ?", [1, 2, 3].to_s).where(k: 5).order(:distance)
 ```
 
 ### Int8 Vectors

@@ -23,7 +23,7 @@ class SqliteVirtualTest < Minitest::Test
 
     relation = SqliteVecItem.where("embedding MATCH ?", [1, 1, 1].to_s).order(:distance).limit(3)
     assert_equal [1, 3, 2], relation.all.map(&:id)
-    assert_equal [1, 3, 2], relation.pluck(:rowid)
+    assert_equal [1, 3, 2], relation.pluck(:id)
     assert_elements_in_delta [0, 1, Math.sqrt(3)], relation.pluck(:distance)
     assert_match "SCAN vec_items VIRTUAL TABLE INDEX", relation.explain.inspect
 
@@ -51,10 +51,17 @@ class SqliteVirtualTest < Minitest::Test
     assert SqliteVecItem.where.not(embedding: nil).where("embedding MATCH ? AND k = ?", "[0, 0, 0]", 3).order(:distance).load
   end
 
-  def test_where_rowid
+  def test_where_id
     create_items(SqliteVecItem, :embedding)
 
-    relation = SqliteVecItem.where(rowid: [2, 3]).where("embedding MATCH ?", [1, 1, 1].to_s).where(k: 5).order(:distance)
-    assert_equal [3, 2], relation.pluck(:rowid)
+    relation = SqliteVecItem.where(id: [2, 3]).where("embedding MATCH ?", [1, 1, 1].to_s).where(k: 5).order(:distance)
+    assert_equal [3, 2], relation.pluck(:id)
+  end
+
+  def test_create_returning_id
+    item = SqliteVecItem.create!(embedding: [1, 2, 3])
+    # TODO figure out why id not set
+    assert_nil item.id
+    assert_kind_of Integer, SqliteVecItem.last.id
   end
 end
