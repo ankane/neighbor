@@ -19,6 +19,9 @@ module Neighbor
 
       # prevent unknown OID warning
       ActiveRecord::ConnectionAdapters::PostgreSQLAdapter.singleton_class.prepend(RegisterTypes)
+
+      # support vector[]/halfvec[]
+      ActiveRecord::ConnectionAdapters::PostgreSQL::OID::Array.prepend(ArrayMethods)
     end
 
     module RegisterTypes
@@ -36,6 +39,18 @@ module Neighbor
         m.register_type "vector" do |_, _, sql_type|
           limit = extract_limit(sql_type)
           Type::Vector.new(limit: limit)
+        end
+      end
+    end
+
+    ArrayWrapper = Struct.new(:to_a)
+
+    module ArrayMethods
+      def type_cast_array(value, method, ...)
+        if (subtype.is_a?(Neighbor::Type::Vector) || subtype.is_a?(Neighbor::Type::Halfvec)) && method != :deserialize && value.is_a?(::Array) && value.all? { |v| v.is_a?(::Numeric) }
+          super(ArrayWrapper.new(value), method, ...)
+        else
+          super
         end
       end
     end

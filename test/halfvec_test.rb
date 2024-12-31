@@ -61,4 +61,16 @@ class HalfvecTest < PostgresTest
     end
     assert_equal "Validation failed: Half embedding must have finite values", error.message
   end
+
+  def test_array
+    item = Item.create!(half_embeddings: [[1, 2, 3], [4, 5, 6]])
+    assert_equal [[1, 2, 3], [4, 5, 6]], item.half_embeddings
+    assert_equal [[1, 2, 3], [4, 5, 6]], Item.last.half_embeddings
+  end
+
+  def test_array_2d
+    item = Item.create!(half_embeddings: [[[1, 2, 3], [4, 5, 6]], [[7, 8, 9], [10, 11, 12]]])
+    assert_equal [[[1, 2, 3], [4, 5, 6]], [[7, 8, 9], [10, 11, 12]]], item.half_embeddings
+    assert_equal [[[1, 2, 3], [4, 5, 6]], [[7, 8, 9], [10, 11, 12]]], Item.last.half_embeddings
+  end
 end

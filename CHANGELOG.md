@@ -1,3 +1,7 @@
+## 0.5.2 (unreleased)
+
+- Improved support for Postgres arrays
+
 ## 0.5.1 (2024-12-03)
 
 - Added experimental support for MariaDB 11.7

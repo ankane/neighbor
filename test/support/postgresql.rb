@@ -19,6 +19,7 @@ PostgresRecord.connection.instance_eval do
     t.sparsevec :sparse_embedding, limit: 3
     t.sparsevec :sparse_factors, limit: 5
     t.vector :embeddings, limit: 3, array: true
+    t.halfvec :half_embeddings, limit: 3, array: true
   end
   add_index :items, :cube_embedding, using: :gist
   add_index :items, :embedding, using: :hnsw, opclass: :vector_cosine_ops

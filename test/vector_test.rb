@@ -99,8 +99,14 @@ class VectorTest < PostgresTest
   end
 
   def test_array
-    Item.connection.execute("INSERT INTO items (embeddings) VALUES (ARRAY['[1,2,3]', '[4,5,6]']::vector[])")
-    item = Item.last
+    item = Item.create!(embeddings: [[1, 2, 3], [4, 5, 6]])
     assert_equal [[1, 2, 3], [4, 5, 6]], item.embeddings
+    assert_equal [[1, 2, 3], [4, 5, 6]], Item.last.embeddings
+  end
+
+  def test_array_2d
+    item = Item.create!(embeddings: [[[1, 2, 3], [4, 5, 6]], [[7, 8, 9], [10, 11, 12]]])
+    assert_equal [[[1, 2, 3], [4, 5, 6]], [[7, 8, 9], [10, 11, 12]]], item.embeddings
+    assert_equal [[[1, 2, 3], [4, 5, 6]], [[7, 8, 9], [10, 11, 12]]], Item.last.embeddings
   end
 end
