@@ -14,6 +14,7 @@ class NeighborTest < PostgresTest
     assert_match %{t.halfvec "half_embedding", limit: 3}, contents
     assert_match %{t.bit "binary_embedding", limit: 3}, contents
     assert_match %{t.sparsevec "sparse_embedding", limit: 3}, contents
+    assert_match %{t.vector "embeddings", limit: 3, array: true}, contents
   end
 
   def test_connection_leasing

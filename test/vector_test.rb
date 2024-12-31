@@ -97,4 +97,10 @@ class VectorTest < PostgresTest
     end
     assert_equal "Validation failed: Embedding must have finite values", error.message
   end
+
+  def test_array
+    Item.connection.execute("INSERT INTO items (embeddings) VALUES (ARRAY['[1,2,3]', '[4,5,6]']::vector[])")
+    item = Item.last
+    assert_equal [[1, 2, 3], [4, 5, 6]], item.embeddings
+  end
 end
