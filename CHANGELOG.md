@@ -1,4 +1,4 @@
-## 0.5.2 (unreleased)
+## 0.5.2 (2025-01-05)
 
 - Improved support for Postgres arrays
 
