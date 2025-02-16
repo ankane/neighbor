@@ -19,7 +19,7 @@ jobs:
       BUNDLE_GEMFILE: ${{ matrix.gemfile }}
     services:
       mariadb:
-        image: mariadb:11.7-rc
+        image: mariadb:11.7
         env:
           MARIADB_ALLOW_EMPTY_ROOT_PASSWORD: 1
           MARIADB_DATABASE: neighbor_test
