@@ -11,7 +11,7 @@ ActiveRecord::Schema.define do
 
   create_table :documents, force: true do |t|
     t.text :content
-    t.bit :embedding, limit: 1024
+    t.bit :embedding, limit: 1536
   end
 end
 
@@ -21,14 +21,14 @@ end
 
 # https://docs.cohere.com/reference/embed
 def fetch_embeddings(input, input_type)
-  url = "https://api.cohere.com/v1/embed"
+  url = "https://api.cohere.com/v2/embed"
   headers = {
     "Authorization" => "Bearer #{ENV.fetch("CO_API_KEY")}",
     "Content-Type" => "application/json"
   }
   data = {
     texts: input,
-    model: "embed-english-v3.0",
+    model: "embed-v4.0",
     input_type: input_type,
     embedding_types: ["ubinary"]
   }

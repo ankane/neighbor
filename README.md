@@ -524,7 +524,7 @@ See the [complete code](examples/openai/example.rb)
 Generate a model
 
 ```sh
-rails generate model Document content:text embedding:bit{1024}
+rails generate model Document content:text embedding:bit{1536}
 rails db:migrate
 ```
 
@@ -540,14 +540,14 @@ Create a method to call the [embed API](https://docs.cohere.com/reference/embed)
 
 ```ruby
 def fetch_embeddings(input, input_type)
-  url = "https://api.cohere.com/v1/embed"
+  url = "https://api.cohere.com/v2/embed"
   headers = {
     "Authorization" => "Bearer #{ENV.fetch("CO_API_KEY")}",
     "Content-Type" => "application/json"
   }
   data = {
     texts: input,
-    model: "embed-english-v3.0",
+    model: "embed-v4.0",
     input_type: input_type,
     embedding_types: ["ubinary"]
   }
