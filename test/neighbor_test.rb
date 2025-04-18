@@ -27,8 +27,6 @@ class NeighborTest < PostgresTest
   end
 
   def test_composite_primary_key
-    skip if ActiveRecord::VERSION::STRING.to_f < 7.1
-
     Product.create!(id: [1, "A"], embedding: [1, 1, 1])
     Product.create!(id: [1, "B"], embedding: [2, 2, 2])
     Product.create!(id: [2, "A"], embedding: [1, 1, 2])

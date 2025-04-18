@@ -28,8 +28,4 @@ class Minitest::Test
       cls.create!(id: i + 1, attribute => v)
     end
   end
-
-  def supports_normalizes?
-    ActiveRecord::VERSION::STRING.to_f >= 7.1
-  end
 end

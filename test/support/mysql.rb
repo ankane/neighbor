@@ -1,8 +1,3 @@
-if ActiveRecord::VERSION::STRING.to_f < 7.1
-  require "trilogy_adapter/connection"
-  ActiveRecord::Base.public_send :extend, TrilogyAdapter::Connection
-end
-
 class MysqlRecord < ActiveRecord::Base
   self.abstract_class = true
 

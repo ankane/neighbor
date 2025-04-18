@@ -60,12 +60,8 @@ class SqliteVirtualTest < Minitest::Test
 
   def test_create_returning_id
     item = SqliteVecItem.create!(embedding: [1, 2, 3])
-    if ActiveRecord::VERSION::STRING.to_f >= 7.1
-      # TODO figure out why id not set
-      assert_nil item.id
-    else
-      assert_kind_of Integer, item.id
-    end
+    # TODO figure out why id not set
+    assert_nil item.id
     assert_kind_of Integer, SqliteVecItem.last.id
   end
 end

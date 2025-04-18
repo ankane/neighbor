@@ -40,16 +40,8 @@ module Neighbor
         end
 
         if normalize
-          if ActiveRecord::VERSION::STRING.to_f >= 7.1
-            attribute_names.each do |attribute_name|
-              normalizes attribute_name, with: ->(v) { Neighbor::Utils.normalize(v, column_info: columns_hash[attribute_name.to_s]) }
-            end
-          else
-            attribute_names.each do |attribute_name|
-              attribute attribute_name do |cast_type|
-                Neighbor::NormalizedAttribute.new(cast_type: cast_type, model: self, attribute_name: attribute_name)
-              end
-            end
+          attribute_names.each do |attribute_name|
+            normalizes attribute_name, with: ->(v) { Neighbor::Utils.normalize(v, column_info: columns_hash[attribute_name.to_s]) }
           end
         end
 

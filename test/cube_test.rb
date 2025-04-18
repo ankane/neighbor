@@ -115,13 +115,11 @@ class CubeTest < PostgresTest
 
   def test_insert
     CosineItem.insert!({cube_embedding: [0, 3, 4]})
-    expected = supports_normalizes? ? [0, 0.6, 0.8] : [0, 3, 4]
-    assert_elements_in_delta expected, Item.last.cube_embedding
+    assert_elements_in_delta [0, 0.6, 0.8], Item.last.cube_embedding
   end
 
   def test_insert_all
     CosineItem.insert_all!([{cube_embedding: [0, 3, 4]}])
-    expected = supports_normalizes? ? [0, 0.6, 0.8] : [0, 3, 4]
-    assert_elements_in_delta expected, Item.last.cube_embedding
+    assert_elements_in_delta [0, 0.6, 0.8], Item.last.cube_embedding
   end
 end

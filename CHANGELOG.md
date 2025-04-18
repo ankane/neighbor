@@ -1,3 +1,7 @@
+## 0.6.0 (unreleased)
+
+- Dropped support for Ruby < 3.2 and Active Record < 7.1
+
 ## 0.5.2 (2025-01-05)
 
 - Improved support for Postgres arrays

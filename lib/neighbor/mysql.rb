@@ -15,9 +15,6 @@ module Neighbor
 
       # prevent unknown OID warning
       ActiveRecord::ConnectionAdapters::AbstractMysqlAdapter.singleton_class.prepend(RegisterTypes)
-      if ActiveRecord::VERSION::STRING.to_f < 7.1
-        ActiveRecord::ConnectionAdapters::AbstractMysqlAdapter.register_vector_type(ActiveRecord::ConnectionAdapters::AbstractMysqlAdapter::TYPE_MAP)
-      end
     end
 
     module RegisterTypes

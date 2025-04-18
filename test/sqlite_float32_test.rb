@@ -51,9 +51,7 @@ class SqliteFloat32Test < Minitest::Test
     if ActiveRecord::VERSION::MAJOR >= 8
       assert_match %{create_virtual_table "vec_items", "vec0"}, contents
     end
-    if ActiveRecord::VERSION::STRING.to_f >= 7.1
-      refute_match "Could not dump table", contents
-    end
+    refute_match "Could not dump table", contents
   end
 
   def test_invalid_dimensions
