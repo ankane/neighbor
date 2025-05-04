@@ -21,7 +21,7 @@ end
 
 # https://platform.openai.com/docs/guides/embeddings/how-to-get-embeddings
 # input can be an array with 2048 elements
-def fetch_embeddings(input)
+def embed(input)
   url = "https://api.openai.com/v1/embeddings"
   headers = {
     "Authorization" => "Bearer #{ENV.fetch("OPENAI_API_KEY")}",
@@ -41,7 +41,7 @@ input = [
   "The cat is purring",
   "The bear is growling"
 ]
-embeddings = fetch_embeddings(input)
+embeddings = embed(input)
 
 documents = []
 input.zip(embeddings) do |content, embedding|

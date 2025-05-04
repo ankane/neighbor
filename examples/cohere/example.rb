@@ -20,7 +20,7 @@ class Document < ActiveRecord::Base
 end
 
 # https://docs.cohere.com/reference/embed
-def fetch_embeddings(input, input_type)
+def embed(input, input_type)
   url = "https://api.cohere.com/v2/embed"
   headers = {
     "Authorization" => "Bearer #{ENV.fetch("CO_API_KEY")}",
@@ -42,7 +42,7 @@ input = [
   "The cat is purring",
   "The bear is growling"
 ]
-embeddings = fetch_embeddings(input, "search_document")
+embeddings = embed(input, "search_document")
 
 documents = []
 input.zip(embeddings) do |content, embedding|
@@ -51,5 +51,5 @@ end
 Document.insert_all!(documents)
 
 query = "forest"
-query_embedding = fetch_embeddings([query], "search_query")[0]
+query_embedding = embed([query], "search_query")[0]
 pp Document.nearest_neighbors(:embedding, query_embedding, distance: "hamming").first(5).map(&:content)

@@ -473,7 +473,7 @@ end
 Create a method to call the [embeddings API](https://platform.openai.com/docs/guides/embeddings)
 
 ```ruby
-def fetch_embeddings(input)
+def embed(input)
   url = "https://api.openai.com/v1/embeddings"
   headers = {
     "Authorization" => "Bearer #{ENV.fetch("OPENAI_API_KEY")}",
@@ -497,7 +497,7 @@ input = [
   "The cat is purring",
   "The bear is growling"
 ]
-embeddings = fetch_embeddings(input)
+embeddings = embed(input)
 ```
 
 Store the embeddings
@@ -539,7 +539,7 @@ end
 Create a method to call the [embed API](https://docs.cohere.com/reference/embed)
 
 ```ruby
-def fetch_embeddings(input, input_type)
+def embed(input, input_type)
   url = "https://api.cohere.com/v2/embed"
   headers = {
     "Authorization" => "Bearer #{ENV.fetch("CO_API_KEY")}",
@@ -565,7 +565,7 @@ input = [
   "The cat is purring",
   "The bear is growling"
 ]
-embeddings = fetch_embeddings(input, "search_document")
+embeddings = embed(input, "search_document")
 ```
 
 Store the embeddings
@@ -582,7 +582,7 @@ Embed the search query
 
 ```ruby
 query = "forest"
-query_embedding = fetch_embeddings([query], "search_query")[0]
+query_embedding = embed([query], "search_query")[0]
 ```
 
 And search the documents
