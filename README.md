@@ -876,7 +876,7 @@ bundle exec rake test:postgresql
 bundle exec rake test:sqlite
 
 # MariaDB
-docker run -e MARIADB_ALLOW_EMPTY_ROOT_PASSWORD=1 -e MARIADB_DATABASE=neighbor_test -p 3307:3306 mariadb:11.7-rc
+docker run -e MARIADB_ALLOW_EMPTY_ROOT_PASSWORD=1 -e MARIADB_DATABASE=neighbor_test -p 3307:3306 mariadb:11.7
 bundle exec rake test:mariadb
 
 # MySQL
