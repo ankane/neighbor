@@ -216,7 +216,7 @@ Index vectors at half precision for smaller indexes
 ```ruby
 class AddIndexToItemsEmbedding < ActiveRecord::Migration[8.0]
   def change
-    add_index :items, "(embedding::halfvec(3)) vector_l2_ops", using: :hnsw
+    add_index :items, "(embedding::halfvec(3)) halfvec_l2_ops", using: :hnsw
   end
 end
 ```
