@@ -6,7 +6,7 @@ Supports:
 
 - Postgres (cube and pgvector)
 - SQLite (sqlite-vec) - experimental
-- MariaDB 11.7 - experimental
+- MariaDB 11.8
 - MySQL 9 (searching requires HeatWave) - experimental
 
 [![Build Status](https://github.com/ankane/neighbor/actions/workflows/build.yml/badge.svg)](https://github.com/ankane/neighbor/actions)
@@ -876,7 +876,7 @@ bundle exec rake test:postgresql
 bundle exec rake test:sqlite
 
 # MariaDB
-docker run -e MARIADB_ALLOW_EMPTY_ROOT_PASSWORD=1 -e MARIADB_DATABASE=neighbor_test -p 3307:3306 mariadb:11.7
+docker run -e MARIADB_ALLOW_EMPTY_ROOT_PASSWORD=1 -e MARIADB_DATABASE=neighbor_test -p 3307:3306 mariadb:11.8
 bundle exec rake test:mariadb
 
 # MySQL

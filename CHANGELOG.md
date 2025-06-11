@@ -1,5 +1,7 @@
 ## 0.6.0 (unreleased)
 
+- Added support for MariaDB 11.8
+- Dropped experimental support for MariaDB 11.7
 - Dropped support for Ruby < 3.2 and Active Record < 7.1
 
 ## 0.5.2 (2025-01-05)
