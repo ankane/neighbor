@@ -5,9 +5,9 @@ Nearest neighbor search for Rails
 Supports:
 
 - Postgres (cube and pgvector)
-- SQLite (sqlite-vec) - experimental
 - MariaDB 11.8
 - MySQL 9 (searching requires HeatWave) - experimental
+- SQLite (sqlite-vec) - experimental
 
 [![Build Status](https://github.com/ankane/neighbor/actions/workflows/build.yml/badge.svg)](https://github.com/ankane/neighbor/actions)
 
@@ -107,9 +107,9 @@ See the additional docs for:
 
 - [cube](#cube)
 - [pgvector](#pgvector)
-- [sqlite-vec](#sqlite-vec)
 - [MariaDB](#mariadb)
 - [MySQL](#mysql)
+- [sqlite-vec](#sqlite-vec)
 
 Or check out some [examples](#examples)
 
@@ -276,6 +276,81 @@ embedding = Neighbor::SparseVector.new({0 => 0.9, 1 => 1.3, 2 => 1.1}, 3)
 Item.nearest_neighbors(:embedding, embedding, distance: "euclidean").first(5)
 ```
 
+## MariaDB
+
+### Distance
+
+Supported values are:
+
+- `euclidean`
+- `cosine`
+- `hamming`
+
+### Indexing
+
+Vector columns must use `null: false` to add a vector index
+
+```ruby
+class CreateItems < ActiveRecord::Migration[8.0]
+  def change
+    create_table :items do |t|
+      t.vector :embedding, limit: 3, null: false
+      t.index :embedding, type: :vector
+    end
+  end
+end
+```
+
+### Binary Vectors
+
+Use the `bigint` type to store binary vectors
+
+```ruby
+class AddEmbeddingToItems < ActiveRecord::Migration[8.0]
+  def change
+    add_column :items, :embedding, :bigint
+  end
+end
+```
+
+Note: Binary vectors can have up to 64 dimensions
+
+Get the nearest neighbors by Hamming distance
+
+```ruby
+Item.nearest_neighbors(:embedding, 5, distance: "hamming").first(5)
+```
+
+## MySQL
+
+### Distance
+
+Supported values are:
+
+- `euclidean`
+- `cosine`
+- `hamming`
+
+Note: The `DISTANCE()` function is [only available on HeatWave](https://dev.mysql.com/doc/refman/9.0/en/vector-functions.html)
+
+### Binary Vectors
+
+Use the `binary` type to store binary vectors
+
+```ruby
+class AddEmbeddingToItems < ActiveRecord::Migration[8.0]
+  def change
+    add_column :items, :embedding, :binary
+  end
+end
+```
+
+Get the nearest neighbors by Hamming distance
+
+```ruby
+Item.nearest_neighbors(:embedding, "\x05", distance: "hamming").first(5)
+```
+
 ## sqlite-vec
 
 ### Distance
@@ -360,81 +435,6 @@ Use the `type` option for binary vectors
 ```ruby
 class Item < ApplicationRecord
   has_neighbors :embedding, dimensions: 8, type: :bit
-end
-```
-
-Get the nearest neighbors by Hamming distance
-
-```ruby
-Item.nearest_neighbors(:embedding, "\x05", distance: "hamming").first(5)
-```
-
-## MariaDB
-
-### Distance
-
-Supported values are:
-
-- `euclidean`
-- `cosine`
-- `hamming`
-
-### Indexing
-
-Vector columns must use `null: false` to add a vector index
-
-```ruby
-class CreateItems < ActiveRecord::Migration[8.0]
-  def change
-    create_table :items do |t|
-      t.vector :embedding, limit: 3, null: false
-      t.index :embedding, type: :vector
-    end
-  end
-end
-```
-
-### Binary Vectors
-
-Use the `bigint` type to store binary vectors
-
-```ruby
-class AddEmbeddingToItems < ActiveRecord::Migration[8.0]
-  def change
-    add_column :items, :embedding, :bigint
-  end
-end
-```
-
-Note: Binary vectors can have up to 64 dimensions
-
-Get the nearest neighbors by Hamming distance
-
-```ruby
-Item.nearest_neighbors(:embedding, 5, distance: "hamming").first(5)
-```
-
-## MySQL
-
-### Distance
-
-Supported values are:
-
-- `euclidean`
-- `cosine`
-- `hamming`
-
-Note: The `DISTANCE()` function is [only available on HeatWave](https://dev.mysql.com/doc/refman/9.0/en/vector-functions.html)
-
-### Binary Vectors
-
-Use the `binary` type to store binary vectors
-
-```ruby
-class AddEmbeddingToItems < ActiveRecord::Migration[8.0]
-  def change
-    add_column :items, :embedding, :binary
-  end
 end
 ```
 
