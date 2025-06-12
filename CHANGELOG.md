@@ -1,4 +1,4 @@
-## 0.6.0 (unreleased)
+## 0.6.0 (2025-06-12)
 
 - Added support for MariaDB 11.8
 - Dropped experimental support for MariaDB 11.7
