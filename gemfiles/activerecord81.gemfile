@@ -1,0 +1,13 @@
+source "https://rubygems.org"
+
+gemspec path: ".."
+
+gem "rake"
+gem "minitest", ">= 5"
+gem "activerecord", "~> 8.1.0.beta1"
+gem "pg"
+gem "sqlite3"
+gem "sqlite-vec"
+gem "mysql2"
+gem "trilogy"
+gem "railties", "~> 8.1.0.beta1", require: false
