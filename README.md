@@ -9,6 +9,8 @@ Supports:
 - MySQL 9 (searching requires HeatWave) - experimental
 - SQLite (sqlite-vec) - experimental
 
+Also available for [Redis](https://github.com/ankane/neighbor-redis) and [S3 Vectors](https://github.com/ankane/neighbor-s3)
+
 [![Build Status](https://github.com/ankane/neighbor/actions/workflows/build.yml/badge.svg)](https://github.com/ankane/neighbor/actions)
 
 ## Installation
