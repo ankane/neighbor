@@ -12,7 +12,7 @@ rescue => e
 
     To use the Docker container, run:
 
-    docker run -e MARIADB_ALLOW_EMPTY_ROOT_PASSWORD=1 -e MARIADB_DATABASE=neighbor_test -p 3307:3306 quay.io/mariadb-foundation/mariadb-devel:11.6-vector-preview
+    docker run -e MARIADB_ALLOW_EMPTY_ROOT_PASSWORD=1 -e MARIADB_DATABASE=neighbor_test -p 3307:3306 mariadb:11.8
 
     (and wait for it to be ready)
   MSG
