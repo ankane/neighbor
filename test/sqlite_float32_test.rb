@@ -42,7 +42,7 @@ class SqliteFloat32Test < Minitest::Test
     connection = ActiveRecord::VERSION::STRING.to_f >= 7.2 ? SqliteItem.connection_pool : SqliteItem.connection
 
     ignore_tables = ActiveRecord::VERSION::MAJOR >= 8 ? [/_vector_chunks00\z/] : [/\Avec_items/, /\Acosine_items/]
-    ActiveRecord::SchemaDumper.stub(:ignore_tables, ignore_tables) do
+    with_ignore_tables(ignore_tables) do
       ActiveRecord::SchemaDumper.dump(connection, file)
     end
     file.rewind
@@ -73,5 +73,15 @@ class SqliteFloat32Test < Minitest::Test
       SqliteItem.create!(embedding: [Float::NAN, 0, 0])
     end
     assert_equal "Validation failed: Embedding must have finite values", error.message
+  end
+
+  def with_ignore_tables(value)
+    previous_value = ActiveRecord::SchemaDumper.ignore_tables
+    begin
+      ActiveRecord::SchemaDumper.ignore_tables = value
+      yield
+    ensure
+      ActiveRecord::SchemaDumper.ignore_tables = previous_value
+    end
   end
 end
