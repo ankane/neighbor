@@ -25,7 +25,7 @@ end
 
 task :test do
   [:postgresql, :sqlite, :mariadb, :mysql].each do |adapter|
-    next if adapter == :sqlite && RUBY_ENGINE == "truffleruby"
+    next if adapter == :sqlite && (RUBY_VERSION.to_i >= 4 || RUBY_ENGINE == "truffleruby")
     puts "Using #{adapter}"
     Rake::Task["test:#{adapter}"].invoke
   end

@@ -7,7 +7,7 @@ gem "minitest"
 gem "activerecord", "~> 8.1.0"
 gem "pg"
 gem "sqlite3"
-gem "sqlite-vec", platform: :mri
+gem "sqlite-vec", platform: :mri if RUBY_VERSION.to_i < 4
 gem "mysql2"
 gem "trilogy"
 gem "railties", require: false
