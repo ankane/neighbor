@@ -850,6 +850,13 @@ movie.nearest_neighbors(:factors, distance: "cosine").first(5).map(&:name)
 
 See the complete code for [cube](examples/disco/item_recs_cube.rb) and [pgvector](examples/disco/item_recs_vector.rb)
 
+### Testing and Fixtures
+If you are using Fixtures for testing, you can use gems like [VCR](https://github.com/vcr/vcr) to efficiently fetch realistic data using ERB in your fixture file, or just use random number arrays of the appropriate vector length in your fixture files like below:
+```ruby
+one:
+  embedding: <%= Array.new(1000) { rand } %>
+```
+
 ## History
 
 View the [changelog](https://github.com/ankane/neighbor/blob/master/CHANGELOG.md)
