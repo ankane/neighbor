@@ -41,7 +41,7 @@ class MysqlTest < Minitest::Test
 
   def test_schema
     file = Tempfile.new
-    connection = ActiveRecord::VERSION::STRING.to_f >= 7.2 ? MysqlRecord.connection_pool : MysqlRecord.connection
+    connection = MysqlRecord.connection_pool
     ActiveRecord::SchemaDumper.dump(connection, file)
     file.rewind
     contents = file.read

@@ -4,7 +4,7 @@ require_relative "support/postgresql"
 class NeighborTest < PostgresTest
   def test_schema
     file = Tempfile.new
-    connection = ActiveRecord::VERSION::STRING.to_f >= 7.2 ? PostgresRecord.connection_pool : PostgresRecord.connection
+    connection = PostgresRecord.connection_pool
     ActiveRecord::SchemaDumper.dump(connection, file)
     file.rewind
     contents = file.read

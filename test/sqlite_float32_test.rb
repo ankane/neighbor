@@ -39,7 +39,7 @@ class SqliteFloat32Test < Minitest::Test
 
   def test_schema
     file = Tempfile.new
-    connection = ActiveRecord::VERSION::STRING.to_f >= 7.2 ? SqliteItem.connection_pool : SqliteItem.connection
+    connection = SqliteItem.connection_pool
 
     ignore_tables = ActiveRecord::VERSION::MAJOR >= 8 ? [/_vector_chunks00\z/] : [/\Avec_items/, /\Acosine_items/]
     with_ignore_tables(ignore_tables) do
