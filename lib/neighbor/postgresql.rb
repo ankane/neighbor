@@ -47,7 +47,7 @@ module Neighbor
 
     module ArrayMethods
       def type_cast_array(value, method, ...)
-        if (subtype.is_a?(Neighbor::Type::Vector) || subtype.is_a?(Neighbor::Type::Halfvec)) && method != :deserialize && value.is_a?(::Array) && value.all? { |v| v.is_a?(::Numeric) }
+        if (subtype.is_a?(Neighbor::Type::Vector) || subtype.is_a?(Neighbor::Type::Halfvec)) && method != :deserialize && value.is_a?(::Array) && value.all?(::Numeric)
           super(ArrayWrapper.new(value), method, ...)
         else
           super
