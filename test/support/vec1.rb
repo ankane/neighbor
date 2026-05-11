@@ -10,11 +10,31 @@ Vec1Record.connection.instance_eval do
   create_table :items, force: true do |t|
     t.binary :embedding
   end
+
+  if ActiveRecord::VERSION::MAJOR >= 8
+    create_virtual_table :virtual_items, :vec1, [
+      "embedding",
+      "id"
+    ]
+  else
+    execute <<~SQL
+      CREATE VIRTUAL TABLE virtual_items USING vec1(
+        embedding,
+        id
+      )
+    SQL
+  end
 end
 
 class Vec1Item < Vec1Record
   has_neighbors :embedding, dimensions: 3
   self.table_name = "items"
+end
+
+class Vec1VirtualItem < Vec1Record
+  has_neighbors :embedding, dimensions: 3
+  self.table_name = "virtual_items"
+  self.primary_key = "id"
 end
 
 # ensure has_neighbors does not cause model schema to load
