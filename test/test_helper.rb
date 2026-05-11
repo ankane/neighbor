@@ -26,4 +26,14 @@ class Minitest::Test
       cls.create!(id: i + 1, attribute => v)
     end
   end
+
+  def with_ignore_tables(value)
+    previous_value = ActiveRecord::SchemaDumper.ignore_tables
+    begin
+      ActiveRecord::SchemaDumper.ignore_tables = value
+      yield
+    ensure
+      ActiveRecord::SchemaDumper.ignore_tables = previous_value
+    end
+  end
 end

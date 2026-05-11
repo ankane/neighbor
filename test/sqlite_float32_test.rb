@@ -74,14 +74,4 @@ class SqliteFloat32Test < Minitest::Test
     end
     assert_equal "Validation failed: Embedding must have finite values", error.message
   end
-
-  def with_ignore_tables(value)
-    previous_value = ActiveRecord::SchemaDumper.ignore_tables
-    begin
-      ActiveRecord::SchemaDumper.ignore_tables = value
-      yield
-    ensure
-      ActiveRecord::SchemaDumper.ignore_tables = previous_value
-    end
-  end
 end

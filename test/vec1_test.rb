@@ -30,6 +30,22 @@ class Vec1Test < Minitest::Test
     assert_equal "[1,2,3]", Vec1Item.pluck("vec1_to_json(embedding)").last
   end
 
+  def test_schema
+    file = Tempfile.new
+    connection = Vec1Item.connection_pool
+
+    with_ignore_tables(/\Avirtual_items_/) do
+      ActiveRecord::SchemaDumper.dump(connection, file)
+    end
+    file.rewind
+    contents = file.read
+    assert_match %{t.binary "embedding"}, contents
+    if ActiveRecord::VERSION::MAJOR >= 8
+      assert_match %{create_virtual_table "virtual_items", "vec1"}, contents
+    end
+    refute_match "Could not dump table", contents
+  end
+
   def test_invalid_dimensions
     error = assert_raises(ActiveRecord::RecordInvalid) do
       Vec1Item.create!(embedding: [1, 1])

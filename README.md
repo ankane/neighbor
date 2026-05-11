@@ -399,6 +399,21 @@ class CreateItems < ActiveRecord::Migration[8.1]
 end
 ```
 
+You can optionally ignore any shadow tables that are created
+
+```ruby
+ActiveRecord::SchemaDumper.ignore_tables += [
+  "items_base", "items_config", "items_idx", "items_meta", "items_model"
+]
+```
+
+Get the `k` nearest neighbors
+
+```ruby
+embedding = Item.type_for_attribute(:embedding).serialize([1, 2, 3])
+Item.find_by_sql(["SELECT * FROM virtual_items(?, ?)", embedding, {k: 5}.to_json])
+```
+
 ## sqlite-vec
 
 ### Distance
