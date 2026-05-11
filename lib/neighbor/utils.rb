@@ -50,7 +50,7 @@ module Neighbor
     def self.adapter(model)
       case model.connection_db_config.adapter
       when /sqlite/i
-        :sqlite
+        SQLite.extension ? :sqlite_vec1 : :sqlite
       when /mysql|trilogy/i
         model.connection_pool.with_connection { |c| c.try(:mariadb?) } ? :mariadb : :mysql
       else
@@ -83,6 +83,13 @@ module Neighbor
           "vec_distance_L1"
         when "hamming"
           "vec_distance_hamming"
+        end
+      when :sqlite_vec1
+        case distance
+        when "euclidean"
+          "vec1_l2_distance"
+        when "cosine"
+          "vec1_cos_distance"
         end
       when :mariadb
         case column_type
@@ -166,6 +173,8 @@ module Neighbor
         else
           "#{operator}(#{quoted_attribute}, #{query})"
         end
+      when :sqlite_vec1
+        "#{operator}(#{quoted_attribute}, #{query})"
       when :mariadb
         if operator == "BIT_COUNT"
           "BIT_COUNT(#{quoted_attribute} ^ #{query})"

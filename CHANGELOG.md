@@ -1,3 +1,7 @@
+## 1.1.0 (unreleased)
+
+- Added experimental support for Vec1
+
 ## 1.0.0 (2026-04-04)
 
 - Dropped support for Ruby < 3.3 and Active Record < 7.2

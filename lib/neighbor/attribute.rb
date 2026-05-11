@@ -30,6 +30,8 @@ module Neighbor
             else
               raise ArgumentError, "Unsupported type"
             end
+          when :sqlite_vec1
+            Type::SqliteVector.new
           when :mariadb
             if @model.columns_hash[@attribute_name.to_s]&.type == :integer
               @cast_type

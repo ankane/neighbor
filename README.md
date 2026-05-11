@@ -7,7 +7,7 @@ Supports:
 - Postgres (cube and pgvector)
 - MariaDB 11.8
 - MySQL 9 (searching requires HeatWave) - experimental
-- SQLite (sqlite-vec) - experimental
+- SQLite (Vec1 and sqlite-vec) - experimental
 
 Also available for [Redis](https://github.com/ankane/neighbor-redis) and [S3 Vectors](https://github.com/ankane/neighbor-s3)
 
@@ -23,7 +23,7 @@ gem "neighbor"
 
 ### For Postgres
 
-Neighbor supports two extensions: [cube](https://www.postgresql.org/docs/current/cube.html) and [pgvector](https://github.com/pgvector/pgvector). cube ships with Postgres, while pgvector supports more dimensions and approximate nearest neighbor search.
+Neighbor supports two extensions for Postgres: [cube](https://www.postgresql.org/docs/current/cube.html) and [pgvector](https://github.com/pgvector/pgvector). cube ships with Postgres, while pgvector supports more dimensions and approximate nearest neighbor search.
 
 For cube, run:
 
@@ -41,7 +41,15 @@ rails db:migrate
 
 ### For SQLite
 
-Add this line to your application’s Gemfile:
+Neighbor supports two extensions for SQLite: [Vec1](https://sqlite.org/vec1/doc/trunk/doc/vec1.md) [unreleased] and [sqlite-vec](https://github.com/asg017/sqlite-vec).
+
+For Vec1, [build the extension](https://sqlite.org/vec1/doc/trunk/doc/vec1.md#2-building-the-extension) and create `config/initializers/neighbor.rb` with:
+
+```ruby
+Neighbor::SQLite.initialize!(extension: "/path/to/vec1.so")
+```
+
+For sqlite-vec, add this line to your application’s Gemfile:
 
 ```ruby
 gem "sqlite-vec"
@@ -66,7 +74,7 @@ class AddEmbeddingToItems < ActiveRecord::Migration[8.1]
     # pgvector, MariaDB, and MySQL
     add_column :items, :embedding, :vector, limit: 3 # dimensions
 
-    # sqlite-vec
+    # Vec1 and sqlite-vec
     add_column :items, :embedding, :binary
   end
 end
@@ -111,6 +119,7 @@ See the additional docs for:
 - [pgvector](#pgvector)
 - [MariaDB](#mariadb)
 - [MySQL](#mysql)
+- [Vec1](#vec1)
 - [sqlite-vec](#sqlite-vec)
 
 Or check out some [examples](#examples)
@@ -351,6 +360,25 @@ Get the nearest neighbors by Hamming distance
 
 ```ruby
 Item.nearest_neighbors(:embedding, "\x05", distance: "hamming").first(5)
+```
+
+## Vec1
+
+### Distance
+
+Supported values are:
+
+- `euclidean`
+- `cosine`
+
+### Dimensions
+
+For Vec1, it’s a good idea to specify the number of dimensions to ensure all records have the same number.
+
+```ruby
+class Item < ApplicationRecord
+  has_neighbors :embedding, dimensions: 3
+end
 ```
 
 ## sqlite-vec
