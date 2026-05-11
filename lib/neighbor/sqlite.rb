@@ -19,8 +19,8 @@ module Neighbor
       def configure_connection
         super
         db = @raw_connection
+        db.enable_load_extension(1)
         begin
-          db.enable_load_extension(1)
           SqliteVec.load(db)
         ensure
           db.enable_load_extension(0)
