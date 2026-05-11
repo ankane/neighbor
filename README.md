@@ -381,6 +381,24 @@ class Item < ApplicationRecord
 end
 ```
 
+### Virtual Tables
+
+You can also use [virtual tables](https://sqlite.org/vec1/doc/trunk/doc/vec1intro.md#1-using-the-virtual-table)
+
+```ruby
+class CreateItems < ActiveRecord::Migration[8.1]
+  def change
+    # Rails 8+
+    create_virtual_table :items, :vec1, ["embedding", "id"]
+
+    # Rails < 8
+    execute <<~SQL
+      CREATE VIRTUAL TABLE items USING vec1(embedding, id)
+    SQL
+  end
+end
+```
+
 ## sqlite-vec
 
 ### Distance
@@ -407,7 +425,7 @@ end
 You can also use [virtual tables](https://alexgarcia.xyz/sqlite-vec/features/knn.html)
 
 ```ruby
-class AddEmbeddingToItems < ActiveRecord::Migration[8.1]
+class CreateItems < ActiveRecord::Migration[8.1]
   def change
     # Rails 8+
     create_virtual_table :items, :vec0, [
