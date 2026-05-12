@@ -410,7 +410,7 @@ ActiveRecord::SchemaDumper.ignore_tables += [
 Get the `k` nearest neighbors
 
 ```ruby
-Item.find_by_sql("SELECT * FROM virtual_items(vec1_from_json(?), ?)", [[1, 2, 3].to_json, {k: 5}.to_json])
+Item.find_by_sql("SELECT * FROM items(vec1_from_json(?), ?)", [[1, 2, 3].to_json, {k: 5}.to_json])
 ```
 
 ## sqlite-vec
