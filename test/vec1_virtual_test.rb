@@ -39,6 +39,15 @@ class Vec1VirtualTest < Minitest::Test
     assert_elements_in_delta [0, 1, Math.sqrt(3)], items.pluck(:distance)
   end
 
+  def test_train
+    create_items(Vec1VirtualItem, :embedding)
+    Vec1VirtualItem.connection.execute("INSERT INTO virtual_items (cmd, arg) VALUES ('rebuild', (SELECT vec1_train(embedding, '{codesize: 0}') FROM virtual_items))")
+
+    items = Vec1VirtualItem.find_by_sql("SELECT *, sqrt(distance) AS distance FROM virtual_items(vec1_from_json(?), ?)", [[1, 1, 1].to_json, {k: 5}.to_json])
+    assert_equal [1, 3, 2], items.pluck(:id)
+    assert_elements_in_delta [0, 1, Math.sqrt(3)], items.pluck(:distance)
+  end
+
   def test_no_limit
     create_items(Vec1VirtualItem, :embedding)
 
