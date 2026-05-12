@@ -28,7 +28,6 @@ end
 class Vec1VirtualItem < Vec1Record
   has_neighbors :embedding, dimensions: 3
   self.table_name = "virtual_items"
-  self.primary_key = "id"
 end
 
 # ensure has_neighbors does not cause model schema to load
