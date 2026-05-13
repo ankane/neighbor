@@ -14,13 +14,13 @@ SqliteRecord.connection.instance_eval do
   end
 
   if ActiveRecord::VERSION::MAJOR >= 8
-    create_virtual_table :vec_items, :vec0, [
+    create_virtual_table :virtual_items, :vec0, [
       "id integer PRIMARY KEY AUTOINCREMENT NOT NULL",
       "embedding float[3] distance_metric=L2"
     ]
   else
     execute <<~SQL
-      CREATE VIRTUAL TABLE vec_items USING vec0(
+      CREATE VIRTUAL TABLE virtual_items USING vec0(
         id integer PRIMARY KEY AUTOINCREMENT NOT NULL,
         embedding float[3] distance_metric=L2
       )
@@ -49,9 +49,9 @@ class SqliteItem < SqliteRecord
   self.table_name = "items"
 end
 
-class SqliteVecItem < SqliteRecord
+class SqliteVirtualItem < SqliteRecord
   has_neighbors :embedding, dimensions: 3
-  self.table_name = "vec_items"
+  self.table_name = "virtual_items"
 end
 
 class SqliteCosineItem < SqliteRecord
