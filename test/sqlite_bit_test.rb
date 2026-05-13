@@ -20,6 +20,20 @@ class SqliteBitTest < Minitest::Test
     assert_elements_in_delta [0, 1, 2], result.map(&:neighbor_distance)
   end
 
+  def test_jaccard
+    create_bit_items
+    result = SqliteItem.find(2).nearest_neighbors(:binary_embedding, distance: "jaccard").first(3)
+    assert_equal [3, 1], result.map(&:id)
+    assert_elements_in_delta [1/3.0, 1], result.map(&:neighbor_distance)
+  end
+
+  def test_jaccard_scope
+    create_bit_items
+    result = SqliteItem.nearest_neighbors(:binary_embedding, "\x04", distance: "jaccard").first(5)
+    assert_equal [2, 3, 1], result.map(&:id)
+    assert_elements_in_delta [0.5, 2/3.0, 1], result.map(&:neighbor_distance)
+  end
+
   def test_invalid_dimensions
     error = assert_raises(ActiveRecord::RecordInvalid) do
       SqliteItem.create!(binary_embedding: "\x00\x11")

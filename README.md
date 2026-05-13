@@ -380,6 +380,7 @@ Supported values are:
 - `cosine`
 - `taxicab`
 - `hamming`
+- `jaccard`
 
 ### Dimensions
 

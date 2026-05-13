@@ -92,6 +92,8 @@ module Neighbor
           "neighbor_max_inner_product"
         when "hamming"
           "neighbor_hamming_distance"
+        when "jaccard"
+          "neighbor_jaccard_distance"
         end
       when :sqlitevec
         case distance

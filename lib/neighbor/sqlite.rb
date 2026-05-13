@@ -89,6 +89,20 @@ module Neighbor
                 a.each_byte.zip(b.each_byte).sum { |ai, bi| (ai ^ bi).to_s(2).count("1") }
               end
           end
+
+          db.create_function("neighbor_jaccard_distance", 2) do |func, a, b|
+            func.result =
+              if a.nil? || b.nil?
+                nil
+              else
+                raise Error, "different vector dimensions" if a.bytesize != b.bytesize
+                # TODO improve
+                ab = a.each_byte.zip(b.each_byte).sum { |ai, bi| (ai & bi).to_s(2).count("1") }
+                aa = a.unpack1("B*").count("1")
+                bb = b.unpack1("B*").count("1")
+                ab == 0 ? 1.0 : 1.0 - (ab / (aa + bb - ab).to_f)
+              end
+          end
         else
           db.enable_load_extension(1)
           begin
