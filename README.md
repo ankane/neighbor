@@ -418,9 +418,7 @@ class CreateItems < ActiveRecord::Migration[8.1]
     create_virtual_table :items, :vec1, ["embedding", "id"]
 
     # Rails < 8
-    execute <<~SQL
-      CREATE VIRTUAL TABLE items USING vec1(embedding, id)
-    SQL
+    execute "CREATE VIRTUAL TABLE items USING vec1(embedding, id)"
   end
 end
 ```

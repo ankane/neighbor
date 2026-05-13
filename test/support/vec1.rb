@@ -14,9 +14,7 @@ Vec1Record.connection.instance_eval do
   if ActiveRecord::VERSION::MAJOR >= 8
     create_virtual_table :virtual_items, :vec1, ["embedding", "id"]
   else
-    execute <<~SQL
-      CREATE VIRTUAL TABLE virtual_items USING vec1(embedding, id)
-    SQL
+    execute "CREATE VIRTUAL TABLE virtual_items USING vec1(embedding, id)"
   end
 end
 
