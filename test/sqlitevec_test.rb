@@ -3,43 +3,43 @@ require_relative "support/sqlitevec"
 
 class SqlitevecTest < Minitest::Test
   def setup
-    SqliteItem.delete_all
+    SqlitevecItem.delete_all
   end
 
   def test_cosine
-    create_items(SqliteItem, :embedding)
-    result = SqliteItem.find(1).nearest_neighbors(:embedding, distance: "cosine").first(3)
+    create_items(SqlitevecItem, :embedding)
+    result = SqlitevecItem.find(1).nearest_neighbors(:embedding, distance: "cosine").first(3)
     assert_equal [2, 3], result.map(&:id)
     assert_elements_in_delta [0, 0.05719095841050148], result.map(&:neighbor_distance)
   end
 
   def test_euclidean
-    create_items(SqliteItem, :embedding)
-    result = SqliteItem.find(1).nearest_neighbors(:embedding, distance: "euclidean").first(3)
+    create_items(SqlitevecItem, :embedding)
+    result = SqlitevecItem.find(1).nearest_neighbors(:embedding, distance: "euclidean").first(3)
     assert_equal [3, 2], result.map(&:id)
     assert_elements_in_delta [1, Math.sqrt(3)], result.map(&:neighbor_distance)
   end
 
   def test_taxicab
-    create_items(SqliteItem, :embedding)
-    result = SqliteItem.find(1).nearest_neighbors(:embedding, distance: "taxicab").first(3)
+    create_items(SqlitevecItem, :embedding)
+    result = SqlitevecItem.find(1).nearest_neighbors(:embedding, distance: "taxicab").first(3)
     assert_equal [3, 2], result.map(&:id)
     assert_elements_in_delta [1, 3], result.map(&:neighbor_distance)
   end
 
   def test_create
-    item = SqliteItem.create!(embedding: [1, 2, 3])
+    item = SqlitevecItem.create!(embedding: [1, 2, 3])
     assert_equal [1, 2, 3], item.embedding
   end
 
   def test_vec_to_json
-    SqliteItem.create!(embedding: [1, 2, 3])
-    assert_equal "[1.000000,2.000000,3.000000]", SqliteItem.pluck("vec_to_json(embedding)").last
+    SqlitevecItem.create!(embedding: [1, 2, 3])
+    assert_equal "[1.000000,2.000000,3.000000]", SqlitevecItem.pluck("vec_to_json(embedding)").last
   end
 
   def test_schema
     file = Tempfile.new
-    connection = SqliteItem.connection_pool
+    connection = SqlitevecItem.connection_pool
 
     ignore_tables = ActiveRecord::VERSION::MAJOR >= 8 ? [/_vector_chunks00\z/] : [/\Avirtual_items/, /\Acosine_items/]
     with_ignore_tables(ignore_tables) do
@@ -56,21 +56,21 @@ class SqlitevecTest < Minitest::Test
 
   def test_invalid_dimensions
     error = assert_raises(ActiveRecord::RecordInvalid) do
-      SqliteItem.create!(embedding: [1, 1])
+      SqlitevecItem.create!(embedding: [1, 1])
     end
     assert_match "Validation failed: Embedding must have 3 dimensions", error.message
   end
 
   def test_infinite
     error = assert_raises(ActiveRecord::RecordInvalid) do
-      SqliteItem.create!(embedding: [Float::INFINITY, 0, 0])
+      SqlitevecItem.create!(embedding: [Float::INFINITY, 0, 0])
     end
     assert_equal "Validation failed: Embedding must have finite values", error.message
   end
 
   def test_nan
     error = assert_raises(ActiveRecord::RecordInvalid) do
-      SqliteItem.create!(embedding: [Float::NAN, 0, 0])
+      SqlitevecItem.create!(embedding: [Float::NAN, 0, 0])
     end
     assert_equal "Validation failed: Embedding must have finite values", error.message
   end

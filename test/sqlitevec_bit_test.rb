@@ -3,33 +3,33 @@ require_relative "support/sqlitevec"
 
 class SqlitevecBitTest < Minitest::Test
   def setup
-    SqliteItem.delete_all
+    SqlitevecItem.delete_all
   end
 
   def test_hamming
     create_bit_items
-    result = SqliteItem.find(1).nearest_neighbors(:binary_embedding, distance: "hamming").first(3)
+    result = SqlitevecItem.find(1).nearest_neighbors(:binary_embedding, distance: "hamming").first(3)
     assert_equal [2, 3], result.map(&:id)
     assert_elements_in_delta [2, 3], result.map(&:neighbor_distance)
   end
 
   def test_hamming_scope
     create_bit_items
-    result = SqliteItem.nearest_neighbors(:binary_embedding, "\x05", distance: "hamming").first(5)
+    result = SqlitevecItem.nearest_neighbors(:binary_embedding, "\x05", distance: "hamming").first(5)
     assert_equal [2, 3, 1], result.map(&:id)
     assert_elements_in_delta [0, 1, 2], result.map(&:neighbor_distance)
   end
 
   def test_invalid_dimensions
     error = assert_raises(ActiveRecord::RecordInvalid) do
-      SqliteItem.create!(binary_embedding: "\x00\x11")
+      SqlitevecItem.create!(binary_embedding: "\x00\x11")
     end
     assert_equal "Validation failed: Binary embedding must have 8 dimensions", error.message
   end
 
   def create_bit_items
-    SqliteItem.create!(id: 1, binary_embedding: "\x00")
-    SqliteItem.create!(id: 2, binary_embedding: "\x05")
-    SqliteItem.create!(id: 3, binary_embedding: "\x07")
+    SqlitevecItem.create!(id: 1, binary_embedding: "\x00")
+    SqlitevecItem.create!(id: 2, binary_embedding: "\x05")
+    SqlitevecItem.create!(id: 3, binary_embedding: "\x07")
   end
 end
