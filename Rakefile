@@ -4,12 +4,12 @@ require "rake/testtask"
 namespace :test do
   Rake::TestTask.new(:postgresql) do |t|
     t.description = "Run tests for Postgres"
-    t.test_files = FileList["test/**/*_test.rb"].exclude("test/{sqlite,vec1,mariadb,mysql}*_test.rb")
+    t.test_files = FileList["test/**/*_test.rb"].exclude("test/{sqlitevec,vec1,mariadb,mysql}*_test.rb")
   end
 
-  Rake::TestTask.new(:sqlite) do |t|
-    t.description = "Run tests for SQLite"
-    t.test_files = FileList["test/**/sqlite*_test.rb"]
+  Rake::TestTask.new(:sqlitevec) do |t|
+    t.description = "Run tests for sqlite-vec"
+    t.test_files = FileList["test/**/sqlitevec*_test.rb"]
   end
 
   Rake::TestTask.new(:vec1) do |t|
@@ -29,8 +29,8 @@ namespace :test do
 end
 
 task :test do
-  [:postgresql, :sqlite, :mariadb, :mysql].each do |adapter|
-    next if adapter == :sqlite && RUBY_ENGINE == "truffleruby"
+  [:postgresql, :sqlitevec, :mariadb, :mysql].each do |adapter|
+    next if adapter == :sqlitevec && RUBY_ENGINE == "truffleruby"
     puts "Using #{adapter}"
     Rake::Task["test:#{adapter}"].invoke
   end

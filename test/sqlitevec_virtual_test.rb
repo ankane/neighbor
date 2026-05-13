@@ -1,7 +1,7 @@
 require_relative "test_helper"
-require_relative "support/sqlite"
+require_relative "support/sqlitevec"
 
-class SqliteVirtualTest < Minitest::Test
+class SqlitevecVirtualTest < Minitest::Test
   def setup
     SqliteVecItem.delete_all
     SqliteCosineItem.delete_all
