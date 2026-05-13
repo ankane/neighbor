@@ -417,7 +417,7 @@ For [Vec1](https://sqlite.org/vec1/doc/trunk/doc/vec1.md), [build the extension]
 Neighbor::SQLite.initialize!(extension: "/path/to/vec1.so")
 ```
 
-This speeds up `euclidean` and `cosine` distances
+This speeds up `euclidean` and `cosine` distance
 
 You can also use [virtual tables](https://sqlite.org/vec1/doc/trunk/doc/vec1intro.md#1-using-the-virtual-table)
 
@@ -461,7 +461,7 @@ And create `config/initializers/neighbor.rb` with:
 Neighbor::SQLite.initialize!
 ```
 
-This speeds up `euclidean`, `cosine`, `taxicab`, and `hamming` distances
+This speeds up `euclidean`, `cosine`, `taxicab`, and `hamming` distance
 
 You can also use [virtual tables](https://alexgarcia.xyz/sqlite-vec/features/knn.html)
 
