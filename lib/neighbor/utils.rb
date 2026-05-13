@@ -182,9 +182,11 @@ module Neighbor
     def self.order(adapter, type, operator, quoted_attribute, query)
       case adapter
       when :sqlite
-        if type == :int8
+        if operator.start_with?("neighbor")
+          "#{operator}(#{quoted_attribute}, #{query}, #{type == :int8 ? 1 : 0})"
+        elsif type == :int8
           "#{operator}(vec_int8(#{quoted_attribute}), vec_int8(#{query}))"
-        elsif type == :bit && operator.start_with?("vec_")
+        elsif type == :bit
           "#{operator}(vec_bit(#{quoted_attribute}), vec_bit(#{query}))"
         else
           "#{operator}(#{quoted_attribute}, #{query})"

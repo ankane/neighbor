@@ -376,6 +376,16 @@ class Item < ApplicationRecord
 end
 ```
 
+### Int8 Vectors
+
+Use the `type` option for int8 vectors
+
+```ruby
+class Item < ApplicationRecord
+  has_neighbors :embedding, dimensions: 3, type: :int8
+end
+```
+
 ### Binary Vectors
 
 Use the `type` option for binary vectors
@@ -452,14 +462,6 @@ Neighbor::SQLite.initialize!
 ```
 
 This speeds up `euclidean`, `cosine`, `taxicab`, and `hamming` distances
-
-Use the `type` option for int8 vectors
-
-```ruby
-class Item < ApplicationRecord
-  has_neighbors :embedding, dimensions: 3, type: :int8
-end
-```
 
 You can also use [virtual tables](https://alexgarcia.xyz/sqlite-vec/features/knn.html)
 

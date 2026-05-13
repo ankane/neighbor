@@ -34,38 +34,41 @@ module Neighbor
     end
 
     def self.setup_functions(db)
-      db.create_function("neighbor_l2_distance", 2) do |func, a, b|
+      db.create_function("neighbor_l2_distance", 2) do |func, a, b, c|
         func.result =
           if a.nil? || b.nil?
             nil
           else
             raise SQLite3::SQLException, "different vector dimensions" if a.bytesize != b.bytesize
-            a = a.unpack("f*")
-            b = b.unpack("f*")
+            fmt = c == 1 ? "c*" : "f*"
+            a = a.unpack(fmt)
+            b = b.unpack(fmt)
             Math.sqrt(a.zip(b).sum { |ai, bi| diff = ai - bi; diff * diff })
           end
       end
 
-      db.create_function("neighbor_max_inner_product", 2) do |func, a, b|
+      db.create_function("neighbor_max_inner_product", 2) do |func, a, b, c|
         func.result =
           if a.nil? || b.nil?
             nil
           else
             raise SQLite3::SQLException, "different vector dimensions" if a.bytesize != b.bytesize
-            a = a.unpack("f*")
-            b = b.unpack("f*")
+            fmt = c == 1 ? "c*" : "f*"
+            a = a.unpack(fmt)
+            b = b.unpack(fmt)
             -a.zip(b).sum { |ai, bi| ai * bi }
           end
       end
 
-      db.create_function("neighbor_cosine_distance", 2) do |func, a, b|
+      db.create_function("neighbor_cosine_distance", 2) do |func, a, b, c|
         func.result =
           if a.nil? || b.nil?
             nil
           else
             raise SQLite3::SQLException, "different vector dimensions" if a.bytesize != b.bytesize
-            a = a.unpack("f*")
-            b = b.unpack("f*")
+            fmt = c == 1 ? "c*" : "f*"
+            a = a.unpack(fmt)
+            b = b.unpack(fmt)
             similarity = a.zip(b).sum { |ai, bi| ai * bi }
             norma = a.sum { |v| v * v }
             normb = b.sum { |v| v * v }
@@ -73,14 +76,15 @@ module Neighbor
           end
       end
 
-      db.create_function("neighbor_l1_distance", 2) do |func, a, b|
+      db.create_function("neighbor_l1_distance", 2) do |func, a, b, c|
         func.result =
           if a.nil? || b.nil?
             nil
           else
             raise SQLite3::SQLException, "different vector dimensions" if a.bytesize != b.bytesize
-            a = a.unpack("f*")
-            b = b.unpack("f*")
+            fmt = c == 1 ? "c*" : "f*"
+            a = a.unpack(fmt)
+            b = b.unpack(fmt)
             a.zip(b).sum { |ai, bi| (ai - bi).abs }
           end
       end
