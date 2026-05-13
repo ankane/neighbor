@@ -455,10 +455,10 @@ For [sqlite-vec](https://github.com/asg017/sqlite-vec), add this line to your ap
 gem "sqlite-vec"
 ```
 
-And create `config/initializers/neighbor.rb` with:
+And run:
 
-```ruby
-Neighbor::SQLite.initialize!
+```sh
+rails generate neighbor:sqlite
 ```
 
 This speeds up `euclidean`, `cosine`, `taxicab`, and `hamming` distance
