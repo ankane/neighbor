@@ -78,6 +78,17 @@ module Neighbor
                 a.zip(b).sum { |ai, bi| (ai - bi).abs }
               end
           end
+
+          db.create_function("neighbor_hamming_distance", 2) do |func, a, b|
+            func.result =
+              if a.nil? || b.nil?
+                nil
+              else
+                raise Error, "different vector dimensions" if a.bytesize != b.bytesize
+                # TODO improve
+                a.each_byte.zip(b.each_byte).sum { |ai, bi| (ai ^ bi).to_s(2).count("1") }
+              end
+          end
         else
           db.enable_load_extension(1)
           begin

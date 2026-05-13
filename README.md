@@ -379,6 +379,7 @@ Supported values are:
 - `inner_product`
 - `cosine`
 - `taxicab`
+- `hamming`
 
 ### Dimensions
 
@@ -460,6 +461,22 @@ For sqlite-vec, it’s a good idea to specify the number of dimensions to ensure
 class Item < ApplicationRecord
   has_neighbors :embedding, dimensions: 3
 end
+```
+
+### Binary Vectors
+
+Use the `type` option for binary vectors
+
+```ruby
+class Item < ApplicationRecord
+  has_neighbors :embedding, dimensions: 8, type: :bit
+end
+```
+
+Get the nearest neighbors by Hamming distance
+
+```ruby
+Item.nearest_neighbors(:embedding, "\x05", distance: "hamming").first(5)
 ```
 
 ### Virtual Tables

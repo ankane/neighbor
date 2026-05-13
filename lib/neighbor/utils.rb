@@ -2,7 +2,7 @@ module Neighbor
   module Utils
     def self.validate_dimensions(value, type, expected, adapter)
       dimensions = type == :sparsevec ? value.dimensions : value.size
-      dimensions *= 8 if type == :bit && [:sqlitevec, :mysql].include?(adapter)
+      dimensions *= 8 if type == :bit && [:sqlite, :sqlitevec, :mysql].include?(adapter)
 
       if expected && dimensions != expected
         "Expected #{expected} dimensions, not #{dimensions}"
@@ -90,6 +90,8 @@ module Neighbor
           "neighbor_l1_distance"
         when "inner_product"
           "neighbor_max_inner_product"
+        when "hamming"
+          "neighbor_hamming_distance"
         end
       when :sqlitevec
         case distance
