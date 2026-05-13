@@ -10,7 +10,11 @@ module Neighbor
 
       raise Error, "Already initialized" if @extension
 
-      require "sqlite_vec" if extension == :sqlite_vec
+      if extension == :sqlite_vec
+        require "sqlite_vec"
+      elsif !extension.is_a?(String)
+        raise ArgumentError, "Unsupported extension"
+      end
 
       @extension = extension
     end
