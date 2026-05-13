@@ -61,10 +61,10 @@ For sqlite-vec, add this line to your application’s Gemfile:
 gem "sqlite-vec"
 ```
 
-And run:
+And create `config/initializers/neighbor.rb` with:
 
-```sh
-rails generate neighbor:sqlite
+```ruby
+Neighbor::SQLite.initialize!
 ```
 
 ## Getting Started
