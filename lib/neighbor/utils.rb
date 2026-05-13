@@ -51,9 +51,9 @@ module Neighbor
       case model.connection_db_config.adapter
       when /sqlite/i
         case SQLite.extension
-        when nil
+        when :sqlite_vec
           :sqlitevec
-        when false
+        when nil, false
           :sqlite
         else
           :sqlite_vec1

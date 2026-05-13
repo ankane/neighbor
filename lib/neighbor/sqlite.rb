@@ -5,21 +5,17 @@ module Neighbor
     end
 
     # note: this is a public API (unlike PostgreSQL and MySQL)
-    def self.initialize!(extension: nil)
-      @extension = false unless defined?(@extension)
-
+    def self.initialize!(extension: :sqlite_vec)
       return if extension == @extension
 
-      raise Error, "Already initialized" if @extension != false
+      raise Error, "Already initialized" if @extension
 
-      require "sqlite_vec" if extension.nil?
+      require "sqlite_vec" if extension == :sqlite_vec
 
       @extension = extension
     end
 
     def self.initialize_adapter!
-      @extension = false unless defined?(@extension)
-
       require_relative "type/sqlite_vector"
       require_relative "type/sqlite_int8_vector"
 
@@ -109,15 +105,15 @@ module Neighbor
       def configure_connection
         super
         db = @raw_connection
-        if SQLite.extension == false
+        if !SQLite.extension
           SQLite.setup_functions(db)
         else
           db.enable_load_extension(1)
           begin
-            if SQLite.extension
-              db.load_extension(SQLite.extension)
-            else
+            if SQLite.extension == :sqlite_vec
               SqliteVec.load(db)
+            else
+              db.load_extension(SQLite.extension)
             end
           ensure
             db.enable_load_extension(0)
