@@ -63,6 +63,8 @@ task :benchmark do
     end
 
     Item.insert_all!(100000.times.map { {embedding: 128.times.map { rand }} })
+
+    ActiveRecord::Base.connection_handler.clear_all_connections!
   end
 
   # Neighbor::SQLite.initialize!(extension: "/tmp/vec1.so")
