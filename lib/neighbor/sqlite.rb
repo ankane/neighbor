@@ -6,6 +6,8 @@ module Neighbor
 
     # note: this is a public API (unlike PostgreSQL and MySQL)
     def self.initialize!(extension: nil)
+      @extension = false unless defined?(@extension)
+
       return if extension == @extension
 
       raise Error, "Already initialized" if @extension != false
