@@ -63,7 +63,7 @@ module Neighbor
                 similarity = a.zip(b).sum { |ai, bi| ai * bi }
                 norma = a.sum { |v| v * v }
                 normb = b.sum { |v| v * v }
-                1.0 - similarity / Math.sqrt(norma * normb)
+                1.0 - (similarity / Math.sqrt(norma * normb)).clamp(-1.0, 1.0)
               end
           end
 
