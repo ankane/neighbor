@@ -376,7 +376,9 @@ Item.nearest_neighbors(:embedding, "\x05", distance: "hamming").first(5)
 Supported values are:
 
 - `euclidean`
+- `inner_product`
 - `cosine`
+- `taxicab`
 
 ### Dimensions
 

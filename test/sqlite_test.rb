@@ -19,4 +19,18 @@ class SqliteTest < Minitest::Test
     assert_equal [3, 2], result.map(&:id)
     assert_elements_in_delta [1, Math.sqrt(3)], result.map(&:neighbor_distance)
   end
+
+  def test_taxicab
+    create_items(SqliteItem, :embedding)
+    result = SqliteItem.find(1).nearest_neighbors(:embedding, distance: "taxicab").first(3)
+    assert_equal [3, 2], result.map(&:id)
+    assert_elements_in_delta [1, 3], result.map(&:neighbor_distance)
+  end
+
+  def test_inner_product
+    create_items(SqliteItem, :embedding)
+    result = SqliteItem.find(1).nearest_neighbors(:embedding, distance: "inner_product").first(3)
+    assert_equal [2, 3], result.map(&:id)
+    assert_elements_in_delta [6, 4], result.map(&:neighbor_distance)
+  end
 end

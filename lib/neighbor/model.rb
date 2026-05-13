@@ -127,7 +127,7 @@ module Neighbor
           neighbor_distance =
             if distance == "cosine" && normalize_required
               "POWER(#{order}, 2) / 2.0"
-            elsif [:vector, :halfvec, :sparsevec].include?(column_type) && distance == "inner_product"
+            elsif ([:vector, :halfvec, :sparsevec].include?(column_type) || adapter == :sqlite) && distance == "inner_product"
               "(#{order}) * -1"
             elsif adapter == :sqlite_vec1 && distance == "euclidean"
               "sqrt(#{order})"

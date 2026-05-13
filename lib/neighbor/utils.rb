@@ -86,6 +86,10 @@ module Neighbor
           "neighbor_l2_distance"
         when "cosine"
           "neighbor_cosine_distance"
+        when "taxicab"
+          "neighbor_l1_distance"
+        when "inner_product"
+          "neighbor_max_inner_product"
         end
       when :sqlitevec
         case distance

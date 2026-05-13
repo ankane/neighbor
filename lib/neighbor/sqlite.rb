@@ -40,6 +40,18 @@ module Neighbor
               end
           end
 
+          db.create_function("neighbor_max_inner_product", 2) do |func, a, b|
+            func.result =
+              if a.nil? || b.nil?
+                nil
+              else
+                a = a.unpack("f*")
+                b = b.unpack("f*")
+                raise Error, "different vector dimensions" if a.size != b.size
+                -a.zip(b).sum { |ai, bi| ai * bi }
+              end
+          end
+
           db.create_function("neighbor_cosine_distance", 2) do |func, a, b|
             func.result =
               if a.nil? || b.nil?
@@ -52,6 +64,18 @@ module Neighbor
                 norma = a.sum { |v| v * v }
                 normb = b.sum { |v| v * v }
                 1.0 - similarity / Math.sqrt(norma * normb)
+              end
+          end
+
+          db.create_function("neighbor_l1_distance", 2) do |func, a, b|
+            func.result =
+              if a.nil? || b.nil?
+                nil
+              else
+                a = a.unpack("f*")
+                b = b.unpack("f*")
+                raise Error, "different vector dimensions" if a.size != b.size
+                a.zip(b).sum { |ai, bi| (ai - bi).abs }
               end
           end
         else
