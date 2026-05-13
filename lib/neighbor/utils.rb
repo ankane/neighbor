@@ -183,7 +183,11 @@ module Neighbor
       case adapter
       when :sqlite
         if operator.start_with?("neighbor")
-          "#{operator}(#{quoted_attribute}, #{query}, #{type == :int8 ? 1 : 0})"
+          if type == :bit
+            "#{operator}(#{quoted_attribute}, #{query})"
+          else
+            "#{operator}(#{quoted_attribute}, #{query}, #{type == :int8 ? 1 : 0})"
+          end
         elsif type == :int8
           "#{operator}(vec_int8(#{quoted_attribute}), vec_int8(#{query}))"
         elsif type == :bit
