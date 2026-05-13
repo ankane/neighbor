@@ -7,7 +7,7 @@ Supports:
 - Postgres (cube and pgvector)
 - MariaDB 11.8
 - MySQL 9 (searching requires HeatWave) - experimental
-- SQLite (no extension, Vec1, and sqlite-vec) - experimental
+- SQLite - experimental
 
 Also available for [Redis](https://github.com/ankane/neighbor-redis) and [S3 Vectors](https://github.com/ankane/neighbor-s3)
 

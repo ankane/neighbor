@@ -76,7 +76,7 @@ module Neighbor
           column_type = column_info&.type
 
           adapter = Neighbor::Utils.adapter(klass)
-          if type && ![:sqlite, :sqlitevec].include?(adapter)
+          if type && adapter != :sqlite
             raise ArgumentError, "type only works with SQLite"
           end
 
@@ -129,7 +129,7 @@ module Neighbor
               "POWER(#{order}, 2) / 2.0"
             elsif ([:vector, :halfvec, :sparsevec].include?(column_type) || adapter == :sqlite) && distance == "inner_product"
               "(#{order}) * -1"
-            elsif adapter == :sqlite_vec1 && distance == "euclidean"
+            elsif adapter == :sqlite && order.start_with?("vec1_l2_distance")
               "sqrt(#{order})"
             else
               order

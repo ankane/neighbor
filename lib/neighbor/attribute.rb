@@ -21,15 +21,6 @@ module Neighbor
           case Utils.adapter(@model)
           when :sqlite
             case @type&.to_sym
-            when :bit
-              @cast_type
-            when :float32, nil
-              Type::SqliteVector.new
-            else
-              raise ArgumentError, "Unsupported type"
-            end
-          when :sqlitevec
-            case @type&.to_sym
             when :int8
               Type::SqliteInt8Vector.new
             when :bit
@@ -39,8 +30,6 @@ module Neighbor
             else
               raise ArgumentError, "Unsupported type"
             end
-          when :sqlite_vec1
-            Type::SqliteVector.new
           when :mariadb
             if @model.columns_hash[@attribute_name.to_s]&.type == :integer
               @cast_type

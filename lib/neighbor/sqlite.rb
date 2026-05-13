@@ -1,25 +1,31 @@
 module Neighbor
   module SQLite
     class << self
-      attr_reader :extension
+      attr_reader :extensions
+    end
+
+    def self.vec1?
+      extensions.any?(String)
+    end
+
+    def self.sqlite_vec?
+      extensions.include?(:sqlite_vec)
     end
 
     # note: this is a public API (unlike PostgreSQL and MySQL)
     def self.initialize!(extension: :sqlite_vec)
-      return if extension == @extension
-
-      raise Error, "Already initialized" if @extension
-
       if extension == :sqlite_vec
         require "sqlite_vec"
       elsif !extension.is_a?(String)
         raise ArgumentError, "Unsupported extension"
       end
 
-      @extension = extension
+      (@extensions ||= []) << extension
     end
 
     def self.initialize_adapter!
+      @extensions ||= []
+
       require_relative "type/sqlite_vector"
       require_relative "type/sqlite_int8_vector"
 
@@ -109,15 +115,16 @@ module Neighbor
       def configure_connection
         super
         db = @raw_connection
-        if !SQLite.extension
-          SQLite.setup_functions(db)
-        else
+        SQLite.setup_functions(db)
+        if SQLite.extensions.any?
           db.enable_load_extension(1)
           begin
-            if SQLite.extension == :sqlite_vec
-              SqliteVec.load(db)
-            else
-              db.load_extension(SQLite.extension)
+            SQLite.extensions.each do |extension|
+              if extension == :sqlite_vec
+                SqliteVec.load(db)
+              else
+                db.load_extension(extension)
+              end
             end
           ensure
             db.enable_load_extension(0)

@@ -2,7 +2,7 @@ module Neighbor
   module Utils
     def self.validate_dimensions(value, type, expected, adapter)
       dimensions = type == :sparsevec ? value.dimensions : value.size
-      dimensions *= 8 if type == :bit && [:sqlite, :sqlitevec, :mysql].include?(adapter)
+      dimensions *= 8 if type == :bit && [:sqlite, :mysql].include?(adapter)
 
       if expected && dimensions != expected
         "Expected #{expected} dimensions, not #{dimensions}"
@@ -50,14 +50,7 @@ module Neighbor
     def self.adapter(model)
       case model.connection_db_config.adapter
       when /sqlite/i
-        case SQLite.extension
-        when :sqlite_vec
-          :sqlitevec
-        when nil, false
-          :sqlite
-        else
-          :sqlite_vec1
-        end
+        :sqlite
       when /mysql|trilogy/i
         model.connection_pool.with_connection { |c| c.try(:mariadb?) } ? :mariadb : :mysql
       else
@@ -83,35 +76,37 @@ module Neighbor
       when :sqlite
         case distance
         when "euclidean"
-          "neighbor_l2_distance"
+          if SQLite.vec1?
+            "vec1_l2_distance"
+          elsif SQLite.sqlite_vec?
+            "vec_distance_L2"
+          else
+            "neighbor_l2_distance"
+          end
         when "cosine"
-          "neighbor_cosine_distance"
+          if SQLite.vec1?
+            "vec1_cos_distance"
+          elsif SQLite.sqlite_vec?
+            "vec_distance_cosine"
+          else
+            "neighbor_cosine_distance"
+          end
         when "taxicab"
-          "neighbor_l1_distance"
+          if SQLite.sqlite_vec?
+            "vec_distance_L1"
+          else
+            "neighbor_l1_distance"
+          end
         when "inner_product"
           "neighbor_max_inner_product"
         when "hamming"
-          "neighbor_hamming_distance"
+          if SQLite.sqlite_vec?
+            "vec_distance_hamming"
+          else
+            "neighbor_hamming_distance"
+          end
         when "jaccard"
           "neighbor_jaccard_distance"
-        end
-      when :sqlitevec
-        case distance
-        when "euclidean"
-          "vec_distance_L2"
-        when "cosine"
-          "vec_distance_cosine"
-        when "taxicab"
-          "vec_distance_L1"
-        when "hamming"
-          "vec_distance_hamming"
-        end
-      when :sqlite_vec1
-        case distance
-        when "euclidean"
-          "vec1_l2_distance"
-        when "cosine"
-          "vec1_cos_distance"
         end
       when :mariadb
         case column_type
@@ -187,18 +182,13 @@ module Neighbor
     def self.order(adapter, type, operator, quoted_attribute, query)
       case adapter
       when :sqlite
-        "#{operator}(#{quoted_attribute}, #{query})"
-      when :sqlitevec
-        case type
-        when :int8
+        if type == :int8
           "#{operator}(vec_int8(#{quoted_attribute}), vec_int8(#{query}))"
-        when :bit
+        elsif type == :bit && operator.start_with?("vec_")
           "#{operator}(vec_bit(#{quoted_attribute}), vec_bit(#{query}))"
         else
           "#{operator}(#{quoted_attribute}, #{query})"
         end
-      when :sqlite_vec1
-        "#{operator}(#{quoted_attribute}, #{query})"
       when :mariadb
         if operator == "BIT_COUNT"
           "BIT_COUNT(#{quoted_attribute} ^ #{query})"
