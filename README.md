@@ -7,7 +7,7 @@ Supports:
 - Postgres (cube and pgvector)
 - MariaDB 11.8
 - MySQL 9 (searching requires HeatWave) - experimental
-- SQLite (Vec1 and sqlite-vec) - experimental
+- SQLite (no extension, Vec1, and sqlite-vec) - experimental
 
 Also available for [Redis](https://github.com/ankane/neighbor-redis) and [S3 Vectors](https://github.com/ankane/neighbor-s3)
 
@@ -41,7 +41,13 @@ rails db:migrate
 
 ### For SQLite
 
-Neighbor supports two extensions for SQLite: [Vec1](https://sqlite.org/vec1/doc/trunk/doc/vec1.md) [unreleased] and [sqlite-vec](https://github.com/asg017/sqlite-vec).
+Neighbor supports three options for SQLite: no extension [unreleased], [Vec1](https://sqlite.org/vec1/doc/trunk/doc/vec1.md) [unreleased], and [sqlite-vec](https://github.com/asg017/sqlite-vec).
+
+For no extension, create `config/initializers/neighbor.rb` with:
+
+```ruby
+Neighbor::SQLite.initialize!(extension: false)
+```
 
 For Vec1, [build the extension](https://sqlite.org/vec1/doc/trunk/doc/vec1.md#2-building-the-extension) and create `config/initializers/neighbor.rb` with:
 
@@ -74,7 +80,7 @@ class AddEmbeddingToItems < ActiveRecord::Migration[8.1]
     # pgvector, MariaDB, and MySQL
     add_column :items, :embedding, :vector, limit: 3 # dimensions
 
-    # Vec1 and sqlite-vec
+    # SQLite (no extension, Vec1, and sqlite-vec)
     add_column :items, :embedding, :binary
   end
 end
@@ -119,6 +125,7 @@ See the additional docs for:
 - [pgvector](#pgvector)
 - [MariaDB](#mariadb)
 - [MySQL](#mysql)
+- [SQLite](#sqlite)
 - [Vec1](#vec1)
 - [sqlite-vec](#sqlite-vec)
 
@@ -360,6 +367,25 @@ Get the nearest neighbors by Hamming distance
 
 ```ruby
 Item.nearest_neighbors(:embedding, "\x05", distance: "hamming").first(5)
+```
+
+## SQLite
+
+### Distance
+
+Supported values are:
+
+- `euclidean`
+- `cosine`
+
+### Dimensions
+
+For SQLite, it’s a good idea to specify the number of dimensions to ensure all records have the same number.
+
+```ruby
+class Item < ApplicationRecord
+  has_neighbors :embedding, dimensions: 3
+end
 ```
 
 ## Vec1

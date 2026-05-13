@@ -12,9 +12,9 @@ module Neighbor
       end
 
       require_relative "type/sqlite_vector"
-      require_relative "type/sqlite_int8_vector" unless extension
+      require_relative "type/sqlite_int8_vector" if extension.nil?
 
-      require "sqlite_vec" unless extension
+      require "sqlite_vec" if extension.nil?
       require "active_record/connection_adapters/sqlite3_adapter"
 
       ActiveRecord::ConnectionAdapters::SQLite3Adapter.prepend(InstanceMethods)
@@ -27,15 +27,44 @@ module Neighbor
       def configure_connection
         super
         db = @raw_connection
-        db.enable_load_extension(1)
-        begin
-          if SQLite.extension
-            db.load_extension(SQLite.extension)
-          else
-            SqliteVec.load(db)
+        if SQLite.extension == false
+          db.create_function("neighbor_l2_distance", 2) do |func, a, b|
+            func.result =
+              if a.nil? || b.nil?
+                nil
+              else
+                a = a.unpack("f*")
+                b = b.unpack("f*")
+                raise Error, "different vector dimensions" if a.size != b.size
+                Math.sqrt(a.zip(b).sum { |ai, bi| diff = ai - bi; diff * diff })
+              end
           end
-        ensure
-          db.enable_load_extension(0)
+
+          db.create_function("neighbor_cosine_distance", 2) do |func, a, b|
+            func.result =
+              if a.nil? || b.nil?
+                nil
+              else
+                a = a.unpack("f*")
+                b = b.unpack("f*")
+                raise Error, "different vector dimensions" if a.size != b.size
+                similarity = a.zip(b).sum { |ai, bi| ai * bi }
+                norma = a.sum { |v| v * v }
+                normb = b.sum { |v| v * v }
+                1.0 - similarity / Math.sqrt(norma * normb)
+              end
+          end
+        else
+          db.enable_load_extension(1)
+          begin
+            if SQLite.extension
+              db.load_extension(SQLite.extension)
+            else
+              SqliteVec.load(db)
+            end
+          ensure
+            db.enable_load_extension(0)
+          end
         end
       end
     end

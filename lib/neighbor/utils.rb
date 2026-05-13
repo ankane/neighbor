@@ -2,7 +2,7 @@ module Neighbor
   module Utils
     def self.validate_dimensions(value, type, expected, adapter)
       dimensions = type == :sparsevec ? value.dimensions : value.size
-      dimensions *= 8 if type == :bit && [:sqlite, :mysql].include?(adapter)
+      dimensions *= 8 if type == :bit && [:sqlitevec, :mysql].include?(adapter)
 
       if expected && dimensions != expected
         "Expected #{expected} dimensions, not #{dimensions}"
@@ -50,7 +50,14 @@ module Neighbor
     def self.adapter(model)
       case model.connection_db_config.adapter
       when /sqlite/i
-        SQLite.extension ? :sqlite_vec1 : :sqlite
+        case SQLite.extension
+        when nil
+          :sqlitevec
+        when false
+          :sqlite
+        else
+          :sqlite_vec1
+        end
       when /mysql|trilogy/i
         model.connection_pool.with_connection { |c| c.try(:mariadb?) } ? :mariadb : :mysql
       else
@@ -74,6 +81,13 @@ module Neighbor
     def self.operator(adapter, column_type, distance)
       case adapter
       when :sqlite
+        case distance
+        when "euclidean"
+          "neighbor_l2_distance"
+        when "cosine"
+          "neighbor_cosine_distance"
+        end
+      when :sqlitevec
         case distance
         when "euclidean"
           "vec_distance_L2"
@@ -165,6 +179,8 @@ module Neighbor
     def self.order(adapter, type, operator, quoted_attribute, query)
       case adapter
       when :sqlite
+        "#{operator}(#{quoted_attribute}, #{query})"
+      when :sqlitevec
         case type
         when :int8
           "#{operator}(vec_int8(#{quoted_attribute}), vec_int8(#{query}))"

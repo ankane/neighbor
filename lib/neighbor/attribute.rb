@@ -20,6 +20,8 @@ module Neighbor
         if @cast_type.is_a?(ActiveModel::Type::Value)
           case Utils.adapter(@model)
           when :sqlite
+            Type::SqliteVector.new
+          when :sqlitevec
             case @type&.to_sym
             when :int8
               Type::SqliteInt8Vector.new

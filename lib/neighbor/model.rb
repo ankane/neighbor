@@ -76,7 +76,7 @@ module Neighbor
           column_type = column_info&.type
 
           adapter = Neighbor::Utils.adapter(klass)
-          if type && adapter != :sqlite
+          if type && adapter != :sqlitevec
             raise ArgumentError, "type only works with SQLite"
           end
 

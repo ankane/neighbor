@@ -1,5 +1,6 @@
 ## 1.1.0 (unreleased)
 
+- Added experimental support for SQLite with no extension
 - Added experimental support for Vec1
 
 ## 1.0.0 (2026-04-04)
