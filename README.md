@@ -39,6 +39,20 @@ rails generate neighbor:cube
 rails db:migrate
 ```
 
+### For SQLite
+
+Add this line to your application’s Gemfile:
+
+```ruby
+gem "sqlite-vec"
+```
+
+And run:
+
+```sh
+rails generate neighbor:sqlite
+```
+
 ## Getting Started
 
 Create a migration
