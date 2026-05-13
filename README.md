@@ -43,12 +43,6 @@ rails db:migrate
 
 Neighbor supports three options for SQLite: no extension [unreleased], [Vec1](https://sqlite.org/vec1/doc/trunk/doc/vec1.md) [unreleased], and [sqlite-vec](https://github.com/asg017/sqlite-vec).
 
-For no extension, create `config/initializers/neighbor.rb` with:
-
-```ruby
-Neighbor::SQLite.initialize!(extension: false)
-```
-
 For Vec1, [build the extension](https://sqlite.org/vec1/doc/trunk/doc/vec1.md#2-building-the-extension) and create `config/initializers/neighbor.rb` with:
 
 ```ruby

@@ -4,8 +4,6 @@ class SqliteRecord < ActiveRecord::Base
   establish_connection adapter: "sqlite3", database: ":memory:"
 end
 
-Neighbor::SQLite.initialize!(extension: false)
-
 SqliteRecord.connection.instance_eval do
   create_table :items, force: true do |t|
     t.binary :embedding

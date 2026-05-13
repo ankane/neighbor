@@ -30,6 +30,7 @@ ActiveSupport.on_load(:active_record) do
   end
 
   Neighbor::MySQL.initialize!
+  Neighbor::SQLite.initialize_adapter!
 end
 
 require_relative "neighbor/railtie" if defined?(Rails::Railtie)

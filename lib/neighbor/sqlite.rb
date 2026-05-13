@@ -6,24 +6,25 @@ module Neighbor
 
     # note: this is a public API (unlike PostgreSQL and MySQL)
     def self.initialize!(extension: nil)
-      if defined?(@initialized)
-        raise Error, "Already initialized" if extension != @extension
-        return
-      end
+      return if extension == @extension
 
-      require_relative "type/sqlite_vector"
-      require_relative "type/sqlite_int8_vector" if extension.nil?
+      raise Error, "Already initialized" if @extension != false
 
       require "sqlite_vec" if extension.nil?
-      require "active_record/connection_adapters/sqlite3_adapter"
-
-      ActiveRecord::ConnectionAdapters::SQLite3Adapter.prepend(InstanceMethods)
 
       @extension = extension
-      @initialized = true
     end
 
-    # private
+    def self.initialize_adapter!
+      @extension = false unless defined?(@extension)
+
+      require_relative "type/sqlite_vector"
+      require_relative "type/sqlite_int8_vector"
+
+      require "active_record/connection_adapters/sqlite3_adapter"
+      ActiveRecord::ConnectionAdapters::SQLite3Adapter.prepend(InstanceMethods)
+    end
+
     def self.setup_functions(db)
       db.create_function("neighbor_l2_distance", 2) do |func, a, b|
         func.result =
