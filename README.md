@@ -39,28 +39,6 @@ rails generate neighbor:vector
 rails db:migrate
 ```
 
-### For SQLite
-
-Neighbor supports three options for SQLite: no extension [unreleased], [Vec1](https://sqlite.org/vec1/doc/trunk/doc/vec1.md) [unreleased], and [sqlite-vec](https://github.com/asg017/sqlite-vec).
-
-For Vec1, [build the extension](https://sqlite.org/vec1/doc/trunk/doc/vec1.md#2-building-the-extension) and create `config/initializers/neighbor.rb` with:
-
-```ruby
-Neighbor::SQLite.initialize!(extension: "/path/to/vec1.so")
-```
-
-For sqlite-vec, add this line to your application’s Gemfile:
-
-```ruby
-gem "sqlite-vec"
-```
-
-And create `config/initializers/neighbor.rb` with:
-
-```ruby
-Neighbor::SQLite.initialize!
-```
-
 ## Getting Started
 
 Create a migration
@@ -74,7 +52,7 @@ class AddEmbeddingToItems < ActiveRecord::Migration[8.1]
     # pgvector, MariaDB, and MySQL
     add_column :items, :embedding, :vector, limit: 3 # dimensions
 
-    # SQLite (no extension, Vec1, and sqlite-vec)
+    # SQLite
     add_column :items, :embedding, :binary
   end
 end
@@ -120,8 +98,6 @@ See the additional docs for:
 - [MariaDB](#mariadb)
 - [MySQL](#mysql)
 - [SQLite](#sqlite)
-- [Vec1](#vec1)
-- [sqlite-vec](#sqlite-vec)
 
 Or check out some [examples](#examples)
 
@@ -402,26 +378,22 @@ Get the nearest neighbors by Hamming distance
 Item.nearest_neighbors(:embedding, "\x05", distance: "hamming").first(5)
 ```
 
-## Vec1
+### SQLite Extensions
 
-### Distance
+Improve performance and add functionality with extensions:
 
-Supported values are:
+- [Vec1](#vec1)
+- [sqlite-vec](#sqlite-vec)
 
-- `euclidean`
-- `cosine`
+### Vec1
 
-### Dimensions
-
-For Vec1, it’s a good idea to specify the number of dimensions to ensure all records have the same number.
+For [Vec1](https://sqlite.org/vec1/doc/trunk/doc/vec1.md), [build the extension](https://sqlite.org/vec1/doc/trunk/doc/vec1.md#2-building-the-extension) and create `config/initializers/neighbor.rb` with:
 
 ```ruby
-class Item < ApplicationRecord
-  has_neighbors :embedding, dimensions: 3
-end
+Neighbor::SQLite.initialize!(extension: "/path/to/vec1.so")
 ```
 
-### Virtual Tables
+This speeds up `euclidean` and `cosine` distances
 
 You can also use [virtual tables](https://sqlite.org/vec1/doc/trunk/doc/vec1intro.md#1-using-the-virtual-table)
 
@@ -453,28 +425,29 @@ Get the `k` nearest neighbors
 Item.find_by_sql("SELECT * FROM items(vec1_from_json(?), ?)", [[1, 2, 3].to_json, {k: 5}.to_json])
 ```
 
-## sqlite-vec
+### sqlite-vec
 
-### Distance
+For [sqlite-vec](https://github.com/asg017/sqlite-vec), add this line to your application’s Gemfile:
 
-Supported values are:
+```ruby
+gem "sqlite-vec"
+```
 
-- `euclidean`
-- `cosine`
-- `taxicab`
-- `hamming`
+And create `config/initializers/neighbor.rb` with:
 
-### Dimensions
+```ruby
+Neighbor::SQLite.initialize!
+```
 
-For sqlite-vec, it’s a good idea to specify the number of dimensions to ensure all records have the same number.
+This speeds up `euclidean`, `cosine`, `taxicab`, and `hamming` distances
+
+Use the `type` option for int8 vectors
 
 ```ruby
 class Item < ApplicationRecord
-  has_neighbors :embedding, dimensions: 3
+  has_neighbors :embedding, dimensions: 3, type: :int8
 end
 ```
-
-### Virtual Tables
 
 You can also use [virtual tables](https://alexgarcia.xyz/sqlite-vec/features/knn.html)
 
@@ -518,32 +491,6 @@ Filter by primary key
 
 ```ruby
 Item.where(id: [2, 3]).where("embedding MATCH ?", [1, 2, 3].to_s).where(k: 5).order(:distance)
-```
-
-### Int8 Vectors
-
-Use the `type` option for int8 vectors
-
-```ruby
-class Item < ApplicationRecord
-  has_neighbors :embedding, dimensions: 3, type: :int8
-end
-```
-
-### Binary Vectors
-
-Use the `type` option for binary vectors
-
-```ruby
-class Item < ApplicationRecord
-  has_neighbors :embedding, dimensions: 8, type: :bit
-end
-```
-
-Get the nearest neighbors by Hamming distance
-
-```ruby
-Item.nearest_neighbors(:embedding, "\x05", distance: "hamming").first(5)
 ```
 
 ## Examples
