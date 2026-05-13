@@ -35,7 +35,7 @@ module Neighbor
               else
                 a = a.unpack("f*")
                 b = b.unpack("f*")
-                raise Error, "different vector dimensions" if a.size != b.size
+                raise SQLite3::SQLException, "different vector dimensions" if a.size != b.size
                 Math.sqrt(a.zip(b).sum { |ai, bi| diff = ai - bi; diff * diff })
               end
           end
@@ -47,7 +47,7 @@ module Neighbor
               else
                 a = a.unpack("f*")
                 b = b.unpack("f*")
-                raise Error, "different vector dimensions" if a.size != b.size
+                raise SQLite3::SQLException, "different vector dimensions" if a.size != b.size
                 -a.zip(b).sum { |ai, bi| ai * bi }
               end
           end
@@ -59,7 +59,7 @@ module Neighbor
               else
                 a = a.unpack("f*")
                 b = b.unpack("f*")
-                raise Error, "different vector dimensions" if a.size != b.size
+                raise SQLite3::SQLException, "different vector dimensions" if a.size != b.size
                 similarity = a.zip(b).sum { |ai, bi| ai * bi }
                 norma = a.sum { |v| v * v }
                 normb = b.sum { |v| v * v }
@@ -74,7 +74,7 @@ module Neighbor
               else
                 a = a.unpack("f*")
                 b = b.unpack("f*")
-                raise Error, "different vector dimensions" if a.size != b.size
+                raise SQLite3::SQLException, "different vector dimensions" if a.size != b.size
                 a.zip(b).sum { |ai, bi| (ai - bi).abs }
               end
           end
@@ -84,7 +84,7 @@ module Neighbor
               if a.nil? || b.nil?
                 nil
               else
-                raise Error, "different vector dimensions" if a.bytesize != b.bytesize
+                raise SQLite3::SQLException, "different vector dimensions" if a.bytesize != b.bytesize
                 # TODO improve
                 a.each_byte.zip(b.each_byte).sum { |ai, bi| (ai ^ bi).to_s(2).count("1") }
               end
@@ -95,7 +95,7 @@ module Neighbor
               if a.nil? || b.nil?
                 nil
               else
-                raise Error, "different vector dimensions" if a.bytesize != b.bytesize
+                raise SQLite3::SQLException, "different vector dimensions" if a.bytesize != b.bytesize
                 # TODO improve
                 ab = a.each_byte.zip(b.each_byte).sum { |ai, bi| (ai & bi).to_s(2).count("1") }
                 aa = a.unpack1("B*").count("1")
