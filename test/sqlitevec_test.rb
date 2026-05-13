@@ -1,7 +1,7 @@
 require_relative "test_helper"
 require_relative "support/sqlitevec"
 
-class SqlitevecFloat32Test < Minitest::Test
+class SqlitevecTest < Minitest::Test
   def setup
     SqliteItem.delete_all
   end
