@@ -1,7 +1,7 @@
 require_relative "test_helper"
 require_relative "support/postgresql"
 
-class VectorTest < PostgresTest
+class PgvectorVectorTest < PostgresTest
   def test_cosine
     create_items(Item, :embedding)
     result = Item.find(1).nearest_neighbors(:embedding, distance: "cosine").first(3)

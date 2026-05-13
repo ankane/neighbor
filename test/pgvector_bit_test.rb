@@ -1,7 +1,7 @@
 require_relative "test_helper"
 require_relative "support/postgresql"
 
-class BitTest < PostgresTest
+class PgvectorBitTest < PostgresTest
   def test_hamming
     create_bit_items
     result = Item.find(1).nearest_neighbors(:binary_embedding, distance: "hamming").first(3)
