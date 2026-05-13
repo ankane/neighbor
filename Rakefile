@@ -42,3 +42,33 @@ task :test do
 end
 
 task default: :test
+
+task :benchmark do
+  require "active_record"
+  require "benchmark/ips"
+  require "neighbor"
+
+  ActiveRecord::Base.establish_connection adapter: "sqlite3", database: "/tmp/bench.sqlite3"
+
+  class Item < ActiveRecord::Base
+    has_neighbors :embedding, dimensions: 128
+  end
+
+  setup = false
+  if setup
+    ActiveRecord::Schema.define do
+      create_table :items, force: true do |t|
+        t.binary :embedding
+      end
+    end
+
+    Item.insert_all!(100000.times.map { {embedding: 128.times.map { rand }} })
+  end
+
+  # Neighbor::SQLite.initialize!(extension: "/tmp/vec1.so")
+
+  embedding = 128.times.map { rand }
+  Benchmark.ips do |x|
+    x.report { Item.nearest_neighbors(:embedding, embedding, distance: "euclidean").first }
+  end
+end

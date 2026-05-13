@@ -11,3 +11,4 @@ gem "sqlite-vec", platform: :mri
 gem "mysql2"
 gem "trilogy"
 gem "railties", require: false
+gem "benchmark-ips", require: false
