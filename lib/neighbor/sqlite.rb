@@ -4,14 +4,6 @@ module Neighbor
       attr_reader :extensions
     end
 
-    def self.vec1?
-      extensions.any?(String)
-    end
-
-    def self.sqlite_vec?
-      extensions.include?(:sqlite_vec)
-    end
-
     # note: this is a public API (unlike PostgreSQL and MySQL)
     def self.initialize!(extension: :sqlite_vec)
       if extension == :sqlite_vec
@@ -31,6 +23,14 @@ module Neighbor
 
       require "active_record/connection_adapters/sqlite3_adapter"
       ActiveRecord::ConnectionAdapters::SQLite3Adapter.prepend(InstanceMethods)
+    end
+
+    def self.vec1?
+      extensions.any?(String)
+    end
+
+    def self.sqlite_vec?
+      extensions.include?(:sqlite_vec)
     end
 
     def self.setup_functions(db)
