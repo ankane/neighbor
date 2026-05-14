@@ -404,7 +404,7 @@ Item.nearest_neighbors(:embedding, "\x05", distance: "hamming").first(5)
 
 ### SQLite Extensions
 
-Improve performance and add functionality with extensions:
+Improve performance with extensions:
 
 - [Vec1](#vec1)
 - [sqlite-vec](#sqlite-vec)
