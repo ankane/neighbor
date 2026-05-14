@@ -1,6 +1,6 @@
 ## 1.1.1 (unreleased)
 
-- Fixed `Gem::LoadError` error
+- Fixed `sqlite3 is not part of the bundle` error
 
 ## 1.1.0 (2026-05-14)
 
