@@ -1,4 +1,4 @@
-## 1.1.0 (unreleased)
+## 1.1.0 (2026-05-14)
 
 - Added experimental support for SQLite with no extension
 - Added experimental support for Vec1
