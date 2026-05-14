@@ -1,3 +1,7 @@
+## 1.1.1 (unreleased)
+
+- Fixed `Gem::LoadError` error
+
 ## 1.1.0 (2026-05-14)
 
 - Added experimental support for SQLite with no extension

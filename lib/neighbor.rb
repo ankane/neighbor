@@ -30,7 +30,12 @@ ActiveSupport.on_load(:active_record) do
   end
 
   Neighbor::MySQL.initialize!
-  Neighbor::SQLite.initialize_adapter!
+
+  begin
+    Neighbor::SQLite.initialize_adapter!
+  rescue Gem::LoadError
+    # tries to load sqlite3 gem, which may not be available
+  end
 end
 
 require_relative "neighbor/railtie" if defined?(Rails::Railtie)
