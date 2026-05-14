@@ -43,7 +43,7 @@ module Neighbor
             fmt = c == 1 ? "c*" : "f*"
             a = a.unpack(fmt)
             b = b.unpack(fmt)
-            Math.sqrt(a.zip(b).sum { |ai, bi| diff = ai - bi; diff * diff })
+            Math.sqrt(a.zip(b).sum { |ai, bi| (ai - bi)**2 })
           end
       end
 
