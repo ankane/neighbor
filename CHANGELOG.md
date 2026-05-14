@@ -1,4 +1,4 @@
-## 1.1.1 (unreleased)
+## 1.1.1 (2026-05-14)
 
 - Fixed `sqlite3 is not part of the bundle` error
 
