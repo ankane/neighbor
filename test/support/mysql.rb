@@ -12,7 +12,7 @@ rescue => e
 
     To use the Docker container, run:
 
-    docker run -e MYSQL_ALLOW_EMPTY_PASSWORD=1 -e MYSQL_DATABASE=neighbor_test -p 3306:3306 mysql:9
+    docker run -e MYSQL_ALLOW_EMPTY_PASSWORD=1 -e MYSQL_DATABASE=neighbor_test -p 3306:3306 mysql:9.7
 
     (and wait for it to be ready)
   MSG

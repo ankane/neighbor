@@ -24,7 +24,7 @@ jobs:
         ports:
           - 3307:3306
       mysql:
-        image: mysql:9
+        image: mysql:9.7
         env:
           MYSQL_ALLOW_EMPTY_PASSWORD: 1
           MYSQL_DATABASE: neighbor_test
