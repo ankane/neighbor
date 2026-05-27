@@ -38,6 +38,18 @@ class CubeTest < PostgresTest
     assert_elements_in_delta [1, 1], result.map(&:neighbor_distance)
   end
 
+  def test_threshold_cosine
+    create_items(CosineItem, :cube_embedding)
+    result = CosineItem.find(1).nearest_neighbors(:cube_embedding, distance: "cosine", threshold: 0.05).first(3)
+    assert_equal [2], result.map(&:id)
+  end
+
+  def test_threshold_euclidean
+    create_items(Item, :cube_embedding)
+    result = Item.find(1).nearest_neighbors(:cube_embedding, distance: "euclidean", threshold: 1).first(3)
+    assert_equal [3], result.map(&:id)
+  end
+
   def test_index_scan
     assert_index_scan Item.nearest_neighbors(:cube_embedding, [0, 0, 0], distance: "euclidean")
   end

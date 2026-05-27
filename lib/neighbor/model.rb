@@ -60,7 +60,7 @@ module Neighbor
           end
         end
 
-        scope :nearest_neighbors, ->(attribute_name, vector, distance:, precision: nil) {
+        scope :nearest_neighbors, ->(attribute_name, vector, distance:, threshold: nil, precision: nil) {
           attribute_name = attribute_name.to_sym
           options = neighbor_attributes[attribute_name]
           raise ArgumentError, "Invalid attribute" unless options
@@ -137,9 +137,16 @@ module Neighbor
 
           # for select, use column_names instead of * to account for ignored columns
           select_columns = select_values.any? ? [] : column_names
-          select(*select_columns, "#{neighbor_distance} AS neighbor_distance")
+          result = select(*select_columns, "#{neighbor_distance} AS neighbor_distance")
             .where.not(attribute_name => nil)
             .reorder(Arel.sql(order))
+
+          if threshold
+            op = distance == "inner_product" ? ">=" : "<="
+            result = result.where("#{neighbor_distance} #{op} ?", threshold)
+          end
+
+          result
         }
 
         def nearest_neighbors(attribute_name, **options)

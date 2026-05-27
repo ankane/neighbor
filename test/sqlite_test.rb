@@ -34,6 +34,12 @@ class SqliteTest < Minitest::Test
     assert_elements_in_delta [6, 4], result.map(&:neighbor_distance)
   end
 
+  def test_threshold
+    create_items(SqliteItem, :embedding)
+    result = SqliteItem.find(1).nearest_neighbors(:embedding, distance: "cosine", threshold: 0.05).first(3)
+    assert_equal [2], result.map(&:id)
+  end
+
   def test_create
     item = SqliteItem.create!(embedding: [1, 2, 3])
     assert_equal [1, 2, 3], item.embedding

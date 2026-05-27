@@ -20,6 +20,12 @@ class MariadbTest < Minitest::Test
     assert_elements_in_delta [1, Math.sqrt(3)], result.map(&:neighbor_distance)
   end
 
+  def test_threshold
+    create_items(MariadbItem, :embedding)
+    result = MariadbItem.find(1).nearest_neighbors(:embedding, distance: "cosine", threshold: 0.05).first(3)
+    assert_equal [2], result.map(&:id)
+  end
+
   def test_index_scan
     skip "Occasionally freezes server"
 

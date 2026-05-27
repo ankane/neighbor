@@ -1,3 +1,7 @@
+## 1.2.0 (unreleased)
+
+- Added `threshold` option
+
 ## 1.1.1 (2026-05-14)
 
 - Fixed `sqlite3 is not part of the bundle` error
