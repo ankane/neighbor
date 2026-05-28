@@ -1,6 +1,7 @@
 ## 1.2.0 (unreleased)
 
 - Added `threshold` option
+- Added `rerank` option
 
 ## 1.1.1 (2026-05-14)
 

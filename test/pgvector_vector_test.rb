@@ -59,6 +59,57 @@ class PgvectorVectorTest < PostgresTest
     assert_index_scan relation
   end
 
+  def test_rerank
+    create_items(Item, :embedding)
+    relation = Item.nearest_neighbors(:embedding, [1, 1, 1], distance: "cosine", rerank: 40)
+    assert_index_scan relation
+
+    result = relation.first(5)
+    assert_elements_in_delta [0, 0, 0.05719095841050148], result.map(&:neighbor_distance)
+  end
+
+  def test_rerank_select
+    create_items(Item, :embedding)
+    relation = Item.select(:id, :embedding).nearest_neighbors(:embedding, [1, 1, 1], distance: "cosine", rerank: 40)
+    assert_index_scan relation
+
+    result = relation.first(5)
+    assert_elements_in_delta [0, 0, 0.05719095841050148], result.map(&:neighbor_distance)
+    assert_kind_of Array, result.first.embedding
+  end
+
+  def test_rerank_select_excluded
+    create_items(Item, :embedding)
+    relation = Item.select(:id).nearest_neighbors(:embedding, [1, 1, 1], distance: "cosine", rerank: 40)
+    assert_index_scan relation
+
+    result = relation.first(5)
+    assert_elements_in_delta [0, 0, 0.05719095841050148], result.map(&:neighbor_distance)
+    assert_raises(ActiveModel::MissingAttributeError) do
+      result.first.embedding
+    end
+  end
+
+  def test_rerank_where
+    create_items(Item, :embedding)
+    relation = Item.where.not(id: 1).nearest_neighbors(:embedding, [1, 1, 1], distance: "cosine", rerank: 40)
+    assert_index_scan relation
+
+    result = relation.first(5)
+    assert_equal [2, 3], result.map(&:id)
+    assert_elements_in_delta [0, 0.05719095841050148], result.map(&:neighbor_distance)
+  end
+
+  def test_rerank_threshold
+    create_items(Item, :embedding)
+    relation = Item.find(1).nearest_neighbors(:embedding, distance: "cosine", rerank: 40, threshold: 0.05)
+    assert_index_scan relation
+
+    result = relation.first(5)
+    assert_equal [2], result.map(&:id)
+    assert_elements_in_delta [0], result.map(&:neighbor_distance)
+  end
+
   def test_invalid_precision
     error = assert_raises(ArgumentError) do
       Item.nearest_neighbors(:embedding, [1, 2, 3], distance: "euclidean", precision: "bad")

@@ -60,7 +60,7 @@ module Neighbor
           end
         end
 
-        scope :nearest_neighbors, ->(attribute_name, vector, distance:, threshold: nil, precision: nil) {
+        scope :nearest_neighbors, ->(attribute_name, vector, distance:, threshold: nil, precision: nil, rerank: nil) {
           attribute_name = attribute_name.to_sym
           options = neighbor_attributes[attribute_name]
           raise ArgumentError, "Invalid attribute" unless options
@@ -80,7 +80,7 @@ module Neighbor
             raise ArgumentError, "type only works with SQLite"
           end
 
-          operator = Neighbor::Utils.operator(adapter, column_type, distance)
+          operator = rerank ? "<~>" : Neighbor::Utils.operator(adapter, column_type, distance)
           raise ArgumentError, "Invalid distance: #{distance}" unless operator
 
           # ensure normalize set (can be true or false)
@@ -95,10 +95,12 @@ module Neighbor
           Neighbor::Utils.validate(vector, dimensions: dimensions, type: type || Utils.type(adapter, column_info&.type), adapter: adapter)
           vector = Neighbor::Utils.normalize(vector, column_info: column_info) if normalize
 
+          quoted_table = nil
           quoted_attribute = nil
           query = nil
           connection_pool.with_connection do |c|
-            quoted_attribute = "#{c.quote_table_name(table_name)}.#{c.quote_column_name(attribute_name)}"
+            quoted_table = c.quote_table_name(table_name)
+            quoted_attribute = "#{quoted_table}.#{c.quote_column_name(attribute_name)}"
             query = c.quote(column_attribute.serialize(vector))
           end
 
@@ -115,6 +117,21 @@ module Neighbor
             else
               raise ArgumentError, "Invalid precision"
             end
+          end
+
+          if rerank
+            if adapter != :postgresql || ![:vector, :halfvec].include?(column_type)
+              raise ArgumentError, "Rerank not supported for this type"
+            end
+
+            if precision
+              raise ArgumentError, "Cannot combine precision and rerank"
+            end
+
+            cast_dimensions = dimensions || column_info&.limit
+            raise ArgumentError, "Unknown dimensions" unless cast_dimensions
+            quoted_attribute = "binary_quantize(#{quoted_attribute})::bit(#{connection_pool.with_connection { |c| c.quote(cast_dimensions.to_i) }})"
+            query = "binary_quantize(#{query}::#{column_type == :halfvec ? "halfvec" : "vector"})"
           end
 
           order = Utils.order(adapter, type, operator, quoted_attribute, query)
@@ -135,13 +152,31 @@ module Neighbor
               order
             end
 
-          # for select, use column_names instead of * to account for ignored columns
-          select_columns = select_values.any? ? [] : column_names
-          result = select(*select_columns, "#{neighbor_distance} AS neighbor_distance")
-            .where.not(attribute_name => nil)
+          if rerank
+            select_columns =
+              if select_values.any? && !select_values.include?(attribute_name)
+                [attribute_name]
+              else
+                nil
+              end
+          else
+            # for select, use column_names instead of * to account for ignored columns
+            select_columns = select_values.any? ? [] : column_names
+            select_columns += ["#{neighbor_distance} AS neighbor_distance"]
+          end
+
+          result = where.not(attribute_name => nil)
             .reorder(Arel.sql(order))
 
-          if threshold
+          result = result.select(select_columns) if select_columns
+
+          if rerank
+            result = with(table_name => result.limit(rerank))
+              .reselect(select_columns ? select_values : "#{quoted_table}.*")
+              .unscope(:where)
+              .nearest_neighbors(attribute_name, vector, distance: distance, threshold: threshold)
+              .unscope(where: attribute_name)
+          elsif threshold
             op = distance == "inner_product" ? ">=" : "<="
             result = result.where("#{neighbor_distance} #{op} ?", threshold)
           end

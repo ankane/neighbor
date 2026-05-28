@@ -218,6 +218,12 @@ class AddIndexToItemsEmbedding < ActiveRecord::Migration[8.1]
 end
 ```
 
+Re-rank by the original vectors [unreleased]
+
+```ruby
+Item.nearest_neighbors(:embedding, [0.9, 1.3, 1.1], distance: "cosine", rerank: 40).first(5)
+```
+
 ### Sparse Vectors
 
 Use the `sparsevec` type to store sparse vectors
