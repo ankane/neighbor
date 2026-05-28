@@ -79,7 +79,9 @@ class PostgresTest < Minitest::Test
   def assert_index_scan(relation)
     Item.transaction do
       Item.connection.execute("SET LOCAL enable_seqscan = off")
-      assert_match "Index Scan", relation.limit(5).explain.inspect
+      explain = relation.limit(5).explain.inspect
+      puts explain if ENV["VERBOSE"]
+      assert_match "Index Scan", explain
     end
   end
 end
