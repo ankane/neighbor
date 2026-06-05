@@ -91,7 +91,7 @@ nearest_item = item.nearest_neighbors(:embedding, distance: "euclidean").first
 nearest_item.neighbor_distance
 ```
 
-Get the nearest neighbors within a distance threshold [unreleased]
+Get the nearest neighbors within a distance threshold
 
 ```ruby
 item.nearest_neighbors(:embedding, distance: "euclidean", threshold: 0.5).first(5)
