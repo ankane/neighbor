@@ -17,14 +17,14 @@ jobs:
       BUNDLE_GEMFILE: ${{ matrix.gemfile }}
     services:
       mariadb:
-        image: mariadb
+        image: mariadb:12.3
         env:
           MARIADB_ALLOW_EMPTY_ROOT_PASSWORD: 1
           MARIADB_DATABASE: neighbor_test
         ports:
           - 3307:3306
       mysql:
-        image: mysql
+        image: mysql:9.7
         env:
           MYSQL_ALLOW_EMPTY_PASSWORD: 1
           MYSQL_DATABASE: neighbor_test
